@@ -45,9 +45,9 @@ public class Customer : MonoBehaviour
 
     System.Collections.IEnumerator EatAndLeave()
     {
-        Debug.Log("손님이 식사를 시작합니다.");
+        Debug.Log("식사 시작");
         yield return new WaitForSeconds(2f); // 2초간 식사
-        Debug.Log("식사 완료! 돈을 지불하고 떠납니다.");
+        Debug.Log("식사 완료");
         GameManager.instance.AddGold(100);
         targetTable.GetComponent<Table>().isOccupied = false; // 테이블 비우기
         currentState = CustomerState.Leaving;
