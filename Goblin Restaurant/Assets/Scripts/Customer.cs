@@ -49,7 +49,8 @@ public class Customer : MonoBehaviour
         yield return new WaitForSeconds(2f); // 2초간 식사
         Debug.Log("식사 완료");
         GameManager.instance.AddGold(100);
-        targetTable.GetComponent<Table>().isOccupied = false; // 테이블 비우기
+        targetTable.GetComponent<Table>().Vacate(); // 테이블 비우기
+        targetTable.GetComponent<Table>().isDirty = true; // 테이블 더러운 상태로 변경
         currentState = CustomerState.Leaving;
         RestaurantManager.instance.customers.Remove(this);
     }

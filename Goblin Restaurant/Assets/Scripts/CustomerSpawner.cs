@@ -55,7 +55,7 @@ public class CustomerSpawner : MonoBehaviour
     {
         foreach (Table table in tables)
         {
-            if (!table.isOccupied)
+            if (!table.isOccupied && !table.isDirty)
             {
                 return table;
             }

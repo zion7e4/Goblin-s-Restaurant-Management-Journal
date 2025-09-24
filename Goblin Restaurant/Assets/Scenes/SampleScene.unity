@@ -641,6 +641,7 @@ MonoBehaviour:
   cookingtime: 5
   targetCustomer: {fileID: 0}
   targetCountertop: {fileID: 0}
+  targetTable: {fileID: 0}
   idlePosition: {fileID: 1864346188}
 --- !u!1 &989197968
 GameObject:
@@ -1405,6 +1406,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Table
   isOccupied: 0
+  isDirty: 0
   currentCustomer: {fileID: 0}
 --- !u!1 &1864346185
 GameObject:

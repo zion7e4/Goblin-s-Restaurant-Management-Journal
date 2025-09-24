@@ -13,7 +13,9 @@ public class Goblin : MonoBehaviour
         MovingToCounterTop,
         Cooking,
         MovingToServe,
-        MovingToIdle
+        MovingToIdle,
+        CheckingTable,
+        MovingToTable
     }
 
     public EmployeeState currentState;
@@ -26,6 +28,8 @@ public class Goblin : MonoBehaviour
     private Customer targetCustomer;
     [SerializeField]
     private CounterTop targetCountertop;
+    [SerializeField]
+    private Table targetTable;
     [SerializeField]
     private Transform idlePosition; // 직원이 할 일이 없을 때 서 있을 위치
 
@@ -66,6 +70,12 @@ public class Goblin : MonoBehaviour
             case EmployeeState.MovingToServe:
                 MoveTo(targetCustomer.transform.position, ServeFood);
                 break;
+            case EmployeeState.CheckingTable:
+                CheckTable();
+                break;
+            case EmployeeState.MovingToTable:
+                MoveTo(targetTable.transform.position, () => { StartCoroutine(CleaningTable()); });
+                break;
         }
     }
 
@@ -73,11 +83,18 @@ public class Goblin : MonoBehaviour
     void FindTask()
     {
         targetCustomer = RestaurantManager.instance.customers.FirstOrDefault(c => c.currentState == Customer.CustomerState.WaitingForOrder);
-
         if (targetCustomer != null)
         {
             currentState = EmployeeState.MovingToCustomer;
         }
+
+        targetTable = RestaurantManager.instance.tables.FirstOrDefault(t => !t.isOccupied && t.isDirty);
+        if (targetTable != null)
+        {
+            currentState = EmployeeState.MovingToTable;
+            return;
+        }
+
         else if (Vector2.Distance(transform.position, idlePosition.position) > 0.1f)
         {
             currentState = EmployeeState.MovingToIdle;
@@ -97,6 +114,7 @@ public class Goblin : MonoBehaviour
             targetCountertop.isBeingUsed = true; // 화구를 사용 상태로 변경
             currentState = EmployeeState.MovingToCounterTop;
         }
+
         else
         {
             // 만약 모든 화구가 사용 중이라면 잠시 대기 (Idle 상태로 돌아가 다시 탐색)
@@ -128,6 +146,33 @@ public class Goblin : MonoBehaviour
         targetCustomer = null;
         targetCountertop = null;
 
+        currentState = EmployeeState.MovingToIdle;
+    }
+
+    void CheckTable()
+    {
+        targetTable = RestaurantManager.instance.tables.FirstOrDefault(t => !t.isOccupied && t.isDirty);
+
+        if (targetTable.isDirty && targetTable.isOccupied)
+        {
+            currentState = EmployeeState.MovingToTable;
+        }
+        else
+        {
+            currentState = EmployeeState.Idle;
+        }
+    }
+
+    // 테이블 청소
+    IEnumerator CleaningTable()
+    {
+        Debug.Log("테이블 청소 시작");
+
+        yield return new WaitForSeconds(5f); // 청소 시간
+
+        Debug.Log("테이블 청소 완료");
+        targetTable.isDirty = false; // 테이블 청소 완료
+        targetTable = null;
         currentState = EmployeeState.MovingToIdle;
     }
 
