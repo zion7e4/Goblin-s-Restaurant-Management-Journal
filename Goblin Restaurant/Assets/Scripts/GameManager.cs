@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -19,25 +19,26 @@ public class GameManager : MonoBehaviour
 
             if (_currentState == GameState.Closing)
             {
-                ShowSettlementPanal(); // ÀÏÀÏ Á¤»ê ÆĞ³Î Ç¥½Ã
+                ShowSettlementPanal(); // ì¼ì¼ ì •ì‚° íŒ¨ë„ í‘œì‹œ
             }
         }
     }
 
-    public float dayDurationInSeconds = 600f; // ½ÇÁ¦ ÇÏ·ç ±æÀÌ (10ºĞ)
-    public int totalGoldAmount = 0; // ÃÑ °ñµå º¯¼ö Ãß°¡
-    private int todaysGold = 0; // ¿À´Ã ¹ø °ñµå
-    private int todaysCustomers = 0; // ¿À´Ã ¹æ¹®ÇÑ °í°´ ¼ö
+    public float dayDurationInSeconds = 600f; // ì‹¤ì œ í•˜ë£¨ ê¸¸ì´ (10ë¶„)
+    public int totalGoldAmount = 0; // ì´ ê³¨ë“œ ë³€ìˆ˜ ì¶”ê°€
+    private int todaysGold = 0; // ì˜¤ëŠ˜ ë²ˆ ê³¨ë“œ
+    private int todaysCustomers = 0; // ì˜¤ëŠ˜ ë°©ë¬¸í•œ ê³ ê° ìˆ˜
     private float currentTimeOfDay;
-    private int DayCount = 1; // ¸çÄ¥Â°ÀÎÁö ¼¼´Â º¯¼ö Ãß°¡
-    private float timeScale; // °ÔÀÓ ³» ½Ã°£ Èå¸§ ¼Óµµ
+    private int DayCount = 1; // ë©°ì¹ ì§¸ì¸ì§€ ì„¸ëŠ” ë³€ìˆ˜ ì¶”ê°€
+    private float timeScale; // ê²Œì„ ë‚´ ì‹œê°„ íë¦„ ì†ë„
+    private int speedState = 0; // ì‹œê°„ ë°°ì† ìƒíƒœ ë³€ìˆ˜ ì¶”ê°€
 
-    public TextMeshProUGUI timeText; // È­¸é¿¡ ½Ã°£À» Ç¥½ÃÇÒ UI ÅØ½ºÆ®
-    public TextMeshProUGUI dayText; // È­¸é¿¡ ³¯Â¥¸¦ Ç¥½ÃÇÒ UI ÅØ½ºÆ®
-    public TextMeshProUGUI totalGold; // È­¸é¿¡ ÃÑ °ñµå¸¦ Ç¥½ÃÇÒ UI ÅØ½ºÆ®
+    public TextMeshProUGUI timeText; // í™”ë©´ì— ì‹œê°„ì„ í‘œì‹œí•  UI í…ìŠ¤íŠ¸
+    public TextMeshProUGUI dayText; // í™”ë©´ì— ë‚ ì§œë¥¼ í‘œì‹œí•  UI í…ìŠ¤íŠ¸
+    public TextMeshProUGUI totalGold; // í™”ë©´ì— ì´ ê³¨ë“œë¥¼ í‘œì‹œí•  UI í…ìŠ¤íŠ¸
 
-    public GameObject OpenButton; // ¿ÀÇÂ ¹öÆ° ui
-    public GameObject NextDayButton; // ´ÙÀ½ ³¯ ¹öÆ° ui
+    public GameObject OpenButton; // ì˜¤í”ˆ ë²„íŠ¼ ui
+    public GameObject NextDayButton; // ë‹¤ìŒ ë‚  ë²„íŠ¼ ui
 
     public GameObject settlementPanel;
     public GameObject CheckButton;
@@ -45,7 +46,9 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI totalGoldText;
     public TextMeshProUGUI customerCountText;
 
-    private InputSystem_Actions inputActions; // »ı¼ºµÈ Input Action C# Å¬·¡½º
+    public TextMeshProUGUI TimeScaleButtonText;
+
+    private InputSystem_Actions inputActions; // ìƒì„±ëœ Input Action C# í´ë˜ìŠ¤
 
     private void Awake()
     {
@@ -75,33 +78,35 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         currentState = GameState.Preparing;
-        // °ÔÀÓ ³» 9½Ã°£(09~18½Ã)À» ½ÇÁ¦ 10ºĞÀ¸·Î °è»ê
+        // ê²Œì„ ë‚´ 9ì‹œê°„(09~18ì‹œ)ì„ ì‹¤ì œ 10ë¶„ìœ¼ë¡œ ê³„ì‚°
         timeScale = (9 * 60 * 60) / dayDurationInSeconds;
-        currentTimeOfDay = 9 * 3600; // ¿ÀÀü 9½Ã¿¡¼­ ½ÃÀÛ (ÃÊ ´ÜÀ§)
+        currentTimeOfDay = 9 * 3600; // ì˜¤ì „ 9ì‹œì—ì„œ ì‹œì‘ (ì´ˆ ë‹¨ìœ„)
         timeText.text = "09:00";
         dayText.text = "Day " + DayCount;
-        totalGold.text = "Gold: " + totalGoldAmount; // ÃÑ °ñµå ÃÊ±âÈ­
-        Debug.Log("¿ÀÇÂ ÁØºñ ½Ã°£ÀÔ´Ï´Ù.");
+        totalGold.text = "Gold: " + totalGoldAmount; // ì´ ê³¨ë“œ ì´ˆê¸°í™”
+        Time.timeScale = 1; // ì´ˆê¸° ì‹œê°„ ë°°ì†
+        TimeScaleButtonText.text = "X1";
+        Debug.Log("ì˜¤í”ˆ ì¤€ë¹„ ì‹œê°„ì…ë‹ˆë‹¤.");
     }
 
     void Update()
     {
-        // °¡°Ô ¿î¿µ »óÅÂÀÏ ¶§¸¸ ½Ã°£ÀÌ Èå¸§
+        // ê°€ê²Œ ìš´ì˜ ìƒíƒœì¼ ë•Œë§Œ ì‹œê°„ì´ íë¦„
         if (currentState == GameState.Open)
         {
             currentTimeOfDay += Time.deltaTime * timeScale;
 
-            // ½Ã°£ UI ¾÷µ¥ÀÌÆ® (¿¹: 13:30)
+            // ì‹œê°„ UI ì—…ë°ì´íŠ¸ (ì˜ˆ: 13:30)
             int hours = (int)(currentTimeOfDay / 3600);
             int minutes = (int)((currentTimeOfDay % 3600) / 60);
             timeText.text = string.Format("{0:D2}:{1:D2}", hours, minutes);
             dayText.text = "Day " + DayCount;
 
-            // 18½Ã°¡ µÇ¸é ¸¶°¨ »óÅÂ·Î º¯°æ
+            // 18ì‹œê°€ ë˜ë©´ ë§ˆê° ìƒíƒœë¡œ ë³€ê²½
             if (currentTimeOfDay >= 18 * 3600)
             {
                 currentState = GameState.Closing;
-                Debug.Log("¿µ¾÷ Á¾·á");
+                Debug.Log("ì˜ì—… ì¢…ë£Œ");
 
             }
         }
@@ -110,14 +115,14 @@ public class GameManager : MonoBehaviour
         {
             timeText.text = "09:00";
             dayText.text = "Day " + DayCount;
-            todaysGold = 0; // ¿À´Ã ¹ø °ñµå ÃÊ±âÈ­
-            todaysCustomers = 0; // ¿À´Ã ¹æ¹®°´ ¼ö ÃÊ±âÈ­
+            todaysGold = 0; // ì˜¤ëŠ˜ ë²ˆ ê³¨ë“œ ì´ˆê¸°í™”
+            todaysCustomers = 0; // ì˜¤ëŠ˜ ë°©ë¬¸ê° ìˆ˜ ì´ˆê¸°í™”
         }
     }
 
     private void UpdateButtonUI()
     {
-        // °¢ »óÅÂ¿¡ ¸Â´Â ¹öÆ°¸¸ È°¼ºÈ­(true)ÇÏ°í ³ª¸ÓÁö´Â ºñÈ°¼ºÈ­(false)
+        // ê° ìƒíƒœì— ë§ëŠ” ë²„íŠ¼ë§Œ í™œì„±í™”(true)í•˜ê³  ë‚˜ë¨¸ì§€ëŠ” ë¹„í™œì„±í™”(false)
         OpenButton.SetActive(currentState == GameState.Preparing);
         NextDayButton.SetActive(currentState == GameState.Closing);
     }
@@ -127,7 +132,7 @@ public class GameManager : MonoBehaviour
         if (currentState == GameState.Preparing)
         {
             currentState = GameState.Open;
-            Debug.Log("¿µ¾÷ ½ÃÀÛ");
+            Debug.Log("ì˜ì—… ì‹œì‘");
         }
     }
 
@@ -136,37 +141,58 @@ public class GameManager : MonoBehaviour
         if (currentState == GameState.Closing)
         {
             currentState = GameState.Preparing;
-            currentTimeOfDay = 9 * 3600; // ´ÙÀ½ ³¯ ¿ÀÀü 9½Ã·Î ÃÊ±âÈ­
-            DayCount += 1; // ¸çÄ¥Â°ÀÎÁö Áõ°¡
-            Debug.Log("´ÙÀ½ ³¯ ÁØºñ¸¦ ½ÃÀÛÇÕ´Ï´Ù.");
+            currentTimeOfDay = 9 * 3600; // ë‹¤ìŒ ë‚  ì˜¤ì „ 9ì‹œë¡œ ì´ˆê¸°í™”
+            DayCount += 1; // ë©°ì¹ ì§¸ì¸ì§€ ì¦ê°€
+            Debug.Log("ë‹¤ìŒ ë‚  ì¤€ë¹„ë¥¼ ì‹œì‘í•©ë‹ˆë‹¤.");
         }
     }
 
     public void closePanal()
     {
-        settlementPanel.SetActive(false); // ÀÏÀÏ Á¤»ê ÆĞ³Î ´İ±â
-        CheckButton.SetActive(false); // È®ÀÎ ¹öÆ° ´İ±â
+        settlementPanel.SetActive(false); // ì¼ì¼ ì •ì‚° íŒ¨ë„ ë‹«ê¸°
+        CheckButton.SetActive(false); // í™•ì¸ ë²„íŠ¼ ë‹«ê¸°
     }
 
     private void ShowSettlementPanal()
     {
-        todaysGoldText.text = $"¿À´Ã È®µæÇÑ °ñµå·®: {todaysGold}";
-        totalGoldText.text = $"ÃÑ º¸À¯ °ñµå: {totalGoldAmount}";
-        customerCountText.text = $"±İÀÏ ¹æ¹®°´ ¼ö: {todaysCustomers}";
+        todaysGoldText.text = $"ì˜¤ëŠ˜ í™•ë“í•œ ê³¨ë“œëŸ‰: {todaysGold}";
+        totalGoldText.text = $"ì´ ë³´ìœ  ê³¨ë“œ: {totalGoldAmount}";
+        customerCountText.text = $"ê¸ˆì¼ ë°©ë¬¸ê° ìˆ˜: {todaysCustomers}";
 
-        settlementPanel.SetActive(true); // ÀÏÀÏ Á¤»ê ÆĞ³Î ¿­±â
-        CheckButton.SetActive(true); // È®ÀÎ ¹öÆ° ¿­±â
+        settlementPanel.SetActive(true); // ì¼ì¼ ì •ì‚° íŒ¨ë„ ì—´ê¸°
+        CheckButton.SetActive(true); // í™•ì¸ ë²„íŠ¼ ì—´ê¸°
     }
 
     public void AddGold(int amount)
     {
-        totalGoldAmount += amount; // ÃÑ °ñµå¿¡ Ãß°¡
-        todaysGold += amount; // ¿À´Ã ¹ø °ñµå¿¡ Ãß°¡
-        totalGold.text = "Gold: " + totalGoldAmount; // UI ¾÷µ¥ÀÌÆ®
+        totalGoldAmount += amount; // ì´ ê³¨ë“œì— ì¶”ê°€
+        todaysGold += amount; // ì˜¤ëŠ˜ ë²ˆ ê³¨ë“œì— ì¶”ê°€
+        totalGold.text = "Gold: " + totalGoldAmount; // UI ì—…ë°ì´íŠ¸
     }
 
     public void AddCustomerCount()
     {
-        todaysCustomers += 1; // ¿À´Ã ¹æ¹®ÇÑ °í°´ ¼ö Áõ°¡
+        todaysCustomers += 1; // ì˜¤ëŠ˜ ë°©ë¬¸í•œ ê³ ê° ìˆ˜ ì¦ê°€
+    }
+
+    public void ChangeTimeScale()
+    {
+        speedState = (speedState + 1) % 3;
+
+        switch (speedState)
+        {
+            case 0:
+                Time.timeScale = 1;
+                TimeScaleButtonText.text = "X1";
+                break;
+            case 1:
+                Time.timeScale = 2;
+                TimeScaleButtonText.text = "X2";
+                break;
+            case 2:
+                Time.timeScale = 0;
+                TimeScaleButtonText.text = "||";
+                break;
+        }
     }
 }
