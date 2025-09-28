@@ -562,34 +562,7 @@ MonoBehaviour:
   allSpeciesTemplates:
   - {fileID: 11400000, guid: 89d1c4c591e5fb841884de071a335b15, type: 2}
   - {fileID: 11400000, guid: 0631174b83db9be4eb9200b7e0972e5c, type: 2}
-  hiredEmployees:
-  - firstName: 
-    currentLevel: 0
-    currentExperience: 0
-    skillPoints: 0
-    currentSalary: 0
-    currentCookingStat: 0
-    currentServingStat: 0
-    currentCleaningStat: 0
-    currentTraits: []
-  - firstName: 
-    currentLevel: 0
-    currentExperience: 0
-    skillPoints: 0
-    currentSalary: 0
-    currentCookingStat: 0
-    currentServingStat: 0
-    currentCleaningStat: 0
-    currentTraits: []
-  - firstName: 
-    currentLevel: 0
-    currentExperience: 0
-    skillPoints: 0
-    currentSalary: 0
-    currentCookingStat: 0
-    currentServingStat: 0
-    currentCleaningStat: 0
-    currentTraits: []
+  hiredEmployees: []
 --- !u!4 &561029028
 Transform:
   m_ObjectHideFlags: 0
@@ -621,12 +594,11 @@ MonoBehaviour:
   hireTabButton: {fileID: 1643831250}
   manageTabButton: {fileID: 544937117}
   applicantListPanel: {fileID: 56175717}
-  manageEmployeePanel: {fileID: 0}
-  applicantCardParent: {fileID: 1839423365}
+  manageEmployeePanel: {fileID: 187165873}
   applicantCardPrefab: {fileID: 4427968844971384551, guid: 883a1a435dea33445a698d43882b562e, type: 3}
-  normalLeftPadding: 20
-  narrowLeftPadding: 5
-  maxApplicantsToShow: 15
+  hiredCardPrefab: {fileID: 4427968844971384551, guid: 51f05b051983aa547b562dd2bba193cf, type: 3}
+  applicantCardParent: {fileID: 1839423365}
+  hiredCardParent: {fileID: 910719298}
   normalTabColor: {r: 1, g: 1, b: 1, a: 1}
   activeTabColor: {r: 0.8, g: 0.9, b: 1, a: 1}
 --- !u!114 &561029030
@@ -643,7 +615,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   secondsPerDay: 1
   currentDay: 1
-  currentFame: 500000
+  currentFame: 5000
   mainCharacterTemplate: {fileID: 11400000, guid: 73599de3c8e5a6a41a97a5583acee7e8, type: 2}
 --- !u!1 &776068248
 GameObject:
@@ -793,7 +765,7 @@ GameObject:
   - component: {fileID: 910719298}
   - component: {fileID: 910719299}
   m_Layer: 5
-  m_Name: ApplicantListContent2
+  m_Name: HiredListContent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -815,8 +787,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -0.000061035, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &910719299
 MonoBehaviour:
@@ -827,23 +799,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 910719297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
   m_Padding:
     m_Left: 0
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 300, y: 300}
+  m_Spacing: {x: 75, y: 25}
+  m_Constraint: 1
+  m_ConstraintCount: 5
 --- !u!1 &1002432009
 GameObject:
   m_ObjectHideFlags: 0

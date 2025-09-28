@@ -1,62 +1,48 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// ê²Œì„ì˜ ëª¨ë“  UI ìš”ì†Œë¥¼ ê´€ë¦¬í•˜ê³ , ë‹¤ë¥¸ ë§¤ë‹ˆì €ë¡œë¶€í„° ë°›ì€ ë°ì´í„°ë¥¼ í™”ë©´ì— í‘œì‹œí•˜ëŠ” ì¤‘ì•™ ê´€ë¦¬ìì…ë‹ˆë‹¤.
+/// </summary>
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    [Header("¸ŞÀÎ UI ÆĞ³Î")]
+    [Header("ë©”ì¸ UI íŒ¨ë„")]
     public GameObject managementUIParent;
-
-    [Header("ÅÇ UI ¿ä¼Ò")]
+    [Header("íƒ­ UI ìš”ì†Œ")]
     public Button hireTabButton;
     public Button manageTabButton;
-
-    [Header("ÄÁÅÙÃ÷ ÆĞ³Î")]
+    [Header("ì»¨í…ì¸  íŒ¨ë„")]
     public GameObject applicantListPanel;
     public GameObject manageEmployeePanel;
-
-    [Header("Áö¿øÀÚ ¸ñ·Ï UI")]
-    public Transform applicantCardParent;
+    [Header("ì¹´ë“œ í”„ë¦¬íŒ¹")]
     public GameObject applicantCardPrefab;
-
-    [Header("·¹ÀÌ¾Æ¿ô Á¶Á¤")]
-    [Tooltip("Áö¿øÀÚ ¸ñ·ÏÀÇ ±âº» ¿ŞÂÊ ¿©¹é")]
-    public int normalLeftPadding = 20;
-    [Tooltip("Áö¿øÀÚ°¡ 18¸íÀÏ ¶§ Àû¿ëµÉ Á¼Àº ¿ŞÂÊ ¿©¹é")]
-    public int narrowLeftPadding = 5;
-    [Tooltip("È­¸é¿¡ Ç¥½ÃÇÒ ÃÖ´ë Áö¿øÀÚ ¼ö")]
-    public int maxApplicantsToShow = 18;
-
-    [Header("ÅÇ ½Ã°¢ È¿°ú")]
+    public GameObject hiredCardPrefab;
+    [Header("ì¹´ë“œ ìƒì„± ìœ„ì¹˜")]
+    public Transform applicantCardParent;
+    public Transform hiredCardParent;
+    [Header("íƒ­ ì‹œê° íš¨ê³¼")]
     public Color normalTabColor = Color.white;
     public Color activeTabColor = new Color(0.8f, 0.9f, 1f);
 
     private List<GameObject> spawnedApplicantCards = new List<GameObject>();
+    private List<GameObject> spawnedHiredCards = new List<GameObject>();
     private bool isUIVisible = false;
-    private GridLayoutGroup applicantGrid; // ±×¸®µå ·¹ÀÌ¾Æ¿ô ÄÄÆ÷³ÍÆ®¸¦ ÀúÀåÇÒ º¯¼ö
 
     void Awake()
     {
         if (Instance == null) { Instance = this; } else { Destroy(gameObject); }
-
-        // applicantCardParent¿¡¼­ GridLayoutGroup ÄÄÆ÷³ÍÆ®¸¦ ¹Ì¸® Ã£¾ÆµÓ´Ï´Ù.
-        if (applicantCardParent != null)
-        {
-            applicantGrid = applicantCardParent.GetComponent<GridLayoutGroup>();
-        }
     }
 
     void Start()
     {
         if (hireTabButton != null) hireTabButton.onClick.AddListener(() => OpenTab(applicantListPanel, hireTabButton));
         if (manageTabButton != null) manageTabButton.onClick.AddListener(() => OpenTab(manageEmployeePanel, manageTabButton));
-
-        // ½ÃÀÛ ½Ã UI¸¦ ¿ÏÀüÈ÷ ²ö »óÅÂ·Î ½ÃÀÛÇÕ´Ï´Ù.
         isUIVisible = false;
         if (managementUIParent != null) managementUIParent.SetActive(isUIVisible);
     }
@@ -67,60 +53,73 @@ public class UIManager : MonoBehaviour
         {
             isUIVisible = !isUIVisible;
             if (managementUIParent != null) managementUIParent.SetActive(isUIVisible);
-
-            // UI¸¦ ÄÓ ¶§, ¸ğµç ÄÁÅÙÃ÷ ÆĞ³ÎÀ» ²ô°í ÅÇ »ö»óÀ» ÃÊ±âÈ­ÇÕ´Ï´Ù.
             if (isUIVisible)
             {
                 if (applicantListPanel != null) applicantListPanel.SetActive(false);
                 if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
-                if (hireTabButton != null) hireTabButton.GetComponent<Image>().color = normalTabColor;
-                if (manageTabButton != null) manageTabButton.GetComponent<Image>().color = normalTabColor;
+                Image hireBtnImage = hireTabButton?.GetComponent<Image>();
+                if (hireBtnImage != null) hireBtnImage.color = normalTabColor;
+                Image manageBtnImage = manageTabButton?.GetComponent<Image>();
+                if (manageBtnImage != null) manageBtnImage.color = normalTabColor;
             }
-
-            Debug.Log($"Tab Å° ´­¸². UI Ç¥½Ã »óÅÂ: {isUIVisible}");
         }
     }
 
+    /// <summary>
+    /// ì§€ì •ëœ ì»¨í…ì¸  íŒ¨ë„ì„ ì—´ê³ , í´ë¦­ëœ íƒ­ ë²„íŠ¼ì˜ ìƒ‰ìƒì„ ë³€ê²½í•©ë‹ˆë‹¤.
+    /// </summary>
     void OpenTab(GameObject panelToShow, Button clickedButton)
     {
         if (applicantListPanel != null) applicantListPanel.SetActive(false);
         if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
         if (panelToShow != null) panelToShow.SetActive(true);
-
-        if (hireTabButton != null) hireTabButton.GetComponent<Image>().color = normalTabColor;
-        if (manageTabButton != null) manageTabButton.GetComponent<Image>().color = normalTabColor;
-        if (clickedButton != null) clickedButton.GetComponent<Image>().color = activeTabColor;
+        Image hireBtnImage = hireTabButton?.GetComponent<Image>();
+        if (hireBtnImage != null) hireBtnImage.color = normalTabColor;
+        Image manageBtnImage = manageTabButton?.GetComponent<Image>();
+        if (manageBtnImage != null) manageBtnImage.color = normalTabColor;
+        Image clickedBtnImage = clickedButton?.GetComponent<Image>();
+        if (clickedBtnImage != null) clickedBtnImage.color = activeTabColor;
+        if (panelToShow == manageEmployeePanel)
+        {
+            UpdateHiredEmployeeListUI();
+        }
     }
 
+    /// <summary>
+    /// ì§€ì›ì ëª©ë¡ UIë¥¼ ìµœì‹  ì •ë³´ë¡œ ìƒˆë¡œê³ ì¹¨í•©ë‹ˆë‹¤.
+    /// </summary>
     public void UpdateApplicantListUI(List<GeneratedApplicant> applicants)
     {
-        // Áö¿øÀÚ ¼ö¿¡ µû¶ó ¿ŞÂÊ ¿©¹éÀ» Á¶Á¤ÇÕ´Ï´Ù.
-        if (applicantGrid != null)
-        {
-            // Take(maxApplicantsToShow).Count()¸¦ »ç¿ëÇØ ½ÇÁ¦ Ç¥½ÃµÉ Áö¿øÀÚ ¼ö¸¦ ±âÁØÀ¸·Î ÆÇ´ÜÇÕ´Ï´Ù.
-            if (applicants.Take(maxApplicantsToShow).Count() >= maxApplicantsToShow)
-            {
-                applicantGrid.padding.left = narrowLeftPadding;
-            }
-            else
-            {
-                applicantGrid.padding.left = normalLeftPadding;
-            }
-        }
-
         foreach (GameObject card in spawnedApplicantCards) { Destroy(card); }
         spawnedApplicantCards.Clear();
-
-        // applicants ¸®½ºÆ®¿¡¼­ ÃÖ´ë maxApplicantsToShow °³¼ö±îÁö¸¸ °¡Á®¿Í¼­ UI¸¦ »ı¼ºÇÕ´Ï´Ù.
-        foreach (GeneratedApplicant applicant in applicants.Take(maxApplicantsToShow))
+        foreach (GeneratedApplicant applicant in applicants)
         {
             GameObject newCard = Instantiate(applicantCardPrefab, applicantCardParent);
-            UpdateCardUI(newCard, applicant);
+            UpdateApplicantCardUI(newCard, applicant);
             spawnedApplicantCards.Add(newCard);
         }
     }
 
-    private void UpdateCardUI(GameObject card, GeneratedApplicant applicant)
+    /// <summary>
+    /// ê³ ìš©ëœ ì§ì› ëª©ë¡ UIë¥¼ ìµœì‹  ì •ë³´ë¡œ ìƒˆë¡œê³ ì¹¨í•©ë‹ˆë‹¤.
+    /// </summary>
+    public void UpdateHiredEmployeeListUI()
+    {
+        foreach (GameObject card in spawnedHiredCards) { Destroy(card); }
+        spawnedHiredCards.Clear();
+        foreach (EmployeeInstance employee in EmployeeManager.Instance.hiredEmployees)
+        {
+            if (employee == null) continue;
+            GameObject newCard = Instantiate(hiredCardPrefab, hiredCardParent);
+            UpdateHiredCardUI(newCard, employee);
+            spawnedHiredCards.Add(newCard);
+        }
+    }
+
+    /// <summary>
+    /// 'ì§€ì›ì' ì¹´ë“œ(ApplicantSlot) í•œ ê°œì˜ ë‚´ìš©ì„ ì±„ì›ë‹ˆë‹¤.
+    /// </summary>
+    private void UpdateApplicantCardUI(GameObject card, GeneratedApplicant applicant)
     {
         Image portraitImage = card.transform.Find("PortraitImage")?.GetComponent<Image>();
         TextMeshProUGUI nameText = card.transform.Find("NameText")?.GetComponent<TextMeshProUGUI>();
@@ -128,21 +127,87 @@ public class UIManager : MonoBehaviour
         Button hireButton = card.transform.Find("HireButton")?.GetComponent<Button>();
 
         if (portraitImage != null) portraitImage.sprite = applicant.BaseSpeciesData.portrait;
-        if (nameText != null) nameText.text = $"{applicant.GeneratedFirstName}\n<size=20>({applicant.BaseSpeciesData.speciesName})</size>";
-
+        if (nameText != null)
+        {
+            nameText.text = $"{applicant.GeneratedFirstName}\n<size=20>({applicant.BaseSpeciesData.speciesName})</size>";
+        }
         if (statsText != null)
         {
             var statsBuilder = new System.Text.StringBuilder();
-            statsBuilder.AppendLine($"¿ä¸®: {applicant.GeneratedCookingStat}");
-            statsBuilder.AppendLine($"¼­ºù: {applicant.GeneratedServingStat}");
-            statsBuilder.AppendLine($"Á¤¸®: {applicant.GeneratedCleaningStat}");
-            if (applicant.GeneratedTraits.Any()) { statsBuilder.AppendLine($"\nÆ¯¼º: <color=yellow>{applicant.GeneratedTraits[0].traitName}</color>"); }
+            statsBuilder.AppendLine($"ìš”ë¦¬: {applicant.GeneratedCookingStat}");
+            statsBuilder.AppendLine($"ì„œë¹™: {applicant.GeneratedServingStat}");
+            statsBuilder.AppendLine($"ì •ë¦¬: {applicant.GeneratedCleaningStat}");
+            if (applicant.GeneratedTraits.Any())
+            {
+                statsBuilder.AppendLine($"\níŠ¹ì„±: <color=yellow>{applicant.GeneratedTraits[0].traitName}</color>");
+            }
             statsText.text = statsBuilder.ToString();
         }
         if (hireButton != null)
         {
             hireButton.onClick.RemoveAllListeners();
             hireButton.onClick.AddListener(() => EmployeeManager.Instance.HireEmployee(applicant));
+        }
+    }
+
+    /// <summary>
+    /// 'ê³ ìš©ëœ ì§ì›' ì¹´ë“œ(HiredEmployeeCard) í•œ ê°œì˜ ë‚´ìš©ì„ ì±„ìš°ê³  ë²„íŠ¼ ê¸°ëŠ¥ì„ ì—°ê²°í•©ë‹ˆë‹¤.
+    /// </summary>
+    private void UpdateHiredCardUI(GameObject card, EmployeeInstance employee)
+    {
+        // í”„ë¦¬íŒ¹ ë‚´ë¶€ì˜ UI ìš”ì†Œë“¤ì„ ì´ë¦„ìœ¼ë¡œ ì°¾ìŠµë‹ˆë‹¤.
+        Image portraitImage = card.transform.Find("PortraitImage")?.GetComponent<Image>();
+        TextMeshProUGUI nameText = card.transform.Find("NameText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI statsText = card.transform.Find("StatsText")?.GetComponent<TextMeshProUGUI>();
+
+        // ê°œë³„ ëŠ¥ë ¥ì¹˜ ì—…ê·¸ë ˆì´ë“œ ë²„íŠ¼ë“¤ì„ ì°¾ìŠµë‹ˆë‹¤.
+        Button cookUpBtn = card.transform.Find("CookUpgradeButton")?.GetComponent<Button>();
+        Button serveUpBtn = card.transform.Find("ServeUpgradeButton")?.GetComponent<Button>();
+        Button cleanUpBtn = card.transform.Find("CleanUpgradeButton")?.GetComponent<Button>();
+
+        // UI í…ìŠ¤íŠ¸ ë‚´ìš©ì„ ì±„ì›ë‹ˆë‹¤.
+        if (portraitImage != null) portraitImage.sprite = employee.BaseData.portrait;
+
+        // ìš”ì²­í•˜ì‹  3ì¤„ í˜•ì‹ìœ¼ë¡œ ì´ë¦„, ë ˆë²¨/SP, ì¢…ì¡±ì„ í‘œì‹œí•©ë‹ˆë‹¤.
+        if (nameText != null)
+        {
+            nameText.text = $"{employee.firstName}\n<size=24>[Lv. {employee.currentLevel}]<color=yellow>({employee.skillPoints})</color></size>\n<size=20>({employee.BaseData.speciesName})</size>";
+        }
+
+        if (statsText != null)
+        {
+            var statsBuilder = new System.Text.StringBuilder();
+            statsBuilder.AppendLine($"ìš”ë¦¬: {employee.currentCookingStat}");
+            statsBuilder.AppendLine($"ì„œë¹™: {employee.currentServingStat}");
+            statsBuilder.AppendLine($"ì •ë¦¬: {employee.currentCleaningStat}");
+            if (employee.currentTraits.Any())
+            {
+                statsBuilder.AppendLine($"\níŠ¹ì„±: <color=yellow>{employee.currentTraits[0].traitName}</color>");
+            }
+            statsText.text = statsBuilder.ToString();
+
+            // âš¡ ìŠ¤íƒ¯ ë¶€ë¶„ ì¤„ê°„ê²© ì¡°ê¸ˆ ëŠ˜ë¦¬ê¸°
+            statsText.lineSpacing = 5f; // ì›í•˜ëŠ” ë§Œí¼ ê°’ ì¡°ì • (ì˜ˆ: 2~6 ì •ë„)
+        }
+
+        // ê° ë²„íŠ¼ì— EmployeeInstanceì— ìˆëŠ” ì˜¬ë°”ë¥¸ í•¨ìˆ˜ë¥¼ ì—°ê²°í•©ë‹ˆë‹¤.
+        if (cookUpBtn != null)
+        {
+            cookUpBtn.interactable = employee.skillPoints > 0;
+            cookUpBtn.onClick.RemoveAllListeners();
+            cookUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI(); });
+        }
+        if (serveUpBtn != null)
+        {
+            serveUpBtn.interactable = employee.skillPoints > 0;
+            serveUpBtn.onClick.RemoveAllListeners();
+            serveUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); });
+        }
+        if (cleanUpBtn != null)
+        {
+            cleanUpBtn.interactable = employee.skillPoints > 0;
+            cleanUpBtn.onClick.RemoveAllListeners();
+            cleanUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCleaning()) UpdateHiredEmployeeListUI(); });
         }
     }
 }

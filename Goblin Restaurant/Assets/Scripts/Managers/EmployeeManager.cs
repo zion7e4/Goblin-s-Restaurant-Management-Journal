@@ -15,25 +15,26 @@ public class EmployeeManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null) { Instance = this; } else { Destroy(gameObject); }
+        if (Instance == null)
+        {
+            Instance = this;
+            // [핵심 추가] 이 오브젝트가 씬이 바뀌어도 파괴되지 않도록 설정합니다.
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            // 이미 다른 EmployeeManager가 있다면 자신을 파괴하여 중복을 막습니다.
+            Destroy(gameObject);
+        }
     }
 
     public void GenerateApplicants(int currentFame)
     {
-        // [추적 로그 1] 이 함수가 시작되었는지 확인
-        Debug.Log("--- GenerateApplicants 함수 시작 ---");
         applicants.Clear();
-
         int minApplicants = 1 + (currentFame / 1500);
         int maxApplicants = 2 + (currentFame / 1000);
         int applicantCount = Random.Range(minApplicants, Mathf.Min(maxApplicants, 10) + 1);
-
-        if (!allSpeciesTemplates.Any())
-        {
-            // [추적 로그] 만약 종족 템플릿이 없으면 알려줌
-            Debug.LogWarning("EmployeeManager의 AllSpeciesTemplates 리스트가 비어있어 지원자를 생성할 수 없습니다!");
-            return;
-        }
+        if (!allSpeciesTemplates.Any()) return;
 
         for (int i = 0; i < applicantCount; i++)
         {
@@ -56,32 +57,23 @@ public class EmployeeManager : MonoBehaviour
             applicants.Add(newApplicant);
         }
 
-        Debug.Log($"[명성: {currentFame}] 오늘 도착한 지원자 수: {applicants.Count}명");
-
-        if (UIManager.Instance != null)
-        {
-            // [추적 로그 2] UIManager에게 신호를 보내는지 확인
-            Debug.Log("UIManager에게 UI 업데이트를 요청합니다.");
-            UIManager.Instance.UpdateApplicantListUI(applicants);
-        }
+        if (UIManager.Instance != null) { UIManager.Instance.UpdateApplicantListUI(applicants); }
     }
 
     public void HireEmployee(GeneratedApplicant applicantToHire)
     {
-        // [추적 로그 3] 고용 버튼이 제대로 눌렸는지 확인
-        Debug.Log($"--- HireEmployee 함수 시작: {applicantToHire.GeneratedFirstName} 고용 시도 ---");
         if (applicants.Contains(applicantToHire))
         {
+            int hiringCost = applicantToHire.BaseSpeciesData.salary;
+            // TODO: 경제 시스템 연동 시 여기에 SpendMoney() 체크 추가
+
             EmployeeInstance newEmployee = new EmployeeInstance(applicantToHire);
             hiredEmployees.Add(newEmployee);
             applicants.Remove(applicantToHire);
-
-            Debug.Log($"{newEmployee.BaseData.speciesName} {newEmployee.firstName}(을)를 성공적으로 고용했습니다! 남은 지원자 수: {applicants.Count}명");
+            Debug.Log($"{newEmployee.BaseData.speciesName} {newEmployee.firstName}(을)를 {hiringCost}원에 고용했습니다.");
 
             if (UIManager.Instance != null)
             {
-                // [추적 로그 4] 고용 후 UI 업데이트를 다시 요청하는지 확인
-                Debug.Log("고용이 완료되어 UIManager에게 UI 업데이트를 다시 요청합니다.");
                 UIManager.Instance.UpdateApplicantListUI(applicants);
             }
         }

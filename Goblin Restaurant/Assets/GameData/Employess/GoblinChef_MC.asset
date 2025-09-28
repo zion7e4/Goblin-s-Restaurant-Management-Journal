@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d70737cca42aa446808fdc5cc5f3dde, type: 3}
   m_Name: GoblinChef_MC
   m_EditorClassIdentifier: Assembly-CSharp::EmployeeData
-  speciesName: 
+  speciesName: "\uACE0\uBE14\uB9B0\uC250\uD504"
   possibleFirstNames: []
   portrait: {fileID: 0}
   requiredFameTier: 1
