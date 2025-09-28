@@ -15,7 +15,8 @@ public class Goblin : MonoBehaviour
         MovingToServe,
         MovingToIdle,
         CheckingTable,
-        MovingToTable
+        MovingToTable,
+        Cleaning
     }
 
     public EmployeeState currentState;
@@ -76,6 +77,8 @@ public class Goblin : MonoBehaviour
             case EmployeeState.MovingToTable:
                 MoveTo(targetTable.transform.position, () => { StartCoroutine(CleaningTable()); });
                 break;
+            case EmployeeState.Cleaning:
+                break;
         }
     }
 
@@ -95,7 +98,7 @@ public class Goblin : MonoBehaviour
             return;
         }
 
-        else if (Vector2.Distance(transform.position, idlePosition.position) > 0.1f)
+        if (Vector2.Distance(transform.position, idlePosition.position) > 0.1f)
         {
             currentState = EmployeeState.MovingToIdle;
         }
@@ -166,12 +169,16 @@ public class Goblin : MonoBehaviour
     // 테이블 청소
     IEnumerator CleaningTable()
     {
+        currentState = EmployeeState.Cleaning;
         Debug.Log("테이블 청소 시작");
 
-        yield return new WaitForSeconds(5f); // 청소 시간
+        yield return new WaitForSeconds(1f); // 청소 시간
 
         Debug.Log("테이블 청소 완료");
-        targetTable.isDirty = false; // 테이블 청소 완료
+        if (targetTable != null)
+        {
+            targetTable.isDirty = false;
+        }
         targetTable = null;
         currentState = EmployeeState.MovingToIdle;
     }

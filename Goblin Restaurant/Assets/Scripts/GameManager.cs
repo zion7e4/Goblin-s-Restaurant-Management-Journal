@@ -8,10 +8,26 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public enum GameState { Preparing, Open, Closing }
-    public GameState currentState;
+    public GameState _currentState;
+    public GameState currentState
+    {
+        get { return _currentState; }
+        set
+        {
+            _currentState = value;
+            UpdateButtonUI();
+
+            if (_currentState == GameState.Closing)
+            {
+                ShowSettlementPanal(); // 일일 정산 패널 표시
+            }
+        }
+    }
 
     public float dayDurationInSeconds = 600f; // 실제 하루 길이 (10분)
     public int totalGoldAmount = 0; // 총 골드 변수 추가
+    private int todaysGold = 0; // 오늘 번 골드
+    private int todaysCustomers = 0; // 오늘 방문한 고객 수
     private float currentTimeOfDay;
     private int DayCount = 1; // 며칠째인지 세는 변수 추가
     private float timeScale; // 게임 내 시간 흐름 속도
@@ -19,6 +35,15 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI timeText; // 화면에 시간을 표시할 UI 텍스트
     public TextMeshProUGUI dayText; // 화면에 날짜를 표시할 UI 텍스트
     public TextMeshProUGUI totalGold; // 화면에 총 골드를 표시할 UI 텍스트
+
+    public GameObject OpenButton; // 오픈 버튼 ui
+    public GameObject NextDayButton; // 다음 날 버튼 ui
+
+    public GameObject settlementPanel;
+    public GameObject CheckButton;
+    public TextMeshProUGUI todaysGoldText;
+    public TextMeshProUGUI totalGoldText;
+    public TextMeshProUGUI customerCountText;
 
     private InputSystem_Actions inputActions; // 생성된 Input Action C# 클래스
 
@@ -40,14 +65,10 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         inputActions.Enable();
-        inputActions.GameManager.OpenStore.performed += OpenTheStore;
-        inputActions.GameManager.NextDay.performed += MoveToNextDay; //왜 씨발 넥스트데이를 처 추가해쑈는데 이병신같은 유니티는 인식을 못하는거니???? 저장까지 잘했잖아 씨봉방거 좆같네
     }
 
     private void OnDisable()
     {
-        inputActions.GameManager.OpenStore.performed -= OpenTheStore;
-        inputActions.GameManager.NextDay.performed -= MoveToNextDay;
         inputActions.Disable();
     }
 
@@ -81,6 +102,7 @@ public class GameManager : MonoBehaviour
             {
                 currentState = GameState.Closing;
                 Debug.Log("영업 종료");
+
             }
         }
 
@@ -88,10 +110,19 @@ public class GameManager : MonoBehaviour
         {
             timeText.text = "09:00";
             dayText.text = "Day " + DayCount;
+            todaysGold = 0; // 오늘 번 골드 초기화
+            todaysCustomers = 0; // 오늘 방문객 수 초기화
         }
     }
 
-    private void OpenTheStore(InputAction.CallbackContext context)
+    private void UpdateButtonUI()
+    {
+        // 각 상태에 맞는 버튼만 활성화(true)하고 나머지는 비활성화(false)
+        OpenButton.SetActive(currentState == GameState.Preparing);
+        NextDayButton.SetActive(currentState == GameState.Closing);
+    }
+
+    public void OpenTheStore()
     {
         if (currentState == GameState.Preparing)
         {
@@ -100,7 +131,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void MoveToNextDay(InputAction.CallbackContext context)
+    public void MoveToNextDay()
     {
         if (currentState == GameState.Closing)
         {
@@ -111,9 +142,31 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void closePanal()
+    {
+        settlementPanel.SetActive(false); // 일일 정산 패널 닫기
+        CheckButton.SetActive(false); // 확인 버튼 닫기
+    }
+
+    private void ShowSettlementPanal()
+    {
+        todaysGoldText.text = $"오늘 확득한 골드량: {todaysGold}";
+        totalGoldText.text = $"총 보유 골드: {totalGoldAmount}";
+        customerCountText.text = $"금일 방문객 수: {todaysCustomers}";
+
+        settlementPanel.SetActive(true); // 일일 정산 패널 열기
+        CheckButton.SetActive(true); // 확인 버튼 열기
+    }
+
     public void AddGold(int amount)
     {
-        totalGoldAmount += amount;
+        totalGoldAmount += amount; // 총 골드에 추가
+        todaysGold += amount; // 오늘 번 골드에 추가
         totalGold.text = "Gold: " + totalGoldAmount; // UI 업데이트
+    }
+
+    public void AddCustomerCount()
+    {
+        todaysCustomers += 1; // 오늘 방문한 고객 수 증가
     }
 }
