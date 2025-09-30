@@ -40,11 +40,13 @@ public class GameManager : MonoBehaviour
     public GameObject OpenButton; // 오픈 버튼 ui
     public GameObject NextDayButton; // 다음 날 버튼 ui
 
-    public GameObject settlementPanel;
-    public GameObject CheckButton;
+    public GameObject settlementPanel; // 일일 정산 패널
+    public GameObject CheckButton; // 확인 버튼
     public TextMeshProUGUI todaysGoldText;
     public TextMeshProUGUI totalGoldText;
     public TextMeshProUGUI customerCountText;
+    public GameObject MenuPlanner; // 메뉴 기획 패널
+    public GameObject ShowMenuPlanner; // 메뉴 기획 패널 오픈 버튼
 
     public TextMeshProUGUI TimeScaleButtonText;
 
@@ -124,6 +126,7 @@ public class GameManager : MonoBehaviour
     {
         // 각 상태에 맞는 버튼만 활성화(true)하고 나머지는 비활성화(false)
         OpenButton.SetActive(currentState == GameState.Preparing);
+        ShowMenuPlanner.SetActive(currentState == GameState.Preparing);
         NextDayButton.SetActive(currentState == GameState.Closing);
     }
 
@@ -147,7 +150,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void closePanal()
+    public void closeSettlementPanal()
     {
         settlementPanel.SetActive(false); // 일일 정산 패널 닫기
         CheckButton.SetActive(false); // 확인 버튼 닫기
@@ -194,5 +197,17 @@ public class GameManager : MonoBehaviour
                 TimeScaleButtonText.text = "||";
                 break;
         }
+    }
+
+    public void OpenMenuPlanner()
+    {
+        MenuPlanner.SetActive(true);
+        ShowMenuPlanner.SetActive(false);
+    }
+
+    public void CloseMenuPlanner()
+    {
+        MenuPlanner.SetActive(false);
+        ShowMenuPlanner.SetActive(true);
     }
 }
