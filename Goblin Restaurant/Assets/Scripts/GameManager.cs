@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
     private int DayCount = 1; // 며칠째인지 세는 변수 추가
     private float timeScale; // 게임 내 시간 흐름 속도
     private int speedState = 0; // 시간 배속 상태 변수 추가
+    private bool hasPlacedTable = false; // 테이블 배치 여부 변수 추가s
+    private Camera mainCamera;
 
     public TextMeshProUGUI timeText; // 화면에 시간을 표시할 UI 텍스트
     public TextMeshProUGUI dayText; // 화면에 날짜를 표시할 UI 텍스트
@@ -39,7 +41,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject OpenButton; // 오픈 버튼 ui
     public GameObject NextDayButton; // 다음 날 버튼 ui
-
+    public GameObject TablePrefab; // 테이블 프리팹
     public GameObject settlementPanel; // 일일 정산 패널
     public GameObject CheckButton; // 확인 버튼
     public TextMeshProUGUI todaysGoldText;
@@ -47,7 +49,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI customerCountText;
     public GameObject MenuPlanner; // 메뉴 기획 패널
     public GameObject ShowMenuPlanner; // 메뉴 기획 패널 오픈 버튼
-
+    public GameObject UpgradeTableButton; // 테이블 업그레이드 버튼
+    public GameObject UpgradeTablePannal; // 테이블 업그레이드 패널
     public TextMeshProUGUI TimeScaleButtonText;
 
     private InputSystem_Actions inputActions; // 생성된 Input Action C# 클래스
@@ -89,6 +92,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1; // 초기 시간 배속
         TimeScaleButtonText.text = "X1";
         Debug.Log("오픈 준비 시간입니다.");
+        mainCamera = Camera.main;
     }
 
     void Update()
@@ -112,14 +116,6 @@ public class GameManager : MonoBehaviour
 
             }
         }
-
-        if (currentState == GameState.Preparing)
-        {
-            timeText.text = "09:00";
-            dayText.text = "Day " + DayCount;
-            todaysGold = 0; // 오늘 번 골드 초기화
-            todaysCustomers = 0; // 오늘 방문객 수 초기화
-        }
     }
 
     private void UpdateButtonUI()
@@ -127,6 +123,7 @@ public class GameManager : MonoBehaviour
         // 각 상태에 맞는 버튼만 활성화(true)하고 나머지는 비활성화(false)
         OpenButton.SetActive(currentState == GameState.Preparing);
         ShowMenuPlanner.SetActive(currentState == GameState.Preparing);
+        UpgradeTableButton.SetActive(currentState == GameState.Preparing && totalGoldAmount >= 100 && !hasPlacedTable);
         NextDayButton.SetActive(currentState == GameState.Closing);
     }
 
@@ -143,9 +140,14 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.Closing)
         {
+            timeText.text = "09:00";
+            todaysGold = 0; // 오늘 번 골드 초기화
+            todaysCustomers = 0; // 오늘 방문객 수 초기화
+
             currentState = GameState.Preparing;
             currentTimeOfDay = 9 * 3600; // 다음 날 오전 9시로 초기화
             DayCount += 1; // 며칠째인지 증가
+            dayText.text = "Day " + DayCount;
             Debug.Log("다음 날 준비를 시작합니다.");
         }
     }
@@ -209,5 +211,45 @@ public class GameManager : MonoBehaviour
     {
         MenuPlanner.SetActive(false);
         ShowMenuPlanner.SetActive(true);
+    }
+
+    public void AddTable(Transform buttonTransform, int price)
+    {
+        if (TablePrefab == null)
+        {
+            Debug.LogError("GameManager에 Table Prefab이 연결되지 않았습니다!");
+            return;
+        }
+
+        // 골드 차감 로직
+        totalGoldAmount -= price;
+        totalGold.text = "Gold: " + totalGoldAmount;
+
+        // 스크린 좌표를 월드 좌표로 변환
+        Vector3 worldPosition = mainCamera.ScreenToWorldPoint(buttonTransform.position);
+        worldPosition.z = 0f;
+
+        // 변환된 위치에 테이블 생성 및 리스트에 추가
+        GameObject newTableObject = Instantiate(TablePrefab, worldPosition, Quaternion.identity);
+        Table newTableComponent = newTableObject.GetComponent<Table>();
+
+        if (newTableComponent != null && RestaurantManager.instance != null)
+        {
+            RestaurantManager.instance.tables.Add(newTableComponent);
+        }
+
+        hasPlacedTable = true; // 테이블이 배치되었음을 표시
+
+        Debug.Log($"테이블을 {worldPosition} 위치에 생성했습니다.");
+    }
+
+    public void OpenUpgradeTablePannal()
+    {
+        UpgradeTablePannal.SetActive(true);
+    }
+
+    public void CloseUpgradeTablePannal()
+    {
+        UpgradeTablePannal.SetActive(false);
     }
 }

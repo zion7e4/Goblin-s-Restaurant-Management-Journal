@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-public class Goblin : MonoBehaviour
+public class Employee : MonoBehaviour
 {
     public enum EmployeeState
     {
@@ -89,6 +89,7 @@ public class Goblin : MonoBehaviour
         if (targetCustomer != null)
         {
             currentState = EmployeeState.MovingToCustomer;
+            return;
         }
 
         targetTable = RestaurantManager.instance.tables.FirstOrDefault(t => !t.isOccupied && t.isDirty);
