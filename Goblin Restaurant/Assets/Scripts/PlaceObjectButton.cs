@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class PlaceObjectButton : MonoBehaviour
 {
-    public int tablePrice = 100; // 테이블 가격\
+    public int tablePrice = 100; // 테이블 가격
+    public int counterTopPrice = 150; // 조리대 가격
     public GameObject UpgradeTableButton; // 테이블 업그레이드 버튼
     public GameObject UpgradeTablePannal; // 테이블 업그레이드 패널
 
