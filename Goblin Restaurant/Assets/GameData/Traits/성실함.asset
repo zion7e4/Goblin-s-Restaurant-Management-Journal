@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5ba12bb9ddae4842ad668896b616843, type: 3}
   m_Name: "\uC131\uC2E4\uD568"
   m_EditorClassIdentifier: Assembly-CSharp::Trait
-  traitName: "\uC131\uC2EB\uD568"
+  traitName: "\uC131\uC2E4\uD568"
   description: "\uC791\uC5C5\uC18D\uB3C4\uAC00 \uC18C\uD3ED \uC0C1\uC2B9\uD568"

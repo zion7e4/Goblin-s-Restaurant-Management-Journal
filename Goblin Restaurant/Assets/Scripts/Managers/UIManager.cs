@@ -17,9 +17,13 @@ public class UIManager : MonoBehaviour
     [Header("탭 UI 요소")]
     public Button hireTabButton;
     public Button manageTabButton;
+    public Button recipeTabButton; // [핵심 추가 1] 레시피 탭 버튼을 위한 변수
+
     [Header("컨텐츠 패널")]
     public GameObject applicantListPanel;
     public GameObject manageEmployeePanel;
+    public GameObject recipeBookPanel; // [핵심 추가 2] 레시피 패널을 위한 변수
+
     [Header("카드 프리팹")]
     public GameObject applicantCardPrefab;
     public GameObject hiredCardPrefab;
@@ -43,6 +47,8 @@ public class UIManager : MonoBehaviour
     {
         if (hireTabButton != null) hireTabButton.onClick.AddListener(() => OpenTab(applicantListPanel, hireTabButton));
         if (manageTabButton != null) manageTabButton.onClick.AddListener(() => OpenTab(manageEmployeePanel, manageTabButton));
+        if (recipeTabButton != null) recipeTabButton.onClick.AddListener(() => OpenTab(recipeBookPanel, recipeTabButton)); // [핵심 추가 3] 레시피 버튼 기능 연결
+
         isUIVisible = false;
         if (managementUIParent != null) managementUIParent.SetActive(isUIVisible);
     }
@@ -57,10 +63,14 @@ public class UIManager : MonoBehaviour
             {
                 if (applicantListPanel != null) applicantListPanel.SetActive(false);
                 if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
+                if (recipeBookPanel != null) recipeBookPanel.SetActive(false); // [핵심 추가 4] UI 켤 때 레시피 패널도 끄기
+
                 Image hireBtnImage = hireTabButton?.GetComponent<Image>();
                 if (hireBtnImage != null) hireBtnImage.color = normalTabColor;
                 Image manageBtnImage = manageTabButton?.GetComponent<Image>();
                 if (manageBtnImage != null) manageBtnImage.color = normalTabColor;
+                Image recipeBtnImage = recipeTabButton?.GetComponent<Image>(); // [핵심 추가 5] 레시피 버튼 색상 초기화
+                if (recipeBtnImage != null) recipeBtnImage.color = normalTabColor;
             }
         }
     }
@@ -72,18 +82,28 @@ public class UIManager : MonoBehaviour
     {
         if (applicantListPanel != null) applicantListPanel.SetActive(false);
         if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
+        if (recipeBookPanel != null) recipeBookPanel.SetActive(false); // [핵심 추가 6] 탭 열 때 레시피 패널도 끄기
+
         if (panelToShow != null) panelToShow.SetActive(true);
+
         Image hireBtnImage = hireTabButton?.GetComponent<Image>();
         if (hireBtnImage != null) hireBtnImage.color = normalTabColor;
         Image manageBtnImage = manageTabButton?.GetComponent<Image>();
         if (manageBtnImage != null) manageBtnImage.color = normalTabColor;
+        Image recipeBtnImage = recipeTabButton?.GetComponent<Image>(); // [핵심 추가 7] 레시피 버튼 색상 초기화
+        if (recipeBtnImage != null) recipeBtnImage.color = normalTabColor;
+
         Image clickedBtnImage = clickedButton?.GetComponent<Image>();
         if (clickedBtnImage != null) clickedBtnImage.color = activeTabColor;
+
         if (panelToShow == manageEmployeePanel)
         {
             UpdateHiredEmployeeListUI();
         }
+        // '레시피' 탭을 열 때는 RecipeBookUI가 OnEnable에서 스스로 새로고침하므로 별도 호출이 필요 없습니다.
     }
+
+    // --- 이하 모든 함수는 보내주신 코드와 동일하게 유지됩니다 ---
 
     /// <summary>
     /// 지원자 목록 UI를 최신 정보로 새로고침합니다.
@@ -155,25 +175,18 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void UpdateHiredCardUI(GameObject card, EmployeeInstance employee)
     {
-        // 프리팹 내부의 UI 요소들을 이름으로 찾습니다.
         Image portraitImage = card.transform.Find("PortraitImage")?.GetComponent<Image>();
         TextMeshProUGUI nameText = card.transform.Find("NameText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI statsText = card.transform.Find("StatsText")?.GetComponent<TextMeshProUGUI>();
-
-        // 개별 능력치 업그레이드 버튼들을 찾습니다.
         Button cookUpBtn = card.transform.Find("CookUpgradeButton")?.GetComponent<Button>();
         Button serveUpBtn = card.transform.Find("ServeUpgradeButton")?.GetComponent<Button>();
         Button cleanUpBtn = card.transform.Find("CleanUpgradeButton")?.GetComponent<Button>();
 
-        // UI 텍스트 내용을 채웁니다.
         if (portraitImage != null) portraitImage.sprite = employee.BaseData.portrait;
-
-        // 요청하신 3줄 형식으로 이름, 레벨/SP, 종족을 표시합니다.
         if (nameText != null)
         {
             nameText.text = $"{employee.firstName}\n<size=24>[Lv. {employee.currentLevel}]<color=yellow>({employee.skillPoints})</color></size>\n<size=20>({employee.BaseData.speciesName})</size>";
         }
-
         if (statsText != null)
         {
             var statsBuilder = new System.Text.StringBuilder();
@@ -185,12 +198,8 @@ public class UIManager : MonoBehaviour
                 statsBuilder.AppendLine($"\n특성: <color=yellow>{employee.currentTraits[0].traitName}</color>");
             }
             statsText.text = statsBuilder.ToString();
-
-            // ⚡ 스탯 부분 줄간격 조금 늘리기
-            statsText.lineSpacing = 5f; // 원하는 만큼 값 조정 (예: 2~6 정도)
+            statsText.lineSpacing = 5f;
         }
-
-        // 각 버튼에 EmployeeInstance에 있는 올바른 함수를 연결합니다.
         if (cookUpBtn != null)
         {
             cookUpBtn.interactable = employee.skillPoints > 0;
@@ -211,3 +220,4 @@ public class UIManager : MonoBehaviour
         }
     }
 }
+
