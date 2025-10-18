@@ -8,8 +8,6 @@ public class Employee : MonoBehaviour
     public enum EmployeeState
     {
         Idle,
-        MovingToCustomer,
-        TakingOrder,
         MovingToCounterTop,
         Cooking,
         MovingToServe,
@@ -33,6 +31,7 @@ public class Employee : MonoBehaviour
     private Table targetTable;
     [SerializeField]
     private Transform idlePosition; // 직원이 할 일이 없을 때 서 있을 위치
+    private KitchenOrder targetOrder;
 
     void Start()
     {
@@ -57,12 +56,6 @@ public class Employee : MonoBehaviour
                     currentState = EmployeeState.Idle;
                 }
                 break;
-            case EmployeeState.MovingToCustomer:
-                MoveTo(targetCustomer.transform.position, () => { currentState = EmployeeState.TakingOrder; });
-                break;
-            case EmployeeState.TakingOrder:
-                TakeOrder();
-                break;
             case EmployeeState.MovingToCounterTop:
                 MoveTo(targetCountertop.transform.position, () => { StartCoroutine(CookFoodCoroutine()); });
                 break;
@@ -82,47 +75,38 @@ public class Employee : MonoBehaviour
         }
     }
 
-    // 할 일 찾기
     void FindTask()
     {
-        targetCustomer = RestaurantManager.instance.customers.FirstOrDefault(c => c.currentState == Customer.CustomerState.WaitingForOrder);
-        if (targetCustomer != null)
+        targetOrder = RestaurantManager.instance.OrderQueue.FirstOrDefault(o => o.status == OrderStatus.Pending);
+
+        if (targetOrder != null)
         {
-            currentState = EmployeeState.MovingToCustomer;
+            Debug.Log("요리할 주문 발견");
+            targetCountertop = RestaurantManager.instance.counterTops.FirstOrDefault(s => !s.isBeingUsed);
+
+            if (targetCountertop != null)
+            {
+                targetOrder.status = OrderStatus.Cooking;
+                targetCountertop.isBeingUsed = true;
+                currentState = EmployeeState.MovingToCounterTop;
+            }
+
+
             return;
         }
 
-        targetTable = RestaurantManager.instance.tables.FirstOrDefault(t => !t.isOccupied && t.isDirty);
+        targetTable = RestaurantManager.instance.tables.FirstOrDefault(t => t != null && !t.isOccupied && t.isDirty && !t.isBeingUsedForCleaning);
         if (targetTable != null)
         {
+            targetTable.isBeingUsedForCleaning = true;
             currentState = EmployeeState.MovingToTable;
-            return;
+            return; 
         }
 
-        if (Vector2.Distance(transform.position, idlePosition.position) > 0.1f)
+
+        if (idlePosition != null && Vector2.Distance(transform.position, idlePosition.position) > 0.1f)
         {
             currentState = EmployeeState.MovingToIdle;
-        }
-    }
-
-    // 주문 수주
-    void TakeOrder()
-    {
-        Debug.Log("주문 수주");
-
-        // 미사용 화구 찾기
-        targetCountertop = RestaurantManager.instance.counterTops.FirstOrDefault(s => !s.isBeingUsed);
-
-        if (targetCountertop != null)
-        {
-            targetCountertop.isBeingUsed = true; // 화구를 사용 상태로 변경
-            currentState = EmployeeState.MovingToCounterTop;
-        }
-
-        else
-        {
-            // 만약 모든 화구가 사용 중이라면 잠시 대기 (Idle 상태로 돌아가 다시 탐색)
-            currentState = EmployeeState.Idle;
         }
     }
 
@@ -130,20 +114,41 @@ public class Employee : MonoBehaviour
     IEnumerator CookFoodCoroutine()
     {
         currentState = EmployeeState.Cooking;
-        Debug.Log("요리 시작");
+        Debug.Log($"{targetOrder.recipe.data.recipeName} 요리 시작");
 
-        yield return new WaitForSeconds(cookingtime);
+        if (targetOrder.foodObject != null)
+        {
+            targetOrder.foodObject.transform.position = targetCountertop.transform.position;
+            targetOrder.foodObject.SetActive(true);
+        }
+
+        yield return new WaitForSeconds(targetOrder.recipe.data.baseCookTime);
 
         Debug.Log("요리 완성");
+
+        targetOrder.status = OrderStatus.ReadyToServe;
+        targetCustomer = targetOrder.customer;
         currentState = EmployeeState.MovingToServe;
+
+        if (targetOrder.foodObject != null)
+        {
+            targetOrder.foodObject.transform.SetParent(this.transform);
+            targetOrder.foodObject.transform.localPosition = new Vector3(0, 1.2f, 0);
+        }
     }
 
     // 음식 서빙
     void ServeFood()
     {
         Debug.Log("서빙 완료");
+        targetCustomer.ReceiveFood();
 
-        targetCustomer.ReceiveFood(); // 손님에게 음식을 전달
+        if (targetOrder.foodObject != null)
+        {
+            Destroy(targetOrder.foodObject);
+        }
+
+        RestaurantManager.instance.OrderQueue.Remove(targetOrder);
 
         // 사용했던 자원들을 초기화
         targetCountertop.isBeingUsed = false;
@@ -179,6 +184,7 @@ public class Employee : MonoBehaviour
         if (targetTable != null)
         {
             targetTable.isDirty = false;
+            targetTable.isBeingUsedForCleaning = false;
         }
         targetTable = null;
         currentState = EmployeeState.MovingToIdle;

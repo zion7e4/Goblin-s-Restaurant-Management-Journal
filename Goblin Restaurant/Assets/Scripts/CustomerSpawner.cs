@@ -40,7 +40,7 @@ public class CustomerSpawner : MonoBehaviour
 
             RestaurantManager.instance.customers.Add(newCustomer);
 
-            newCustomer.SetTable(emptyTable.transform);
+            newCustomer.Initialize(emptyTable.transform, spawnPoint);
             emptyTable.isOccupied = true;
         }
 

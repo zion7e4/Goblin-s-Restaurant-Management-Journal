@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2125600ba7b3ac4bab39ed15cff98b9, type: 3}
+  m_Name: Recipe_1005
+  m_EditorClassIdentifier: Assembly-CSharp::RecipeData
+  id: 1005
+  recipeName: "\uACE0\uAE09 \uC2A4\uD14C\uC774\uD06C"
+  description: "\uC721\uC999\uC774 \uD48D\uBD80\uD55C \uACE0\uAE09 \uACE0\uAE30 \uC2A4\uD14C\uC774\uD06C"
+  icon: {fileID: -2146707869069832397, guid: 8f8c6292fa0836949a77ad6127ca0222, type: 3}
+  basePrice: 60
+  baseCookTime: 18
+  rarity: 0
+  requiredIngredients:
+  - ingredientID: ING10
+    amount: 2
+  - ingredientID: ING02
+    amount: 2

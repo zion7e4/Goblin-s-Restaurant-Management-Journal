@@ -1,27 +1,74 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlaceObjectButton : MonoBehaviour
 {
-    public int tablePrice = 100; // 테이블 가격
-    public int counterTopPrice = 150; // 조리대 가격
-    public GameObject UpgradeTableButton; // 테이블 업그레이드 버튼
-    public GameObject UpgradeTablePannal; // 테이블 업그레이드 패널
+    public int tablePrice = 100;
+    public GameObject upgradeConfirmPanel;
+    private Button myButton;
 
-    public void OnButtonClick()
+    private bool isPurchased = false;
+
+    void Awake()
     {
-        if(GameManager.instance.totalGoldAmount >= tablePrice)
+        myButton = GetComponent<Button>();
+    }
+
+    void Update()
+    {
+        bool isPreparing = (GameManager.instance.currentState == GameManager.GameState.Preparing);
+
+        bool shouldBeVisible = isPreparing && !isPurchased;
+
+        if (gameObject.activeSelf != shouldBeVisible)
         {
-            GameManager.instance.AddTable(this.transform, tablePrice);
+            gameObject.SetActive(shouldBeVisible);
+        }
 
-            gameObject.SetActive(false); // 버튼 비활성화
-            UpgradeTableButton.SetActive(false); // 테이블 업그레이드 버튼 비활성화
-            UpgradeTablePannal.SetActive(false); // 테이블 업그레이드 패널 비활성화
+        if (shouldBeVisible && myButton != null)
+        {
+            myButton.interactable = (GameManager.instance.totalGoldAmount >= tablePrice);
+        }
+    }
 
 
+    public void ShowUpgradePanel()
+    {
+        if (upgradeConfirmPanel != null)
+        {
+            upgradeConfirmPanel.SetActive(true);
+            upgradeConfirmPanel.transform.SetAsLastSibling();
+        }
+    }
+
+    public void OnConfirmPurchase()
+    {
+        if (GameManager.instance.totalGoldAmount >= tablePrice)
+        {
+            GameManager.instance.AddTable(this.transform);
+
+            isPurchased = true;
+
+            if (upgradeConfirmPanel != null)
+            {
+                upgradeConfirmPanel.SetActive(false);
+            }
         }
         else
         {
             Debug.Log("골드가 부족합니다!");
+            if (upgradeConfirmPanel != null)
+            {
+                upgradeConfirmPanel.SetActive(false);
+            }
+        }
+    }
+
+    public void OnCancel()
+    {
+        if (upgradeConfirmPanel != null)
+        {
+            upgradeConfirmPanel.SetActive(false);
         }
     }
 }

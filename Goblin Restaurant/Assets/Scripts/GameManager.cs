@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -35,11 +36,14 @@ public class GameManager : MonoBehaviour
     private bool hasPlacedTable = false; // 테이블 배치 여부 변수 추가s
     private Camera mainCamera;
 
+    public List<GameObject> upgradeTableButtons; // 업그레이드 가능한 테이블 버튼 리스트
+    public int tablePrice = 100; // 테이블 가격
+
     public TextMeshProUGUI timeText; // 화면에 시간을 표시할 UI 텍스트
     public TextMeshProUGUI dayText; // 화면에 날짜를 표시할 UI 텍스트
     public TextMeshProUGUI totalGold; // 화면에 총 골드를 표시할 UI 텍스트
 
-    public GameObject OpenButton; // 오픈 버튼 ui
+    public GameObject PreparePanel; // 오픈 준비 패널
     public GameObject NextDayButton; // 다음 날 버튼 ui
     public GameObject TablePrefab; // 테이블 프리팹
     public GameObject settlementPanel; // 일일 정산 패널
@@ -48,9 +52,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI totalGoldText;
     public TextMeshProUGUI customerCountText;
     public GameObject MenuPlanner; // 메뉴 기획 패널
-    public GameObject ShowMenuPlanner; // 메뉴 기획 패널 오픈 버튼
     public GameObject UpgradeTableButton; // 테이블 업그레이드 버튼
-    public GameObject UpgradeTablePannal; // 테이블 업그레이드 패널
     public TextMeshProUGUI TimeScaleButtonText;
 
     private InputSystem_Actions inputActions; // 생성된 Input Action C# 클래스
@@ -120,11 +122,20 @@ public class GameManager : MonoBehaviour
 
     private void UpdateButtonUI()
     {
-        // 각 상태에 맞는 버튼만 활성화(true)하고 나머지는 비활성화(false)
-        OpenButton.SetActive(currentState == GameState.Preparing);
-        ShowMenuPlanner.SetActive(currentState == GameState.Preparing);
-        UpgradeTableButton.SetActive(currentState == GameState.Preparing && totalGoldAmount >= 100 && !hasPlacedTable);
+        PreparePanel.SetActive(currentState == GameState.Preparing);
         NextDayButton.SetActive(currentState == GameState.Closing);
+
+        bool isPreparing = (currentState == GameState.Preparing);
+
+        foreach (GameObject button in upgradeTableButtons)
+        {
+            if (button != null)
+            {
+                bool canShowButton = isPreparing && totalGoldAmount >= tablePrice;
+                button.SetActive(canShowButton);
+            }
+
+        }
     }
 
     public void OpenTheStore()
@@ -132,6 +143,7 @@ public class GameManager : MonoBehaviour
         if (currentState == GameState.Preparing)
         {
             currentState = GameState.Open;
+            MenuPlanner.SetActive(false); // 메뉴 기획 패널 닫기
             Debug.Log("영업 시작");
         }
     }
@@ -204,16 +216,14 @@ public class GameManager : MonoBehaviour
     public void OpenMenuPlanner()
     {
         MenuPlanner.SetActive(true);
-        ShowMenuPlanner.SetActive(false);
     }
 
     public void CloseMenuPlanner()
     {
         MenuPlanner.SetActive(false);
-        ShowMenuPlanner.SetActive(true);
     }
 
-    public void AddTable(Transform buttonTransform, int price)
+    public void AddTable(Transform buttonTransform)
     {
         if (TablePrefab == null)
         {
@@ -222,7 +232,7 @@ public class GameManager : MonoBehaviour
         }
 
         // 골드 차감 로직
-        totalGoldAmount -= price;
+        totalGoldAmount -= tablePrice;
         totalGold.text = "Gold: " + totalGoldAmount;
 
         // 스크린 좌표를 월드 좌표로 변환
@@ -238,18 +248,6 @@ public class GameManager : MonoBehaviour
             RestaurantManager.instance.tables.Add(newTableComponent);
         }
 
-        hasPlacedTable = true; // 테이블이 배치되었음을 표시
-
         Debug.Log($"테이블을 {worldPosition} 위치에 생성했습니다.");
-    }
-
-    public void OpenUpgradeTablePannal()
-    {
-        UpgradeTablePannal.SetActive(true);
-    }
-
-    public void CloseUpgradeTablePannal()
-    {
-        UpgradeTablePannal.SetActive(false);
     }
 }
