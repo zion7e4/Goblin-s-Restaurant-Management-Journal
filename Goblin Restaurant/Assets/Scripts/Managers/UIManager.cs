@@ -15,14 +15,14 @@ public class UIManager : MonoBehaviour
     [Header("메인 UI 패널")]
     public GameObject managementUIParent;
     [Header("탭 UI 요소")]
-    public Button hireTabButton;
-    public Button manageTabButton;
-    public Button recipeTabButton; // [핵심 추가 1] 레시피 탭 버튼을 위한 변수
+    public Button Button_OpenHirePanel;
+    public Button Button_OpenManagePanel;
+    public Button recipeTabButton;
 
     [Header("컨텐츠 패널")]
     public GameObject applicantListPanel;
     public GameObject manageEmployeePanel;
-    public GameObject recipeBookPanel; // [핵심 추가 2] 레시피 패널을 위한 변수
+    public GameObject recipeBookPanel;
 
     [Header("카드 프리팹")]
     public GameObject applicantCardPrefab;
@@ -36,6 +36,8 @@ public class UIManager : MonoBehaviour
 
     private List<GameObject> spawnedApplicantCards = new List<GameObject>();
     private List<GameObject> spawnedHiredCards = new List<GameObject>();
+
+    // UI의 현재 활성화 상태
     private bool isUIVisible = false;
 
     void Awake()
@@ -45,65 +47,80 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        if (hireTabButton != null) hireTabButton.onClick.AddListener(() => OpenTab(applicantListPanel, hireTabButton));
-        if (manageTabButton != null) manageTabButton.onClick.AddListener(() => OpenTab(manageEmployeePanel, manageTabButton));
-        if (recipeTabButton != null) recipeTabButton.onClick.AddListener(() => OpenTab(recipeBookPanel, recipeTabButton)); // [핵심 추가 3] 레시피 버튼 기능 연결
+        // 각 버튼에 OpenTab 기능 연결
+        if (Button_OpenHirePanel != null) Button_OpenHirePanel.onClick.AddListener(() => OpenTab(applicantListPanel, Button_OpenHirePanel));
+        if (Button_OpenManagePanel != null) Button_OpenManagePanel.onClick.AddListener(() => OpenTab(manageEmployeePanel, Button_OpenManagePanel));
+        if (recipeTabButton != null) recipeTabButton.onClick.AddListener(() => OpenTab(recipeBookPanel, recipeTabButton));
 
+        // 게임 시작 시 UI 끄기
         isUIVisible = false;
         if (managementUIParent != null) managementUIParent.SetActive(isUIVisible);
     }
 
+    // [수정 1] Update 함수의 Tab키 로직을 Esc키 로직으로 변경
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
-        {
-            isUIVisible = !isUIVisible;
-            if (managementUIParent != null) managementUIParent.SetActive(isUIVisible);
-            if (isUIVisible)
-            {
-                if (applicantListPanel != null) applicantListPanel.SetActive(false);
-                if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
-                if (recipeBookPanel != null) recipeBookPanel.SetActive(false); // [핵심 추가 4] UI 켤 때 레시피 패널도 끄기
+        // Tab 키 관련 로직을 모두 제거합니다.
 
-                Image hireBtnImage = hireTabButton?.GetComponent<Image>();
-                if (hireBtnImage != null) hireBtnImage.color = normalTabColor;
-                Image manageBtnImage = manageTabButton?.GetComponent<Image>();
-                if (manageBtnImage != null) manageBtnImage.color = normalTabColor;
-                Image recipeBtnImage = recipeTabButton?.GetComponent<Image>(); // [핵심 추가 5] 레시피 버튼 색상 초기화
-                if (recipeBtnImage != null) recipeBtnImage.color = normalTabColor;
-            }
+        // 대신, UI가 켜져 있을 때 'Escape' 키를 누르면 UI가 닫히도록 변경합니다. (선택 사항)
+        if (isUIVisible && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            isUIVisible = false;
+            if (managementUIParent != null) managementUIParent.SetActive(isUIVisible);
         }
     }
 
     /// <summary>
-    /// 지정된 컨텐츠 패널을 열고, 클릭된 탭 버튼의 색상을 변경합니다.
+    /// [수정 2] OpenTab 함수가 메인 패널(managementUIParent)의 활성화/비활성화를 직접 제어합니다.
     /// </summary>
     void OpenTab(GameObject panelToShow, Button clickedButton)
     {
+        // --- 1. 닫기 로직: UI가 켜져있고, 이미 활성화된 탭을 다시 눌렀는지 확인 ---
+        if (isUIVisible && panelToShow != null && panelToShow.activeSelf)
+        {
+            // 이미 열린 탭을 다시 눌렀으므로, 메인 UI 전체를 닫습니다.
+            isUIVisible = false;
+            if (managementUIParent != null) managementUIParent.SetActive(false);
+            return; // 함수 종료
+        }
+
+        // --- 2. 열기 또는 탭 전환 로직 ---
+
+        // 2a. 메인 UI가 닫혀있었다면 켭니다.
+        if (!isUIVisible)
+        {
+            isUIVisible = true;
+            if (managementUIParent != null) managementUIParent.SetActive(true);
+        }
+
+        // 2b. 모든 컨텐츠 패널을 끕니다. (탭 전환을 위해)
         if (applicantListPanel != null) applicantListPanel.SetActive(false);
         if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
-        if (recipeBookPanel != null) recipeBookPanel.SetActive(false); // [핵심 추가 6] 탭 열 때 레시피 패널도 끄기
+        if (recipeBookPanel != null) recipeBookPanel.SetActive(false);
 
+        // 2c. 요청된 컨텐츠 패널만 켭니다.
         if (panelToShow != null) panelToShow.SetActive(true);
 
-        Image hireBtnImage = hireTabButton?.GetComponent<Image>();
+        // 2d. 모든 탭 버튼 색상을 '일반'으로 초기화합니다.
+        Image hireBtnImage = Button_OpenHirePanel?.GetComponent<Image>();
         if (hireBtnImage != null) hireBtnImage.color = normalTabColor;
-        Image manageBtnImage = manageTabButton?.GetComponent<Image>();
+        Image manageBtnImage = Button_OpenManagePanel?.GetComponent<Image>();
         if (manageBtnImage != null) manageBtnImage.color = normalTabColor;
-        Image recipeBtnImage = recipeTabButton?.GetComponent<Image>(); // [핵심 추가 7] 레시피 버튼 색상 초기화
+        Image recipeBtnImage = recipeTabButton?.GetComponent<Image>();
         if (recipeBtnImage != null) recipeBtnImage.color = normalTabColor;
 
+        // 2e. 클릭된 탭 버튼만 '활성' 색상으로 변경합니다.
         Image clickedBtnImage = clickedButton?.GetComponent<Image>();
         if (clickedBtnImage != null) clickedBtnImage.color = activeTabColor;
 
+        // 2f. '직원 관리' 탭을 열었다면 목록을 새로고침합니다.
         if (panelToShow == manageEmployeePanel)
         {
             UpdateHiredEmployeeListUI();
         }
-        // '레시피' 탭을 열 때는 RecipeBookUI가 OnEnable에서 스스로 새로고침하므로 별도 호출이 필요 없습니다.
     }
 
-    // --- 이하 모든 함수는 보내주신 코드와 동일하게 유지됩니다 ---
+    // --- 이하 함수들은 수정할 필요 없이 동일하게 유지됩니다 ---
 
     /// <summary>
     /// 지원자 목록 UI를 최신 정보로 새로고침합니다.
@@ -220,4 +237,3 @@ public class UIManager : MonoBehaviour
         }
     }
 }
-
