@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 94
+  controlID: 112
   draggingID: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -860,9 +860,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 824.0202, y: 566.6096, z: -0.48290792}
+    m_Target: {x: 421.91232, y: 256.19287, z: -2.228541}
     speed: 2
-    m_Value: {x: 824.0202, y: 566.6096, z: -0.48290792}
+    m_Value: {x: 421.91232, y: 256.19287, z: -2.228541}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -912,9 +912,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 48.99873
+    m_Target: 244.06697
     speed: 2
-    m_Value: 48.99873
+    m_Value: 244.06697
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -987,9 +987,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 6eb40000
+      m_SelectedIDs: 1e81feff
       m_LastClickedID: 0
-      m_ExpandedIDs: 04fbffff
+      m_ExpandedIDs: 6e0affff4456ffff409cffff66aeffffe2aeffff5eafffffdcaffffff2f0ffff0cf1ffff20f1ffffa0f2ffff04fbffff62b60000ceb60000fab6000076b80000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1206,7 +1206,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 57606
+  m_LastSelectedObjectID: 46780
 --- !u!114 &17
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1254,7 +1254,8 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Resources/Recipes
+    - Assets/Resources/Ingredients
+    - Assets/Images/Ingredients
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1264,30 +1265,31 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Resources/Recipes
+  - Assets/Resources/Ingredients
+  - Assets/Images/Ingredients
   m_LastFoldersGridSize: 16
   m_LastProjectPath: D:\Git\Goblin-s-Restaurant-Management-Journal\Goblin Restaurant
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 50bf0000
-    m_LastClickedID: 48976
-    m_ExpandedIDs: 0000000006bb000008bb00000abb000036bf000000ca9a3b
+    scrollPos: {x: 0, y: 2.7999268}
+    m_SelectedIDs: ba6f01009e860100
+    m_LastClickedID: 99998
+    m_ExpandedIDs: 0000000008bb00000abb00006abb00006ebb000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: 
-      m_OriginalName: 
+      m_Name: Resources
+      m_OriginalName: Resources
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 0
+      m_UserData: 47982
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 11
+      m_OriginalEventType: 0
       m_IsRenamingFilename: 1
       m_TrimLeadingAndTrailingWhitespace: 0
       m_ClientGUIView: {fileID: 10}
@@ -1422,7 +1424,7 @@ MonoBehaviour:
     m_ControlHash: 1412526313
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 0
+  m_LastVerticalScrollValue: 54
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:

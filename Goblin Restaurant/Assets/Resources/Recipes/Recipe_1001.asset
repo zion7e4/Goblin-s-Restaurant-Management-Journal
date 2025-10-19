@@ -17,6 +17,7 @@ MonoBehaviour:
   description: "\uACE0\uBE14\uB9B0\uB4E4\uC774 \uC990\uACA8 \uBA39\uB294 \uAC04\uB2E8\uD55C
     \uAF2C\uCE58\uAD6C\uC774"
   icon: {fileID: 8519142861453517631, guid: d2cd03ff58fa9314fbe480bcf44e9229, type: 3}
+  foodPrefab: {fileID: 8120544248079953832, guid: 806f13cc5b01d5f4abb9b595bc730587, type: 3}
   basePrice: 15
   baseCookTime: 8
   rarity: 0

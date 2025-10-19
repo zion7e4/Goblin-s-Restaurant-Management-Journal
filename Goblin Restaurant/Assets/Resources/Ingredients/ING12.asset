@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c8a1300be832a14aa299555dd8b7393, type: 3}
+  m_Name: ING12
+  m_EditorClassIdentifier: Assembly-CSharp::IngredientData
+  id: ING12
+  ingredientName: "\uC5D8\uD504\uC758 \uD5A5\uC2E0\uB8CC"
+  icon: {fileID: -4952307162156863748, guid: a5956f2b2374c9c4ab65fee378dddd76, type: 3}
+  rarity: 1
+  buyPrice: 0

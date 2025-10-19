@@ -16,7 +16,8 @@ MonoBehaviour:
   recipeName: "\uB4DC\uB798\uACE4 \uC2EC\uC7A5 \uC2A4\uD14C\uC774\uD06C"
   description: "\uC804\uC124 \uC18D \uB4DC\uB798\uACE4\uC758 \uC2EC\uC7A5\uC73C\uB85C
     \uB9CC\uB4E0 \uAD81\uADF9\uC758 \uC694\uB9AC"
-  icon: {fileID: 0}
+  icon: {fileID: -5814658561930778736, guid: 7d693f96ad81eb34aa1b5ad99c721fce, type: 3}
+  foodPrefab: {fileID: 0}
   basePrice: 9999
   baseCookTime: 45
   rarity: 0

@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     private int DayCount = 1; // 며칠째인지 세는 변수 추가
     private float timeScale; // 게임 내 시간 흐름 속도
     private int speedState = 0; // 시간 배속 상태 변수 추가
-    private bool hasPlacedTable = false; // 테이블 배치 여부 변수 추가s
+    private bool hasPlacedTable = false; // 테이블 배치 여부 변수 추가
     private Camera mainCamera;
 
     public List<GameObject> upgradeTableButtons; // 업그레이드 가능한 테이블 버튼 리스트
@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI dayText; // 화면에 날짜를 표시할 UI 텍스트
     public TextMeshProUGUI totalGold; // 화면에 총 골드를 표시할 UI 텍스트
 
+    public Button OpenButton; // 오픈 버튼
     public GameObject PreparePanel; // 오픈 준비 패널
     public GameObject NextDayButton; // 다음 날 버튼 ui
     public GameObject TablePrefab; // 테이블 프리팹
@@ -51,7 +52,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI todaysGoldText;
     public TextMeshProUGUI totalGoldText;
     public TextMeshProUGUI customerCountText;
-    public GameObject MenuPlanner; // 메뉴 기획 패널
+    public GameObject menuPlanner; // 메뉴 기획 패널
+    public GameObject RecipeSelection; // 레시피 선택 패널
     public GameObject UpgradeTableButton; // 테이블 업그레이드 버튼
     public TextMeshProUGUI TimeScaleButtonText;
 
@@ -143,8 +145,17 @@ public class GameManager : MonoBehaviour
         if (currentState == GameState.Preparing)
         {
             currentState = GameState.Open;
-            MenuPlanner.SetActive(false); // 메뉴 기획 패널 닫기
+            menuPlanner.SetActive(false); // 메뉴 기획 패널 닫기
+            MenuPlanner.instance.ConsumeIngredientsForToday();
             Debug.Log("영업 시작");
+        }
+    }
+
+    public void SetStartButtonInteractable(bool isInteractable)
+    {
+        if (OpenButton != null)
+        {
+            OpenButton.interactable = isInteractable;
         }
     }
 
@@ -215,12 +226,22 @@ public class GameManager : MonoBehaviour
 
     public void OpenMenuPlanner()
     {
-        MenuPlanner.SetActive(true);
+        menuPlanner.SetActive(true);
     }
 
     public void CloseMenuPlanner()
     {
-        MenuPlanner.SetActive(false);
+        menuPlanner.SetActive(false);
+    }
+
+    public void OpenRecipeSelection()
+    {
+        RecipeSelection.SetActive(true);
+    }
+
+    public void CloseRecipeSelection()
+    {
+        RecipeSelection.SetActive(false);
     }
 
     public void AddTable(Transform buttonTransform)

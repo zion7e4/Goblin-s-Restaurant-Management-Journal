@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Linq;
+using System.Drawing;
 
 public class Customer : MonoBehaviour
 {
@@ -50,22 +51,14 @@ public class Customer : MonoBehaviour
         Debug.Log("손님이 메뉴를 고르는 중...");
         yield return new WaitForSeconds(2f);
 
-        var unlockedRecipes = RecipeManager.instance.playerRecipes.Values.ToList();
+        var availableMenu = MenuPlanner.instance.dailyMenu.Where(r => r != null).ToList();
 
-        if (unlockedRecipes.Count > 0)
+        if (availableMenu.Count > 0)
         {
-            int randomIndex = Random.Range(0, unlockedRecipes.Count);
-            PlayerRecipe orderedRecipe = unlockedRecipes[randomIndex];
-            myOrderedRecipe = orderedRecipe; //내가 주문한 메뉴 기억
+            int randomIndex = Random.Range(0, availableMenu.Count);
+            myOrderedRecipe = availableMenu[randomIndex];
 
-            Debug.Log($"{orderedRecipe.data.recipeName} 결정! 주방에 주문을 넣습니다.");
-
-            GameObject foodInstance = null;
-            if (orderedRecipe.data.foodPrefab != null)
-            {
-                foodInstance = Instantiate(orderedRecipe.data.foodPrefab);
-                foodInstance.SetActive(false);
-            }
+            Debug.Log($"{myOrderedRecipe.data.recipeName} 결정! 주방에 주문을 넣습니다.");
 
             if (orderIconPrefab != null && iconSpawnPoint != null)
             {
@@ -74,18 +67,18 @@ public class Customer : MonoBehaviour
                 OrderIconUI iconUI = currentOrderIcon.GetComponent<OrderIconUI>();
                 if (iconUI != null)
                 {
-                    iconUI.SetIcon(orderedRecipe.data.icon);
+                    iconUI.SetIcon(myOrderedRecipe.data.icon);
                 }
             }
 
-            KitchenOrder newOrder = new KitchenOrder(this, orderedRecipe, foodInstance);
+            KitchenOrder newOrder = new KitchenOrder(this, myOrderedRecipe, null); // foodObject는 나중에 추가
             RestaurantManager.instance.OrderQueue.Add(newOrder);
 
             currentState = CustomerState.WaitingForFood;
         }
         else
         {
-            Debug.LogError("손님이 주문할 수 있는 레시피가 하나도 없습니다! RecipeManager를 확인하세요.");
+            Debug.LogError("손님이 주문할 메뉴가 오늘의 메뉴에 하나도 편성되어 있지 않습니다!");
         }
     }
 

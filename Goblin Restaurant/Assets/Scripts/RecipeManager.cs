@@ -30,6 +30,16 @@ public class RecipeManager : MonoBehaviour
     {
         UnlockRecipe(1001);
         UnlockRecipe(1002);
+        UnlockRecipe(1003);
+        UnlockRecipe(1003);
+        UnlockRecipe(1004);
+        UnlockRecipe(1005);
+        UnlockRecipe(1006);
+        UnlockRecipe(1007);
+        UnlockRecipe(1008);
+        UnlockRecipe(1009);
+        UnlockRecipe(1010);
+
     }
 
     private void LoadAllRecipeData()
