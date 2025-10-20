@@ -13,16 +13,6 @@ public class InventoryManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-            AddIngredient("ING01", 100);
-            AddIngredient("ING02", 100);
-            AddIngredient("ING03", 100);
-            AddIngredient("ING04", 100);
-            AddIngredient("ING10", 100);
-            AddIngredient("ING11", 100);
-            AddIngredient("ING12", 100);
-            AddIngredient("ING20", 100);
-            AddIngredient("ING21", 100);
-            AddIngredient("ING30", 100);
         }
         else
         {
@@ -60,6 +50,11 @@ public class InventoryManager : MonoBehaviour
         {
             Debug.LogError($"재고에 없는 재료({ingredientID})를 소모하려고 합니다.");
         }
+    }
+
+    public bool CanCook(PlayerRecipe recipe)
+    {
+        return GetMaxCookableAmount(recipe) > 0;
     }
 
     public int GetMaxCookableAmount(PlayerRecipe recipe)

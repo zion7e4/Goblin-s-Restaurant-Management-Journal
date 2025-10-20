@@ -6,6 +6,7 @@ public class SelectableRecipeItemUI : MonoBehaviour
 {
     public Button selectButton;
     public TextMeshProUGUI recipeNameText;
+
     private PlayerRecipe myRecipe;
     private MenuPlannerUI_Controller controller;
 
@@ -15,6 +16,21 @@ public class SelectableRecipeItemUI : MonoBehaviour
         recipeNameText.text = myRecipe.data.recipeName;
 
         controller = uiController;
+
+        selectButton.onClick.AddListener(OnSelectButtonClick);
+    }
+    public void Setup(PlayerRecipe recipe, bool canSelect, MenuPlannerUI_Controller uiController)
+    {
+        myRecipe = recipe;
+        controller = uiController;
+        recipeNameText.text = myRecipe.data.recipeName;
+
+        selectButton.interactable = canSelect;
+
+        if (!canSelect)
+        {
+            recipeNameText.color = Color.gray;
+        }
 
         selectButton.onClick.AddListener(OnSelectButtonClick);
     }

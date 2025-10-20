@@ -55,7 +55,13 @@ public class GameManager : MonoBehaviour
     public GameObject menuPlanner; // 메뉴 기획 패널
     public GameObject RecipeSelection; // 레시피 선택 패널
     public GameObject UpgradeTableButton; // 테이블 업그레이드 버튼
+    public GameObject recipeIngredientsPanel; // 레시피 재료 패널
     public TextMeshProUGUI TimeScaleButtonText;
+    public MenuPlannerUI_Controller menuPlannerUI; // 메뉴 기획 UI 컨트롤러
+    public InventoryUIController inventoryUI; // 인벤토리 UI 컨트롤러
+    public GameObject shopPanel; // 상점 패널
+    public GameObject recipeShopPanel; // 레시피 상점 패널
+    public GameObject ingredientShopPanel; // 재료 상점 패널
 
     private InputSystem_Actions inputActions; // 생성된 Input Action C# 클래스
 
@@ -167,6 +173,16 @@ public class GameManager : MonoBehaviour
             todaysGold = 0; // 오늘 번 골드 초기화
             todaysCustomers = 0; // 오늘 방문객 수 초기화
 
+            if (MenuPlanner.instance != null)
+            {
+                MenuPlanner.instance.ClearDailyMenu(); // 오늘의 메뉴 초기화
+            }
+
+            if (menuPlannerUI != null)
+            {
+                menuPlannerUI.UpdateAllSlotsUI(); // 메뉴 기획 UI 업데이트
+            }
+
             currentState = GameState.Preparing;
             currentTimeOfDay = 9 * 3600; // 다음 날 오전 9시로 초기화
             DayCount += 1; // 며칠째인지 증가
@@ -195,6 +211,12 @@ public class GameManager : MonoBehaviour
     {
         totalGoldAmount += amount; // 총 골드에 추가
         todaysGold += amount; // 오늘 번 골드에 추가
+        totalGold.text = "Gold: " + totalGoldAmount; // UI 업데이트
+    }
+
+    public void SpendGold(int amount)
+    {
+        totalGoldAmount -= amount; // 총 골드 차감
         totalGold.text = "Gold: " + totalGoldAmount; // UI 업데이트
     }
 
@@ -243,6 +265,51 @@ public class GameManager : MonoBehaviour
     {
         RecipeSelection.SetActive(false);
     }
+
+    public void OpenRecipeIngredientsPanel()
+    {
+        recipeIngredientsPanel.SetActive(true);
+    }
+
+    public void CloseRecipeIngredientsPanel()
+    {
+        recipeIngredientsPanel.SetActive(false);
+    }
+
+    public void OpenInventoryPanel()
+    {
+        inventoryUI.OpenInventory();
+        CloseRecipeIngredientsPanel();
+    }
+
+    public void CloseInventoryPanel()
+    {
+        inventoryUI.CloseInventory();
+    }
+
+    public void OpenShopPanel()
+    {
+        shopPanel.SetActive(true);
+    }
+
+    public void CloseShopPanel()
+    {
+        shopPanel.SetActive(false);
+    }
+
+    public void OpenRecipeShopPanel()
+    {
+        recipeShopPanel.SetActive(true);
+        ingredientShopPanel.SetActive(false);
+    }
+
+    public void OpenIngredientShopPanel()
+    {
+        ingredientShopPanel.SetActive(true);
+        recipeShopPanel.SetActive(false);
+    }
+
+
 
     public void AddTable(Transform buttonTransform)
     {

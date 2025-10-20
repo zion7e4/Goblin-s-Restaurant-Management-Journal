@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IngredientData
   id: ING21
   ingredientName: "\uB9CC\uB4DC\uB77C\uACE0\uB77C \uBFCC\uB9AC"
-  icon: {fileID: 8106889021909113566, guid: 641823ddd5576ef4f90e9acc91788a8d, type: 3}
+  icon: {fileID: -4475905320935347277, guid: 641823ddd5576ef4f90e9acc91788a8d, type: 3}
   rarity: 2
-  buyPrice: 0
+  buyPrice: 120

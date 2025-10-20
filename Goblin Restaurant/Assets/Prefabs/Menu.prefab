@@ -136,6 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SelectableRecipeItemUI
   selectButton: {fileID: 2851654663693396579}
   recipeNameText: {fileID: 7895010811597743868}
+  recipeIcon: {fileID: 1095155311407523712}
 --- !u!1 &7257281934698426751
 GameObject:
   m_ObjectHideFlags: 0

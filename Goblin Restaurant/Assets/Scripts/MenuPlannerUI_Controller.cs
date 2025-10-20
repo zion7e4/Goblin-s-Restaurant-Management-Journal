@@ -74,14 +74,10 @@ public class MenuPlannerUI_Controller : MonoBehaviour
         {
             if (!alreadyAddedIDs.Contains(playerRecipe.data.id))
             {
-                //bool canCook = InventoryManager.instance.CanCook(playerRecipe);
-                bool canCook = true;
+                bool canCook = InventoryManager.instance.CanCook(playerRecipe);
 
-                if (canCook)
-                {
-                    GameObject itemGO = Instantiate(selectableRecipePrefab, selectableRecipeContent);
-                    itemGO.GetComponent<SelectableRecipeItemUI>().Setup(playerRecipe, this);
-                }
+                GameObject itemGO = Instantiate(selectableRecipePrefab, selectableRecipeContent);
+                itemGO.GetComponent<SelectableRecipeItemUI>().Setup(playerRecipe, canCook, this);
             }
         }
     }

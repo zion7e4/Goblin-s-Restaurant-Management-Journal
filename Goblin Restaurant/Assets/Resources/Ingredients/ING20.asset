@@ -16,4 +16,4 @@ MonoBehaviour:
   ingredientName: "\uC640\uC774\uBC88\uC758 \uB0A0\uAC1C"
   icon: {fileID: -4352188752171767901, guid: 15652c36a566fef4bb66684ec1a7df25, type: 3}
   rarity: 2
-  buyPrice: 0
+  buyPrice: 150

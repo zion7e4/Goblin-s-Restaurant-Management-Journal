@@ -33,6 +33,8 @@ public class MenuPlanner : MonoBehaviour
     public void ClearDailyMenu()
     {
         dailyMenu = new PlayerRecipe[5];
+
+        dailyMenuQuantities.Clear();
     }
 
     public void SetDailyMenu(int slotIndex, PlayerRecipe recipe, int quantity)
