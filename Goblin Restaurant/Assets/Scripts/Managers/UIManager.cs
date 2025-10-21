@@ -13,15 +13,13 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
 
     [Header("메인 UI 및 서브 패널")]
-    public GameObject managementUIParent; // 메인 관리 UI의 부모 (전체 UI를 켜고 끄는 용도)
-    public GameObject applicantListPanel; // 채용 탭 패널
-    public GameObject manageEmployeePanel; // 직원 관리 탭 패널
-    public GameObject recipeBookPanel; // 레시피 탭 패널
-
-    // [추가] 서브 메뉴 패널 (각 'Out' 버튼에 연결될 패널)
-    public GameObject recruitmentPanel; // 직원 채용 관련 전체 서브 메뉴 패널
-    public GameObject storePanel; // 상점 관련 서브 메뉴 패널
-    public GameObject interiorPanel; // 인테리어 관련 서브 메뉴 패널
+    public GameObject managementUIParent;
+    public GameObject applicantListPanel;
+    public GameObject manageEmployeePanel;
+    public GameObject recipeBookPanel;
+    public GameObject recruitmentPanel;
+    public GameObject storePanel;
+    public GameObject interiorPanel;
 
     [Header("탭 UI 요소")]
     public Button Button_OpenHirePanel;
@@ -37,6 +35,17 @@ public class UIManager : MonoBehaviour
     [Header("탭 시각 효과")]
     public Color normalTabColor = Color.white;
     public Color activeTabColor = new Color(0.8f, 0.9f, 1f);
+
+    [Header("디버그 테스트용 버튼")]
+    public Button Button_DebugLevelUp; // Unity Inspector에서 연결할 임시 버튼
+
+    [Header("해고 확인 팝업")]
+    public GameObject dismissalConfirmationPanel; // 확인 팝업 패널 자체 (인스펙터 연결 필수)
+    public TextMeshProUGUI dismissalNameText;      // 해고될 직원 이름을 표시할 텍스트 컴포넌트 (인스펙터 연결 필수)
+    public Button Button_ConfirmDismiss;           // '네' 버튼 (해고 실행) (인스펙터 연결 필수)
+    public Button Button_CancelDismiss;            // '아니오' 버튼 (해고 취소) (인스펙터 연결 필수)
+
+    private EmployeeInstance employeeToDismiss; // 팝업에서 최종 해고할 직원을 임시 저장할 변수
 
     private List<GameObject> spawnedApplicantCards = new List<GameObject>();
     private List<GameObject> spawnedHiredCards = new List<GameObject>();
@@ -55,6 +64,14 @@ public class UIManager : MonoBehaviour
         if (Button_OpenHirePanel != null) Button_OpenHirePanel.onClick.AddListener(() => OpenTab(applicantListPanel, Button_OpenHirePanel));
         if (Button_OpenManagePanel != null) Button_OpenManagePanel.onClick.AddListener(() => OpenTab(manageEmployeePanel, Button_OpenManagePanel));
         if (recipeTabButton != null) recipeTabButton.onClick.AddListener(() => OpenTab(recipeBookPanel, recipeTabButton));
+
+        // 디버그 버튼 기능 연결
+        if (Button_DebugLevelUp != null) Button_DebugLevelUp.onClick.AddListener(Debug_LevelUpAllEmployees);
+
+        // 해고 확인 팝업 버튼 이벤트 연결 (Start에서 딱 한 번 연결)
+        if (Button_ConfirmDismiss != null) Button_ConfirmDismiss.onClick.AddListener(ConfirmDismissal);
+        if (Button_CancelDismiss != null) Button_CancelDismiss.onClick.AddListener(HideDismissalConfirmation);
+        if (dismissalConfirmationPanel != null) dismissalConfirmationPanel.SetActive(false); // 시작 시 팝업 닫기
 
         // 게임 시작 시 UI 끄기
         isUIVisible = false;
@@ -101,7 +118,7 @@ public class UIManager : MonoBehaviour
         if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
         if (recipeBookPanel != null) recipeBookPanel.SetActive(false);
 
-        // 2c. 요청된 컨텐츠 패널만 웁니다.
+        // 2c. 요청된 컨텐츠 패널만 켭니다.
         if (panelToShow != null) panelToShow.SetActive(true);
 
         // 2d. 모든 탭 버튼 색상을 '일반'으로 초기화하고, 클릭된 탭 버튼만 '활성' 색상으로 변경합니다.
@@ -140,6 +157,91 @@ public class UIManager : MonoBehaviour
         {
             panelToClose.SetActive(false);
         }
+    }
+
+    // --- 디버그 테스트 함수 (전체 직원 레벨업) ---
+
+    /// <summary>
+    /// [디버그용] 고용된 '모든 직원'의 레벨을 올리고 스킬 포인트를 부여합니다.
+    /// </summary>
+    public void Debug_LevelUpAllEmployees()
+    {
+        if (EmployeeManager.Instance == null)
+        {
+            Debug.LogError("EmployeeManager.Instance가 존재하지 않습니다.");
+            return;
+        }
+
+        if (EmployeeManager.Instance.hiredEmployees.Count > 0)
+        {
+            // 리스트의 모든 직원에게 적용되도록 반복문(foreach) 사용
+            foreach (EmployeeInstance employee in EmployeeManager.Instance.hiredEmployees)
+            {
+                employee.currentLevel += 1;
+                employee.skillPoints += 5; // 예시로 스킬 포인트 5 부여
+
+                Debug.Log($"{employee.firstName}의 레벨이 {employee.currentLevel}로 증가했고, 스킬 포인트 5점을 얻었습니다.");
+            }
+
+            // 모든 직원 업데이트 후 UI를 한 번 새로고침합니다.
+            UpdateHiredEmployeeListUI();
+        }
+        else
+        {
+            Debug.LogWarning("현재 고용된 직원이 없습니다. 먼저 직원을 고용하세요.");
+        }
+    }
+
+    // --- 해고 확인 팝업 로직 ---
+
+    /// <summary>
+    /// 직원 해고 전에 확인 팝업을 띄우고, 해고할 직원을 임시 저장합니다. (해고 버튼 OnClick에 연결)
+    /// </summary>
+    /// <param name="employee">해고할 직원 인스턴스</param>
+    public void ShowDismissalConfirmation(EmployeeInstance employee)
+    {
+        if (dismissalConfirmationPanel != null && employee != null)
+        {
+            employeeToDismiss = employee; // 최종 해고 시 사용할 직원을 임시 저장
+
+            // 텍스트 업데이트: "OOO을(를) 정말로 해고하시겠습니까?"
+            if (dismissalNameText != null)
+            {
+                dismissalNameText.text = $"'{employee.firstName}'을(를) 정말로 해고 하시겠습니까?";
+            }
+
+            // 팝업 패널 활성화
+            dismissalConfirmationPanel.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// '네' 버튼에 연결: 확인 후 실제 해고를 실행합니다.
+    /// </summary>
+    public void ConfirmDismissal()
+    {
+        if (employeeToDismiss != null && EmployeeManager.Instance != null)
+        {
+            // EmployeeManager에 해고 요청
+            EmployeeManager.Instance.DismissEmployee(employeeToDismiss);
+
+            employeeToDismiss = null; // 임시 저장 변수 초기화
+        }
+
+        // 팝업 닫기
+        HideDismissalConfirmation();
+    }
+
+    /// <summary>
+    /// '아니오' 버튼에 연결: 해고를 취소하고 팝업을 닫습니다.
+    /// </summary>
+    public void HideDismissalConfirmation()
+    {
+        if (dismissalConfirmationPanel != null)
+        {
+            dismissalConfirmationPanel.SetActive(false);
+        }
+        employeeToDismiss = null; // 임시 저장 변수 초기화
     }
 
     // --- 이하 카드 업데이트 함수들은 동일하게 유지됩니다 ---
@@ -229,6 +331,9 @@ public class UIManager : MonoBehaviour
         Button serveUpBtn = card.transform.Find("ServeUpgradeButton")?.GetComponent<Button>();
         Button cleanUpBtn = card.transform.Find("CleanUpgradeButton")?.GetComponent<Button>();
 
+        // 해고 버튼 가져오기
+        Button dismissBtn = card.transform.Find("DismissButton")?.GetComponent<Button>();
+
         if (portraitImage != null) portraitImage.sprite = employee.BaseData.portrait;
         if (nameText != null)
         {
@@ -248,26 +353,72 @@ public class UIManager : MonoBehaviour
             statsText.lineSpacing = 5f;
         }
 
-        // 스킬 업그레이드 버튼 기능 연결 (EmployeeManager.Instance가 존재한다고 가정)
+        // 스킬 업그레이드 및 해고 버튼 기능 연결 (EmployeeManager.Instance가 존재한다고 가정)
         if (EmployeeManager.Instance != null)
         {
+            // 1. 요리 버튼 설정
             if (cookUpBtn != null)
             {
                 cookUpBtn.interactable = employee.skillPoints > 0;
                 cookUpBtn.onClick.RemoveAllListeners();
                 cookUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI(); });
             }
+
+            // 2. 서빙 버튼 설정
             if (serveUpBtn != null)
             {
                 serveUpBtn.interactable = employee.skillPoints > 0;
                 serveUpBtn.onClick.RemoveAllListeners();
                 serveUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); });
             }
-            if (cleanUpBtn != null)
+
+            // 3. 정리 버튼 설정 (디버그 코드 포함)
+            if (cleanUpBtn == null)
             {
-                cleanUpBtn.interactable = employee.skillPoints > 0;
+                Debug.LogError($"ERROR! CleanUpgradeButton (정리 버튼)을 찾지 못했습니다! 프리팹 '{card.name}' 내부의 이름 철자를 확인하세요.", card);
+            }
+            else
+            {
+                bool isInteractable = employee.skillPoints > 0;
+                cleanUpBtn.interactable = isInteractable;
+
+                Debug.Log($"정리 버튼 ({cleanUpBtn.gameObject.name}) | 스킬 포인트: {employee.skillPoints} | Interactable 설정 상태: {isInteractable}");
+
                 cleanUpBtn.onClick.RemoveAllListeners();
                 cleanUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCleaning()) UpdateHiredEmployeeListUI(); });
+            }
+
+            // 4. 해고 버튼 기능 연결 (★★★ 확인 창 및 주인공 해고 불가 로직 적용 - 수정됨 ★★★)
+            if (dismissBtn != null)
+            {
+                dismissBtn.onClick.RemoveAllListeners();
+
+                // 주인공 식별 플래그와 이름
+                bool isProtagonistFlag = employee.isProtagonist;
+                string employeeName = employee.firstName;
+
+                // ★★★ [강력한 디버그] 현재 직원의 상태를 로그에 출력합니다. ★★★
+                Debug.Log($"[해고 확인] 직원 이름: {employeeName}, isProtagonist 플래그: {isProtagonistFlag}, BaseData.speciesName: {employee.BaseData.speciesName}");
+
+                // 1. isProtagonist 플래그가 true인 경우 (가장 확실한 방법)
+                if (isProtagonistFlag)
+                {
+                    dismissBtn.interactable = false;
+                    Debug.LogError($"주인공 '{employeeName}'({employee.BaseData.speciesName})입니다. isProtagonist=TRUE이므로 해고 버튼 비활성화.");
+                }
+                // 2. isProtagonist 플래그가 false라도 이름이 "Goblin Chef"인 경우 (비상 방어 로직)
+                else if (employeeName.Equals("Goblin Chef", System.StringComparison.OrdinalIgnoreCase)) // 대소문자 구분 없이 "Goblin Chef" 확인
+                {
+                    dismissBtn.interactable = false;
+                    Debug.LogError($"[비상 방어] isProtagonist는 FALSE이지만 이름이 '{employeeName}'입니다. 해고 버튼을 강제로 비활성화합니다.");
+                }
+                else
+                {
+                    // 일반 직원
+                    dismissBtn.interactable = true;
+                    // 확인 창을 띄우는 함수에 이 직원 인스턴스를 전달합니다.
+                    dismissBtn.onClick.AddListener(() => ShowDismissalConfirmation(employee));
+                }
             }
         }
     }

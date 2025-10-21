@@ -16,6 +16,11 @@ public class EmployeeInstance
     public EmployeeData BaseData { get; private set; }
 
     /// <summary>
+    /// 이 직원이 주인공인지 여부입니다. (해고 방지용)
+    /// </summary>
+    public bool isProtagonist { get; private set; } // ★★★ 주인공 여부 플래그 ★★★
+
+    /// <summary>
     /// 생성 시 부여된 직원의 이름입니다.
     /// </summary>
     public string firstName;
@@ -63,7 +68,7 @@ public class EmployeeInstance
     // --- 생성자 ---
 
     /// <summary>
-    /// '지원자(GeneratedApplicant)' 데이터를 바탕으로 새로운 직원 인스턴스를 생성합니다.
+    /// '지원자(GeneratedApplicant)' 데이터를 바탕으로 새로운 직원 인스턴스를 생성합니다. (일반 직원)
     /// </summary>
     public EmployeeInstance(GeneratedApplicant applicant)
     {
@@ -77,6 +82,9 @@ public class EmployeeInstance
         currentCookingStat = applicant.GeneratedCookingStat;
         currentServingStat = applicant.GeneratedServingStat;
         currentCleaningStat = applicant.GeneratedCleaningStat;
+
+        // 일반 직원은 false로 설정
+        isProtagonist = false;
     }
 
     /// <summary>
@@ -94,6 +102,9 @@ public class EmployeeInstance
         currentServingStat = baseData.baseServingStat;
         currentCleaningStat = baseData.baseCleaningStat;
         currentTraits = new List<Trait>(baseData.possibleTraits);
+
+        // ★★★ [수정] 종족 이름("고블린쉐프")을 기반으로 주인공 여부를 설정합니다. ★★★
+        isProtagonist = baseData.speciesName.Equals("고블린쉐프", System.StringComparison.OrdinalIgnoreCase);
     }
 
     // --- 핵심 기능 함수 ---
