@@ -17,7 +17,7 @@ MonoBehaviour:
   - "\uD558\uC6CC\uB4DC "
   - "\uC6B0\uB514\uB974"
   - "\uC62C\uB77C\uD504"
-  portrait: {fileID: 0}
+  portrait: {fileID: 1237780404017752309, guid: a445eb9653545f64a86084467b16fbec, type: 3}
   requiredFameTier: 1
   baseCookingStat: 1
   baseServingStat: 1

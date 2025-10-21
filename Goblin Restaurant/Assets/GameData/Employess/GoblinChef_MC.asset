@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EmployeeData
   speciesName: "\uACE0\uBE14\uB9B0\uC250\uD504"
   possibleFirstNames: []
-  portrait: {fileID: 0}
+  portrait: {fileID: -2201901916909894332, guid: c8c51958a05596e4a974e7301a3e7c1e, type: 3}
   requiredFameTier: 1
   baseCookingStat: 1
   baseServingStat: 1

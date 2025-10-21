@@ -12,24 +12,28 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    [Header("메인 UI 패널")]
-    public GameObject managementUIParent;
+    [Header("메인 UI 및 서브 패널")]
+    public GameObject managementUIParent; // 메인 관리 UI의 부모 (전체 UI를 켜고 끄는 용도)
+    public GameObject applicantListPanel; // 채용 탭 패널
+    public GameObject manageEmployeePanel; // 직원 관리 탭 패널
+    public GameObject recipeBookPanel; // 레시피 탭 패널
+
+    // [추가] 서브 메뉴 패널 (각 'Out' 버튼에 연결될 패널)
+    public GameObject recruitmentPanel; // 직원 채용 관련 전체 서브 메뉴 패널
+    public GameObject storePanel; // 상점 관련 서브 메뉴 패널
+    public GameObject interiorPanel; // 인테리어 관련 서브 메뉴 패널
+
     [Header("탭 UI 요소")]
     public Button Button_OpenHirePanel;
     public Button Button_OpenManagePanel;
     public Button recipeTabButton;
 
-    [Header("컨텐츠 패널")]
-    public GameObject applicantListPanel;
-    public GameObject manageEmployeePanel;
-    public GameObject recipeBookPanel;
-
-    [Header("카드 프리팹")]
+    [Header("카드 프리팹 및 위치")]
     public GameObject applicantCardPrefab;
     public GameObject hiredCardPrefab;
-    [Header("카드 생성 위치")]
     public Transform applicantCardParent;
     public Transform hiredCardParent;
+
     [Header("탭 시각 효과")]
     public Color normalTabColor = Color.white;
     public Color activeTabColor = new Color(0.8f, 0.9f, 1f);
@@ -47,7 +51,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        // 각 버튼에 OpenTab 기능 연결
+        // 각 탭 버튼에 OpenTab 기능 연결
         if (Button_OpenHirePanel != null) Button_OpenHirePanel.onClick.AddListener(() => OpenTab(applicantListPanel, Button_OpenHirePanel));
         if (Button_OpenManagePanel != null) Button_OpenManagePanel.onClick.AddListener(() => OpenTab(manageEmployeePanel, Button_OpenManagePanel));
         if (recipeTabButton != null) recipeTabButton.onClick.AddListener(() => OpenTab(recipeBookPanel, recipeTabButton));
@@ -57,35 +61,34 @@ public class UIManager : MonoBehaviour
         if (managementUIParent != null) managementUIParent.SetActive(isUIVisible);
     }
 
-    // [수정 1] Update 함수의 Tab키 로직을 Esc키 로직으로 변경
+    /// <summary>
+    /// UI가 켜져 있을 때 'Escape' 키를 누르면 UI가 닫히도록 처리합니다.
+    /// </summary>
     void Update()
     {
-        // Tab 키 관련 로직을 모두 제거합니다.
-
-        // 대신, UI가 켜져 있을 때 'Escape' 키를 누르면 UI가 닫히도록 변경합니다. (선택 사항)
         if (isUIVisible && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
+            // 메인 UI가 켜져 있을 때 ESC 키를 누르면 전체 UI를 닫습니다.
             isUIVisible = false;
             if (managementUIParent != null) managementUIParent.SetActive(isUIVisible);
         }
     }
 
     /// <summary>
-    /// [수정 2] OpenTab 함수가 메인 패널(managementUIParent)의 활성화/비활성화를 직접 제어합니다.
+    /// 특정 패널(탭)을 열거나, 이미 열린 탭을 다시 누르면 메인 UI 전체를 닫습니다.
     /// </summary>
     void OpenTab(GameObject panelToShow, Button clickedButton)
     {
-        // --- 1. 닫기 로직: UI가 켜져있고, 이미 활성화된 탭을 다시 눌렀는지 확인 ---
+        // 1. 닫기 로직: UI가 켜져있고, 이미 활성화된 탭을 다시 눌렀는지 확인
         if (isUIVisible && panelToShow != null && panelToShow.activeSelf)
         {
             // 이미 열린 탭을 다시 눌렀으므로, 메인 UI 전체를 닫습니다.
             isUIVisible = false;
             if (managementUIParent != null) managementUIParent.SetActive(false);
-            return; // 함수 종료
+            return;
         }
 
-        // --- 2. 열기 또는 탭 전환 로직 ---
-
+        // 2. 열기 또는 탭 전환 로직
         // 2a. 메인 UI가 닫혀있었다면 켭니다.
         if (!isUIVisible)
         {
@@ -98,29 +101,48 @@ public class UIManager : MonoBehaviour
         if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
         if (recipeBookPanel != null) recipeBookPanel.SetActive(false);
 
-        // 2c. 요청된 컨텐츠 패널만 켭니다.
+        // 2c. 요청된 컨텐츠 패널만 웁니다.
         if (panelToShow != null) panelToShow.SetActive(true);
 
-        // 2d. 모든 탭 버튼 색상을 '일반'으로 초기화합니다.
-        Image hireBtnImage = Button_OpenHirePanel?.GetComponent<Image>();
-        if (hireBtnImage != null) hireBtnImage.color = normalTabColor;
-        Image manageBtnImage = Button_OpenManagePanel?.GetComponent<Image>();
-        if (manageBtnImage != null) manageBtnImage.color = normalTabColor;
-        Image recipeBtnImage = recipeTabButton?.GetComponent<Image>();
-        if (recipeBtnImage != null) recipeBtnImage.color = normalTabColor;
+        // 2d. 모든 탭 버튼 색상을 '일반'으로 초기화하고, 클릭된 탭 버튼만 '활성' 색상으로 변경합니다.
+        Image[] tabImages = new Image[]
+        {
+            Button_OpenHirePanel?.GetComponent<Image>(),
+            Button_OpenManagePanel?.GetComponent<Image>(),
+            recipeTabButton?.GetComponent<Image>()
+        };
 
-        // 2e. 클릭된 탭 버튼만 '활성' 색상으로 변경합니다.
+        foreach (Image img in tabImages)
+        {
+            if (img != null) img.color = normalTabColor;
+        }
+
         Image clickedBtnImage = clickedButton?.GetComponent<Image>();
         if (clickedBtnImage != null) clickedBtnImage.color = activeTabColor;
 
-        // 2f. '직원 관리' 탭을 열었다면 목록을 새로고침합니다.
+        // 2e. '직원 관리' 탭을 열었다면 목록을 새로고침합니다.
         if (panelToShow == manageEmployeePanel)
         {
             UpdateHiredEmployeeListUI();
         }
     }
 
-    // --- 이하 함수들은 수정할 필요 없이 동일하게 유지됩니다 ---
+    // --- 새로 추가된 패널 닫기 함수 ---
+
+    /// <summary>
+    /// 서브 메뉴 패널(채용, 상점, 인테리어 등)을 닫고 메인 화면으로 돌아갑니다.
+    /// 이 함수를 모든 'Button_...out' 버튼에 연결합니다.
+    /// </summary>
+    /// <param name="panelToClose">비활성화할 GameObject 패널</param>
+    public void CloseUIPanel(GameObject panelToClose)
+    {
+        if (panelToClose != null)
+        {
+            panelToClose.SetActive(false);
+        }
+    }
+
+    // --- 이하 카드 업데이트 함수들은 동일하게 유지됩니다 ---
 
     /// <summary>
     /// 지원자 목록 UI를 최신 정보로 새로고침합니다.
@@ -144,12 +166,16 @@ public class UIManager : MonoBehaviour
     {
         foreach (GameObject card in spawnedHiredCards) { Destroy(card); }
         spawnedHiredCards.Clear();
-        foreach (EmployeeInstance employee in EmployeeManager.Instance.hiredEmployees)
+        // EmployeeManager.Instance가 존재한다고 가정
+        if (EmployeeManager.Instance != null)
         {
-            if (employee == null) continue;
-            GameObject newCard = Instantiate(hiredCardPrefab, hiredCardParent);
-            UpdateHiredCardUI(newCard, employee);
-            spawnedHiredCards.Add(newCard);
+            foreach (EmployeeInstance employee in EmployeeManager.Instance.hiredEmployees)
+            {
+                if (employee == null) continue;
+                GameObject newCard = Instantiate(hiredCardPrefab, hiredCardParent);
+                UpdateHiredCardUI(newCard, employee);
+                spawnedHiredCards.Add(newCard);
+            }
         }
     }
 
@@ -183,7 +209,11 @@ public class UIManager : MonoBehaviour
         if (hireButton != null)
         {
             hireButton.onClick.RemoveAllListeners();
-            hireButton.onClick.AddListener(() => EmployeeManager.Instance.HireEmployee(applicant));
+            // EmployeeManager.Instance가 존재한다고 가정
+            if (EmployeeManager.Instance != null)
+            {
+                hireButton.onClick.AddListener(() => EmployeeManager.Instance.HireEmployee(applicant));
+            }
         }
     }
 
@@ -217,23 +247,28 @@ public class UIManager : MonoBehaviour
             statsText.text = statsBuilder.ToString();
             statsText.lineSpacing = 5f;
         }
-        if (cookUpBtn != null)
+
+        // 스킬 업그레이드 버튼 기능 연결 (EmployeeManager.Instance가 존재한다고 가정)
+        if (EmployeeManager.Instance != null)
         {
-            cookUpBtn.interactable = employee.skillPoints > 0;
-            cookUpBtn.onClick.RemoveAllListeners();
-            cookUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI(); });
-        }
-        if (serveUpBtn != null)
-        {
-            serveUpBtn.interactable = employee.skillPoints > 0;
-            serveUpBtn.onClick.RemoveAllListeners();
-            serveUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); });
-        }
-        if (cleanUpBtn != null)
-        {
-            cleanUpBtn.interactable = employee.skillPoints > 0;
-            cleanUpBtn.onClick.RemoveAllListeners();
-            cleanUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCleaning()) UpdateHiredEmployeeListUI(); });
+            if (cookUpBtn != null)
+            {
+                cookUpBtn.interactable = employee.skillPoints > 0;
+                cookUpBtn.onClick.RemoveAllListeners();
+                cookUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI(); });
+            }
+            if (serveUpBtn != null)
+            {
+                serveUpBtn.interactable = employee.skillPoints > 0;
+                serveUpBtn.onClick.RemoveAllListeners();
+                serveUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); });
+            }
+            if (cleanUpBtn != null)
+            {
+                cleanUpBtn.interactable = employee.skillPoints > 0;
+                cleanUpBtn.onClick.RemoveAllListeners();
+                cleanUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCleaning()) UpdateHiredEmployeeListUI(); });
+            }
         }
     }
 }
