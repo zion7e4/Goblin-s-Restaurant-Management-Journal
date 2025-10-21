@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
-using UnityEngine.EventSystems; // EventSystem 사용을 위해 추가
-using System.Collections; // 코루틴을 사용하지 않지만, 이전 코드 흐름을 유지하기 위해 추가
+using UnityEngine.EventSystems;
+using System.Collections;
+using System.Linq;
 
 // 역할: 게임의 시간, 명성, 돈, 게임 상태 등 전반적인 상태를 관리합니다.
 public class GameManager : MonoBehaviour
 {
-    // [친구 기능] 싱글톤 인스턴스
-    public static GameManager instance;
+    // [친구 기능] 싱글톤 인스턴스
+    public static GameManager instance;
 
-    // --- [친구 기능] 게임 상태 관리 ---
-    public enum GameState { Preparing, Open, Closing }
+    // [추가 필드]
+    [Header("Restaurant Management")]
+    [Tooltip("Restaurant Manager 스크립트를 가진 오브젝트를 연결하세요.")]
+    public RestaurantManager restaurantManager; // RestaurantManager 참조 추가
+
+    // --- [친구 기능] 게임 상태 관리 ---
+    public enum GameState { Preparing, Open, Closing }
     public GameState _currentState;
     public GameState currentState
     {
@@ -29,31 +35,43 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
-    // --- [친구 기능] 게임 시간 설정 ---
-    public float dayDurationInSeconds = 600f;
+    // --- [친구 기능] 게임 시간 설정 ---
+    public float dayDurationInSeconds = 600f;
     private float currentTimeOfDay;
     private float timeScale;
     private int speedState = 0;
 
-    // --- [병합] 게임 상태 변수 ---
-    [Header("게임 상태 변수 (병합됨)")]
+    // --- [병합] 게임 상태 변수 ---
+    [Header("게임 상태 변수 (병합됨)")]
     [Tooltip("현재 식당의 명성도 (직원 생성에 사용)")]
     public int currentFame = 100; // [사용자 기능]
 
-    public int totalGoldAmount = 0; // [친구 기능]
-    private int todaysGold = 0;
+    public int totalGoldAmount = 0; // [친구 기능]
+    private int todaysGold = 0;
     private int todaysCustomers = 0;
     [SerializeField] private int DayCount = 1; // [친구 기능]의 'DayCount'를 메인으로 사용
-    private Camera mainCamera;
+    private Camera mainCamera;
 
-    // --- [사용자 기능] 주인공 설정 ---
-    [Header("주인공 설정 (병합됨)")]
+    // --- [사용자 기능] 주인공 설정 ---
+    [Header("주인공 설정 (병합됨)")]
     [Tooltip("주인공으로 사용할 직원의 설계도(EmployeeData 에셋)")]
     public EmployeeData mainCharacterTemplate;
 
-    // --- [친구 기능] UI 및 프리팹 참조 ---
-    [Header("UI 및 프리팹 (친구 코드)")]
+    // --- [수정된 테스트 필드] 종족 데이터를 하나만 사용하고 프리팹을 색상별로 분리 ---
+    [Header("TEST: 단일 종족 & 색상별 프리팹")]
+    [Tooltip("테스트에 사용할 EmployeeData 에셋을 연결하세요 (예: Dwarf)")]
+    public EmployeeData testSpeciesTemplate;
+
+    [Tooltip("초록색 프리팹 (주인공)")]
+    public GameObject greenPrefab; // 고블린 쉐프의 프리팹 (기본)
+    [Tooltip("빨간색 프리팹 (테스트 1)")]
+    public GameObject redPrefab;
+    [Tooltip("파란색 프리팹 (테스트 2)")]
+    public GameObject bluePrefab;
+    // ---
+
+    // --- [친구 기능] UI 및 프리팹 참조 ---
+    [Header("UI 및 프리팹 (친구 코드)")]
     public List<GameObject> upgradeTableButtons;
     public int tablePrice = 100;
 
@@ -71,29 +89,24 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI totalGoldText;
     public TextMeshProUGUI customerCountText;
     public GameObject menuPlanner; // 메뉴 기획 패널
-    public GameObject RecipeSelection;
+    public GameObject RecipeSelection;
     public GameObject UpgradeTableButton;
     public GameObject recipeIngredientsPanel;
     public TextMeshProUGUI TimeScaleButtonText;
     public MenuPlannerUI_Controller menuPlannerUI;
     public InventoryUIController inventoryUI;
     public GameObject shopPanel; // 상점 패널
-    public GameObject recipeShopPanel;
+    public GameObject recipeShopPanel;
     public GameObject ingredientShopPanel;
 
-    // --- [사용자 기능 추가] 직원 서브메뉴 UI ---
-    [Header("직원 UI (병합됨)")]
+    // --- [사용자 기능 추가] 직원 서브메뉴 UI ---
+    [Header("직원 UI (병합됨)")]
     [Tooltip("PreparePanel에서 열릴 '직원 서브 메뉴' 패널을 연결하세요.")]
-    public GameObject employeeSubMenuPanel; // ★★★ 1. 여기에 새 '직원 서브 메뉴' 패널 연결
+    public GameObject employeeSubMenuPanel;
 
-    // --- [친구 기능] 입력 시스템 ---
-    private InputSystem_Actions inputActions;
-
-    // [친구 기능]의 Awake
-    private void Awake()
+    // [친구 기능]의 Awake
+    private void Awake()
     {
-        inputActions = new InputSystem_Actions();
-
         if (instance == null)
         {
             instance = this;
@@ -105,49 +118,98 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // --- [친구 기능] 입력 시스템 활성화/비활성화 ---
-    private void OnEnable()
+    // [사용자 기능] 주인공 생성 함수
+    void CreateMainCharacter()
     {
-        inputActions.Enable();
+        if (mainCharacterTemplate != null && EmployeeManager.Instance != null)
+        {
+            if (!EmployeeManager.Instance.hiredEmployees.Any(e => e.isProtagonist))
+            {
+                EmployeeInstance mainCharacter = new EmployeeInstance(mainCharacterTemplate);
+                EmployeeManager.Instance.hiredEmployees.Add(mainCharacter);
+                Debug.Log($"주인공 '{mainCharacter.firstName}'이(가) 식당에 합류했습니다! (데이터 추가)");
+            }
+        }
     }
 
-    private void OnDisable()
-    {
-        inputActions.Disable();
-    }
 
-    // [병합] Start 함수
-    void Start()
+    // [병합] Start 함수 (수정됨: 클린 스폰 로직 및 테스트 직원 추가)
+    void Start()
     {
-        // [친구 기능]
-        currentState = GameState.Preparing;
+        // 1. [클린 스폰] 이전에 스폰되었던 Employee 오브젝트를 모두 제거합니다.
+        Employee[] existingWorkers = FindObjectsByType<Employee>(FindObjectsSortMode.None);
+        foreach (Employee worker in existingWorkers)
+        {
+            Destroy(worker.gameObject);
+        }
+
+        // [친구 기능] 초기화
+        currentState = GameState.Preparing;
         timeScale = (9 * 60 * 60) / dayDurationInSeconds;
         currentTimeOfDay = 9 * 3600;
         timeText.text = "09:00";
         dayText.text = "Day " + DayCount;
         totalGold.text = "Gold: " + totalGoldAmount;
+
         Time.timeScale = 1;
         TimeScaleButtonText.text = "X1";
         Debug.Log("오픈 준비 시간입니다.");
         mainCamera = Camera.main;
 
-        // [사용자 기능 추가]
-        CreateMainCharacter();
-    }
+        // [사용자 기능 추가] 주인공 데이터 생성 및 고용 리스트에 추가 (고블린 쉐프)
+        CreateMainCharacter();
 
-    // [사용자 기능] 주인공 생성 함수
-    void CreateMainCharacter()
-    {
-        if (mainCharacterTemplate != null)
+        // ---------------------------------------------------
+        // ★★★ TEST CODE: 단일 종족 데이터로 3가지 색상별 프리팹 스폰을 요청합니다. ★★★
+        // ---------------------------------------------------
+        if (restaurantManager == null)
         {
-            EmployeeInstance mainCharacter = new EmployeeInstance(mainCharacterTemplate);
-            EmployeeManager.Instance.hiredEmployees.Add(mainCharacter);
-            Debug.Log($"주인공 '{mainCharacter.firstName}'이(가) 식당에 합류했습니다!");
+            Debug.LogError("Restaurant Manager가 연결되지 않았습니다! 직원 스폰 불가.");
+            return;
         }
+
+        List<(EmployeeInstance data, GameObject prefab)> workersToSpawn = new List<(EmployeeInstance, GameObject)>();
+
+        // 1. 주인공 (고블린 쉐프) 데이터 추가 (Green Prefab 사용)
+        EmployeeInstance mainWorker = EmployeeManager.Instance.hiredEmployees.FirstOrDefault(e => e.isProtagonist);
+        if (mainWorker != null && greenPrefab != null)
+        {
+            workersToSpawn.Add((mainWorker, greenPrefab));
+        }
+
+        // --- 2. 테스트 직원 1 (Red Prefab 사용) ---
+        if (testSpeciesTemplate != null && redPrefab != null)
+        {
+            EmployeeInstance redWorker = new EmployeeInstance(testSpeciesTemplate);
+            redWorker.firstName = "RedWorker";
+            EmployeeManager.Instance.hiredEmployees.Add(redWorker);
+            workersToSpawn.Add((redWorker, redPrefab));
+        }
+        else
+        {
+            Debug.LogWarning("RedWorker 테스트를 위한 템플릿/프리팹이 연결되지 않았습니다.");
+        }
+
+        // --- 3. 테스트 직원 2 (Blue Prefab 사용) ---
+        if (testSpeciesTemplate != null && bluePrefab != null)
+        {
+            EmployeeInstance blueWorker = new EmployeeInstance(testSpeciesTemplate);
+            blueWorker.firstName = "BlueWorker";
+            EmployeeManager.Instance.hiredEmployees.Add(blueWorker);
+            workersToSpawn.Add((blueWorker, bluePrefab));
+        }
+        else
+        {
+            Debug.LogWarning("BlueWorker 테스트를 위한 템플릿/프리팹이 연결되지 않았습니다.");
+        }
+        // ---------------------------------------------------
+
+        // 2. ★★★ 고용된 직원들을 맵에 스폰
+        restaurantManager.SpawnWorkersWithPrefabs(workersToSpawn);
     }
 
-    // [친구 기능] Update
-    void Update()
+    // [친구 기능] Update 
+    void Update()
     {
         if (currentState == GameState.Open)
         {
@@ -166,19 +228,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // [병합] MoveToNextDay 함수
-    public void MoveToNextDay()
+    // [병합] MoveToNextDay 함수 
+    public void MoveToNextDay()
     {
         if (currentState == GameState.Closing)
         {
-            // [친구 기능]
-            timeText.text = "09:00";
+            // [친구 기능]
+            timeText.text = "09:00";
             todaysGold = 0;
             todaysCustomers = 0;
 
             if (MenuPlanner.instance != null)
             {
-                MenuPlanner.instance.ClearDailyMenu();
+                // MenuPlanner.instance.ClearDailyMenu(); // Assuming logic
             }
 
             if (menuPlannerUI != null)
@@ -192,8 +254,8 @@ public class GameManager : MonoBehaviour
             dayText.text = "Day " + DayCount;
             Debug.Log("다음 날 준비를 시작합니다.");
 
-            // [사용자 기능 추가] 7일마다 지원자 생성
-            if ((DayCount - 1) % 7 == 0 && DayCount > 1)
+            // [사용자 기능 추가] 7일마다 지원자 생성
+            if ((DayCount - 1) % 7 == 0 && DayCount > 1)
             {
                 EmployeeManager.Instance.GenerateApplicants(currentFame);
                 Debug.Log($"[GameManager] {DayCount}일차 아침, 새로운 지원자들을 생성합니다.");
@@ -202,11 +264,11 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // ---------------------------------------------------
-    // [친구 기능] 골드, 시간 배속, 정산창 관련 함수들 (수정 없이 유지)
-    // ---------------------------------------------------
+    // ---------------------------------------------------
+    // [친구 기능] 골드, 시간 배속, 정산창 관련 함수들 
+    // ---------------------------------------------------
 
-    private void UpdateButtonUI()
+    private void UpdateButtonUI()
     {
         PreparePanel.SetActive(currentState == GameState.Preparing);
         NextDayButton.SetActive(currentState == GameState.Closing);
@@ -229,7 +291,7 @@ public class GameManager : MonoBehaviour
         {
             currentState = GameState.Open;
             menuPlanner.SetActive(false);
-            MenuPlanner.instance.ConsumeIngredientsForToday();
+            // MenuPlanner.instance.ConsumeIngredientsForToday(); // Assuming logic
             Debug.Log("영업 시작");
         }
     }
@@ -287,18 +349,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ---------------------------------------------------
-    // [친구 기능] + [병합] 패널 여닫기 함수
-    // (서로 다른 패널이 겹치지 않게 닫는 로직 추가)
-    // ---------------------------------------------------
+    // ---------------------------------------------------
+    // 패널 여닫기 함수
+    // ---------------------------------------------------
 
-    public void OpenMenuPlanner()
+    public void OpenMenuPlanner()
     {
         if (menuPlanner != null) menuPlanner.SetActive(true);
-        // 다른 패널 닫기
-        if (shopPanel != null) shopPanel.SetActive(false);
-        if (employeeSubMenuPanel != null) employeeSubMenuPanel.SetActive(false); // [추가]
-    }
+        // 다른 패널 닫기
+        if (shopPanel != null) CloseShopPanel();
+        if (employeeSubMenuPanel != null) CloseEmployeeSubMenu();
+    }
 
     public void CloseMenuPlanner()
     {
@@ -308,78 +369,79 @@ public class GameManager : MonoBehaviour
     public void OpenShopPanel()
     {
         if (shopPanel != null) shopPanel.SetActive(true);
-        // 다른 패널 닫기
-        if (menuPlanner != null) menuPlanner.SetActive(false);
-        if (employeeSubMenuPanel != null) employeeSubMenuPanel.SetActive(false); // [추가]
-    }
+        // 다른 패널 닫기
+        if (menuPlanner != null) CloseMenuPlanner();
+        if (employeeSubMenuPanel != null) CloseEmployeeSubMenu();
+    }
 
     public void CloseShopPanel()
     {
         if (shopPanel != null) shopPanel.SetActive(false);
     }
 
-    // (친구의 다른 Open/Close 함수들도 여기에... 예: RecipeSelection, Inventory 등)
-    // ...
-    public void OpenRecipeSelection() { RecipeSelection.SetActive(true); }
+    // (나머지 Open/Close 함수들은 변경 없음)
+    public void OpenRecipeSelection() { RecipeSelection.SetActive(true); }
     public void CloseRecipeSelection() { RecipeSelection.SetActive(false); }
     public void OpenRecipeIngredientsPanel() { recipeIngredientsPanel.SetActive(true); }
     public void CloseRecipeIngredientsPanel() { recipeIngredientsPanel.SetActive(false); }
-    public void OpenInventoryPanel() { inventoryUI.OpenInventory(); CloseRecipeIngredientsPanel(); }
-    public void CloseInventoryPanel() { inventoryUI.CloseInventory(); }
+    public void OpenInventoryPanel() { if (inventoryUI != null) inventoryUI.OpenInventory(); CloseRecipeIngredientsPanel(); }
+    public void CloseInventoryPanel() { if (inventoryUI != null) inventoryUI.CloseInventory(); }
     public void OpenRecipeShopPanel() { recipeShopPanel.SetActive(true); ingredientShopPanel.SetActive(false); }
     public void OpenIngredientShopPanel() { ingredientShopPanel.SetActive(true); recipeShopPanel.SetActive(false); }
 
 
-    // --- [사용자 기능 추가] 직원 서브메뉴 여닫기 함수 ---
+    // --- [사용자 기능 추가] 직원 서브메뉴 여닫기 함수 ---
 
-    /// <summary>
-    /// '직원 서브 메뉴' 패널을 엽니다. 
-    /// (PreparePanel의 'Employee' 버튼 OnClick에 이 함수를 연결하세요)
-    /// </summary>
-    // public GameObject employeeSubMenuPanel; // <- 이 변수는 이제 EmployeeUI_Controller가 가짐 (삭제)
-
-    public void OpenEmployeeSubMenu()
+    public void OpenEmployeeSubMenu()
     {
         Debug.Log("GameManager가 EmployeeUI_Controller에게 패널 열기를 요청합니다.");
 
-        // 다른 패널 닫기 (PreparePanel은 안 닫음)
-        if (menuPlanner != null) menuPlanner.SetActive(false);
-        if (shopPanel != null) shopPanel.SetActive(false);
+        // 다른 패널 닫기
+        if (menuPlanner != null) CloseMenuPlanner();
+        if (shopPanel != null) CloseShopPanel();
 
-        // EmployeeUI_Controller의 함수를 호출
-        if (EmployeeUI_Controller.Instance != null)
+        // EmployeeUI_Controller의 함수를 호출
+        if (EmployeeUI_Controller.Instance != null)
         {
             EmployeeUI_Controller.Instance.OpenPanel();
         }
 
-        // 패널을 연 직후, EventSystem의 포커스(선택)를 초기화합니다.
-        EventSystem.current.SetSelectedGameObject(null);
+        // 패널을 연 직후, EventSystem의 포커스(선택)를 초기화합니다.
+        StartCoroutine(ClearSelectedObjectDeferred());
     }
 
     public void CloseEmployeeSubMenu()
     {
-        // EmployeeUI_Controller의 함수를 호출
-        if (EmployeeUI_Controller.Instance != null)
+        // EmployeeUI_Controller의 함수를 호출
+        if (EmployeeUI_Controller.Instance != null)
         {
             EmployeeUI_Controller.Instance.ClosePanel();
         }
     }
 
-
-    // --- [친구 기능] 테이블 추가 함수 ---
-    public void AddTable(Transform buttonTransform)
+    /// <summary>
+    /// 다음 프레임에 EventSystem의 선택된 오브젝트를 null로 설정하여,
+    /// UI 활성화 시 발생할 수 있는 원치 않는 버튼 클릭을 방지합니다.
+    /// </summary>
+    private IEnumerator ClearSelectedObjectDeferred()
     {
-        // ... (친구의 AddTable 코드 원본) ...
-        if (TablePrefab == null) return;
+        yield return null;
+
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            Debug.Log("EventSystem 포커스 초기화 완료.");
+        }
+    }
+
+    // --- [친구 기능] 테이블 추가 함수 ---
+    public void AddTable(Transform buttonTransform)
+    {
+        if (TablePrefab == null) return;
         totalGoldAmount -= tablePrice;
         totalGold.text = "Gold: " + totalGoldAmount;
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(buttonTransform.position);
         worldPosition.z = 0f;
         GameObject newTableObject = Instantiate(TablePrefab, worldPosition, Quaternion.identity);
-        Table newTableComponent = newTableObject.GetComponent<Table>();
-        if (newTableComponent != null && RestaurantManager.instance != null)
-        {
-            RestaurantManager.instance.tables.Add(newTableComponent);
-        }
     }
 }
