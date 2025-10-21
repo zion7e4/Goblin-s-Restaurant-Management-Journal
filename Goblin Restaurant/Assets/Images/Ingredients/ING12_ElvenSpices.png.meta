@@ -1,0 +1,1131 @@
+fileFormatVersion: 2
+guid: a5956f2b2374c9c4ab65fee378dddd76
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4952307162156863748
+    second: ING12_ElvenSpices_0
+  - first:
+      213: -2128954870955786793
+    second: ING12_ElvenSpices_1
+  - first:
+      213: 58604737986355914
+    second: ING12_ElvenSpices_2
+  - first:
+      213: 3903879845102086717
+    second: ING12_ElvenSpices_3
+  - first:
+      213: 8636130654037770424
+    second: ING12_ElvenSpices_4
+  - first:
+      213: -4751282905562449130
+    second: ING12_ElvenSpices_5
+  - first:
+      213: 1825113147923501567
+    second: ING12_ElvenSpices_6
+  - first:
+      213: -1061307228693596795
+    second: ING12_ElvenSpices_7
+  - first:
+      213: -775748401480741890
+    second: ING12_ElvenSpices_8
+  - first:
+      213: -1089126054816027682
+    second: ING12_ElvenSpices_9
+  - first:
+      213: -7986555561300299023
+    second: ING12_ElvenSpices_10
+  - first:
+      213: -8273618451622382977
+    second: ING12_ElvenSpices_11
+  - first:
+      213: -77403767473073713
+    second: ING12_ElvenSpices_12
+  - first:
+      213: -2161093040664211528
+    second: ING12_ElvenSpices_13
+  - first:
+      213: -4287262191834985082
+    second: ING12_ElvenSpices_14
+  - first:
+      213: -5812717390530212378
+    second: ING12_ElvenSpices_15
+  - first:
+      213: -7047513158970471199
+    second: ING12_ElvenSpices_16
+  - first:
+      213: -5395771010627706712
+    second: ING12_ElvenSpices_17
+  - first:
+      213: 5070556055228134317
+    second: ING12_ElvenSpices_18
+  - first:
+      213: 2761252139734633071
+    second: ING12_ElvenSpices_19
+  - first:
+      213: -3302642167574974554
+    second: ING12_ElvenSpices_20
+  - first:
+      213: -4819191164239533021
+    second: ING12_ElvenSpices_21
+  - first:
+      213: -1469393028758940681
+    second: ING12_ElvenSpices_22
+  - first:
+      213: 8182824571447405414
+    second: ING12_ElvenSpices_23
+  - first:
+      213: 5068378455569276116
+    second: ING12_ElvenSpices_24
+  - first:
+      213: 2333099729999671407
+    second: ING12_ElvenSpices_25
+  - first:
+      213: -1661257249693235274
+    second: ING12_ElvenSpices_26
+  - first:
+      213: 502877543130915005
+    second: ING12_ElvenSpices_27
+  - first:
+      213: 5019550480287179263
+    second: ING12_ElvenSpices_28
+  - first:
+      213: -6806003691999412906
+    second: ING12_ElvenSpices_29
+  - first:
+      213: 7196595359725431532
+    second: ING12_ElvenSpices_30
+  - first:
+      213: 3221641500445275996
+    second: ING12_ElvenSpices_31
+  - first:
+      213: 5944195130353292448
+    second: ING12_ElvenSpices_32
+  - first:
+      213: -5543042119033944251
+    second: ING12_ElvenSpices_33
+  - first:
+      213: -4481298202623809706
+    second: ING12_ElvenSpices_34
+  - first:
+      213: 6055157254085163939
+    second: ING12_ElvenSpices_35
+  - first:
+      213: 916797725651450525
+    second: ING12_ElvenSpices_36
+  - first:
+      213: -661019363137971107
+    second: ING12_ElvenSpices_37
+  - first:
+      213: 606060524352729706
+    second: ING12_ElvenSpices_38
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_0
+      rect:
+        serializedVersion: 2
+        x: 715
+        y: 847
+        width: 30
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfe640ddfded54bb0800000000000000
+      internalID: -4952307162156863748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_1
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 307
+        width: 838
+        height: 523
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ddb7d513de6472e0800000000000000
+      internalID: -2128954870955786793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_2
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 196
+        width: 230
+        height: 149
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac2e4ddd2b430d000800000000000000
+      internalID: 58604737986355914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_3
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 231
+        width: 264
+        height: 168
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3aed15190e5d2630800000000000000
+      internalID: 3903879845102086717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_4
+      rect:
+        serializedVersion: 2
+        x: 851
+        y: 306
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b088cbd213b9d770800000000000000
+      internalID: 8636130654037770424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_5
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 259
+        width: 32
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61b709aee5d001eb0800000000000000
+      internalID: -4751282905562449130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_6
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 292
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff110e8fcba145910800000000000000
+      internalID: 1825113147923501567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_7
+      rect:
+        serializedVersion: 2
+        x: 579
+        y: 285
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 585f924d2ba7541f0800000000000000
+      internalID: -1061307228693596795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_8
+      rect:
+        serializedVersion: 2
+        x: 865
+        y: 292
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efbc9ae50fcfb35f0800000000000000
+      internalID: -775748401480741890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_9
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 285
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edb6113af95a2e0f0800000000000000
+      internalID: -1089126054816027682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_10
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 279
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f276c5180e0a2190800000000000000
+      internalID: -7986555561300299023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_11
+      rect:
+        serializedVersion: 2
+        x: 859
+        y: 266
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f723eef8ad33e2d80800000000000000
+      internalID: -8273618451622382977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_12
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 259
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc19d7ffea10deef0800000000000000
+      internalID: -77403767473073713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_13
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 267
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bf04a854514202e0800000000000000
+      internalID: -2161093040664211528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_14
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 265
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68d86bc50c59084c0800000000000000
+      internalID: -4287262191834985082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_15
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 225
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ed06b59454155fa0800000000000000
+      internalID: -5812717390530212378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_16
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 244
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ec8ca90f14323e90800000000000000
+      internalID: -7047513158970471199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_17
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 251
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a06f269ade5e15b0800000000000000
+      internalID: -5395771010627706712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_18
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 231
+        width: 18
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da334950edb3e5640800000000000000
+      internalID: 5070556055228134317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_19
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 255
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6a8b2cf030f15620800000000000000
+      internalID: 2761252139734633071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_20
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 238
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6afa77d5278aa22d0800000000000000
+      internalID: -3302642167574974554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_21
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 215
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32c2dc65b2bce1db0800000000000000
+      internalID: -4819191164239533021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_22
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 196
+        width: 19
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f3536553daab9be0800000000000000
+      internalID: -1469393028758940681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_23
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 217
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66be570e79b3f8170800000000000000
+      internalID: 8182824571447405414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_24
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 211
+        width: 25
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dc13771a5f765640800000000000000
+      internalID: 5068378455569276116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_25
+      rect:
+        serializedVersion: 2
+        x: 701
+        y: 217
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f60b038d7d5d06020800000000000000
+      internalID: 2333099729999671407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_26
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 218
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b70e77455702f8e0800000000000000
+      internalID: -1661257249693235274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_27
+      rect:
+        serializedVersion: 2
+        x: 742
+        y: 211
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db0e6db06749af600800000000000000
+      internalID: 502877543130915005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_28
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 215
+        width: 19
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff1a8ad219609a540800000000000000
+      internalID: 5019550480287179263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_29
+      rect:
+        serializedVersion: 2
+        x: 476
+        y: 190
+        width: 32
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65db06ea3b73c81a0800000000000000
+      internalID: -6806003691999412906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_30
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 197
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ceaa8a8b9517fd360800000000000000
+      internalID: 7196595359725431532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_31
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 197
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5772bb20e195bc20800000000000000
+      internalID: 3221641500445275996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_32
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 202
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a490543af50e7250800000000000000
+      internalID: 5944195130353292448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_33
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 176
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54704ff9f882313b0800000000000000
+      internalID: -5543042119033944251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_34
+      rect:
+        serializedVersion: 2
+        x: 373
+        y: 183
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 657e204170b3fc1c0800000000000000
+      internalID: -4481298202623809706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_35
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 183
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ab30e4e07d380450800000000000000
+      internalID: 6055157254085163939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_36
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 163
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9a37509cae19bc00800000000000000
+      internalID: 916797725651450525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_37
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 163
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5c9186346693d6f0800000000000000
+      internalID: -661019363137971107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ING12_ElvenSpices_38
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 170
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a627e6af5d8296800800000000000000
+      internalID: 606060524352729706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ING12_ElvenSpices_0: -4952307162156863748
+      ING12_ElvenSpices_1: -2128954870955786793
+      ING12_ElvenSpices_10: -7986555561300299023
+      ING12_ElvenSpices_11: -8273618451622382977
+      ING12_ElvenSpices_12: -77403767473073713
+      ING12_ElvenSpices_13: -2161093040664211528
+      ING12_ElvenSpices_14: -4287262191834985082
+      ING12_ElvenSpices_15: -5812717390530212378
+      ING12_ElvenSpices_16: -7047513158970471199
+      ING12_ElvenSpices_17: -5395771010627706712
+      ING12_ElvenSpices_18: 5070556055228134317
+      ING12_ElvenSpices_19: 2761252139734633071
+      ING12_ElvenSpices_2: 58604737986355914
+      ING12_ElvenSpices_20: -3302642167574974554
+      ING12_ElvenSpices_21: -4819191164239533021
+      ING12_ElvenSpices_22: -1469393028758940681
+      ING12_ElvenSpices_23: 8182824571447405414
+      ING12_ElvenSpices_24: 5068378455569276116
+      ING12_ElvenSpices_25: 2333099729999671407
+      ING12_ElvenSpices_26: -1661257249693235274
+      ING12_ElvenSpices_27: 502877543130915005
+      ING12_ElvenSpices_28: 5019550480287179263
+      ING12_ElvenSpices_29: -6806003691999412906
+      ING12_ElvenSpices_3: 3903879845102086717
+      ING12_ElvenSpices_30: 7196595359725431532
+      ING12_ElvenSpices_31: 3221641500445275996
+      ING12_ElvenSpices_32: 5944195130353292448
+      ING12_ElvenSpices_33: -5543042119033944251
+      ING12_ElvenSpices_34: -4481298202623809706
+      ING12_ElvenSpices_35: 6055157254085163939
+      ING12_ElvenSpices_36: 916797725651450525
+      ING12_ElvenSpices_37: -661019363137971107
+      ING12_ElvenSpices_38: 606060524352729706
+      ING12_ElvenSpices_4: 8636130654037770424
+      ING12_ElvenSpices_5: -4751282905562449130
+      ING12_ElvenSpices_6: 1825113147923501567
+      ING12_ElvenSpices_7: -1061307228693596795
+      ING12_ElvenSpices_8: -775748401480741890
+      ING12_ElvenSpices_9: -1089126054816027682
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
