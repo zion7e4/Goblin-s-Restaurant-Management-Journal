@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// 고용된 개별 직원의 현재 상태(레벨, 능력치, 특성 등)를 저장하고 관리하는 데이터 클래스입니다.
@@ -18,7 +19,7 @@ public class EmployeeInstance
     /// <summary>
     /// 이 직원이 주인공인지 여부입니다. (해고 방지용)
     /// </summary>
-    public bool isProtagonist { get; private set; } // ★★★ 주인공 여부 플래그 ★★★
+    public bool isProtagonist { get; private set; }
 
     /// <summary>
     /// 생성 시 부여된 직원의 이름입니다.
@@ -93,87 +94,71 @@ public class EmployeeInstance
     public EmployeeInstance(EmployeeData baseData)
     {
         BaseData = baseData;
-        firstName = baseData.speciesName;
+        // 고블린 쉐프 식별을 위한 기본 이름 설정
+        firstName = "Goblin Chef";
         currentLevel = 1;
         currentExperience = 0;
-        skillPoints = 0;
+        skillPoints = 5; // 주인공은 기본 스킬 포인트 제공 (예시)
         currentSalary = baseData.salary;
         currentCookingStat = baseData.baseCookingStat;
         currentServingStat = baseData.baseServingStat;
         currentCleaningStat = baseData.baseCleaningStat;
-        currentTraits = new List<Trait>(baseData.possibleTraits);
+        currentTraits = new List<Trait>(); // 주인공은 기본 특성 없음으로 시작 (수정 가능)
 
-        // ★★★ [수정] 종족 이름("고블린쉐프")을 기반으로 주인공 여부를 설정합니다. ★★★
-        isProtagonist = baseData.speciesName.Equals("고블린쉐프", System.StringComparison.OrdinalIgnoreCase);
+        // 주인공 여부를 설정합니다.
+        isProtagonist = true;
     }
 
     // --- 핵심 기능 함수 ---
 
-    /// <summary>
-    /// 경험치를 추가하고, 필요 경험치를 충족하면 레벨업을 진행하여 스킬 포인트를 얻습니다.
-    /// </summary>
-    /// <param name="amount">추가할 경험치 양</param>
-    public void AddExperience(float amount)
-    {
-        float requiredExp = currentLevel * 100;
-        currentExperience += amount;
-
-        while (currentExperience >= requiredExp)
-        {
-            currentLevel++;
-            currentExperience -= requiredExp;
-            skillPoints++;
-            currentSalary += 10;
-            Debug.Log($"축하합니다! {firstName}(이)가 {currentLevel}레벨로 상승했습니다! (보유 스킬포인트: {skillPoints})");
-            requiredExp = currentLevel * 100;
-        }
-    }
+    // ************* [경험치 관련 함수는 현재 구현되지 않았으므로 생략] *************
 
     /// <summary>
-    /// 스킬 포인트를 1 사용하여 '요리' 능력치를 1 올립니다.
+    /// 요리 스탯에 스킬 포인트를 사용하고 스탯을 증가시킵니다.
     /// </summary>
-    /// <returns>성공하면 true, 스킬 포인트가 부족하면 false를 반환합니다.</returns>
+    /// <returns>스탯 증가에 성공했으면 true를 반환합니다.</returns>
     public bool SpendSkillPointOnCooking()
     {
         if (skillPoints > 0)
         {
             skillPoints--;
             currentCookingStat++;
-            Debug.Log($"{firstName}의 요리 능력치가 {currentCookingStat}(으)로 상승했습니다!");
+            Debug.Log($"{firstName}: 요리 스탯이 {currentCookingStat}으로 증가했습니다. 남은 포인트: {skillPoints}");
             return true;
         }
+        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 요리 스탯을 올릴 수 없습니다.");
         return false;
     }
 
     /// <summary>
-    /// 스킬 포인트를 1 사용하여 '서빙' 능력치를 1 올립니다.
+    /// 서빙 스탯에 스킬 포인트를 사용하고 스탯을 증가시킵니다.
     /// </summary>
-    /// <returns>성공하면 true, 스킬 포인트가 부족하면 false를 반환합니다.</returns>
     public bool SpendSkillPointOnServing()
     {
         if (skillPoints > 0)
         {
             skillPoints--;
             currentServingStat++;
-            Debug.Log($"{firstName}의 서빙 능력치가 {currentServingStat}(으)로 상승했습니다!");
+            Debug.Log($"{firstName}: 서빙 스탯이 {currentServingStat}으로 증가했습니다. 남은 포인트: {skillPoints}");
             return true;
         }
+        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 서빙 스탯을 올릴 수 없습니다.");
         return false;
     }
 
     /// <summary>
-    /// 스킬 포인트를 1 사용하여 '정리' 능력치를 1 올립니다.
+    /// 정리 스탯에 스킬 포인트를 사용하고 스탯을 증가시킵니다.
     /// </summary>
-    /// <returns>성공하면 true, 스킬 포인트가 부족하면 false를 반환합니다.</returns>
     public bool SpendSkillPointOnCleaning()
     {
         if (skillPoints > 0)
         {
             skillPoints--;
             currentCleaningStat++;
-            Debug.Log($"{firstName}의 정리 능력치가 {currentCleaningStat}(으)로 상승했습니다!");
+            Debug.Log($"{firstName}: 정리 스탯이 {currentCleaningStat}으로 증가했습니다. 남은 포인트: {skillPoints}");
             return true;
         }
+        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 정리 스탯을 올릴 수 없습니다.");
         return false;
     }
 }

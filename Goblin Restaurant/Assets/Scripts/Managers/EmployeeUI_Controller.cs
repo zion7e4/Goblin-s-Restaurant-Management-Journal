@@ -28,8 +28,6 @@ public class EmployeeUI_Controller : MonoBehaviour
     public Button Button_OpenHirePanel;
     public Button Button_OpenManagePanel;
 
-    // Button_Employeeout 필드는 ESC 기능으로 대체되어 제거되었습니다.
-
     [Header("카드 프리팹 및 위치 (필수)")]
     public GameObject applicantCardPrefab;
     public GameObject hiredCardPrefab;
@@ -221,6 +219,7 @@ public class EmployeeUI_Controller : MonoBehaviour
             EmployeeManager.Instance.DismissEmployee(employeeToDismiss);
             employeeToDismiss = null;
         }
+        UpdateHiredEmployeeListUI(); // 해고 후 목록 갱신
         HideDismissalConfirmation();
     }
 
@@ -332,6 +331,7 @@ public class EmployeeUI_Controller : MonoBehaviour
                 }
             }
             statsText.text = statsBuilder.ToString();
+            statsText.lineSpacing = 5f;
         }
 
         if (hireButton != null && EmployeeManager.Instance != null)
@@ -386,11 +386,37 @@ public class EmployeeUI_Controller : MonoBehaviour
             statsText.lineSpacing = 5f;
         }
 
-        // 스킬 업그레이드 및 해고 버튼 기능 연결
+        // =======================================================
+        // ★★★ 스킬 업그레이드 버튼 로직 복원 (스탯 분배 문제 해결) ★★★
+        // =======================================================
         if (EmployeeManager.Instance != null)
         {
-            // 스킬 업그레이드 버튼 연결 로직 (Null 체크 포함)
-            // ... (생략된 원본 기능)
+            // 요리 스탯 업그레이드 버튼
+            if (cookUpBtn != null)
+            {
+                cookUpBtn.interactable = employee.skillPoints > 0;
+                cookUpBtn.onClick.RemoveAllListeners();
+                // 스탯 증가 성공 시 UI 갱신 (핵심)
+                cookUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI(); });
+            }
+
+            // 서빙 스탯 업그레이드 버튼
+            if (serveUpBtn != null)
+            {
+                serveUpBtn.interactable = employee.skillPoints > 0;
+                serveUpBtn.onClick.RemoveAllListeners();
+                // 스탯 증가 성공 시 UI 갱신 (핵심)
+                serveUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); });
+            }
+
+            // 정리 스탯 업그레이드 버튼
+            if (cleanUpBtn != null)
+            {
+                cleanUpBtn.interactable = employee.skillPoints > 0;
+                cleanUpBtn.onClick.RemoveAllListeners();
+                // 스탯 증가 성공 시 UI 갱신 (핵심)
+                cleanUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCleaning()) UpdateHiredEmployeeListUI(); });
+            }
 
             // 해고 버튼 로직 (Null 체크 포함)
             if (dismissBtn != null)
