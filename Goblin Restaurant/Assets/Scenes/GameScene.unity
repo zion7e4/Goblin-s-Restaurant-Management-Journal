@@ -1982,6 +1982,7 @@ MonoBehaviour:
   - {fileID: 1425325133}
   counterTops:
   - {fileID: 1469436949}
+  cleanliness: 100
   orderQueue: []
 --- !u!4 &125082562
 Transform:
