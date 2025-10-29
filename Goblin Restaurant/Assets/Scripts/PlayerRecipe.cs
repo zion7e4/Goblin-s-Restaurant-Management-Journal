@@ -9,6 +9,7 @@ public class PlayerRecipe
     {
         data = recipeData;
         currentLevel = 1;
+        data.Level = currentLevel;
     }
 
     public int GetCurrentPrice()
@@ -19,10 +20,10 @@ public class PlayerRecipe
 
     public int GetCurrentGrade()
     {
-        if (currentLevel >= 9) return 5;
-        if (currentLevel >= 7) return 4;
-        if (currentLevel >= 5) return 3;
-        if (currentLevel >= 3) return 2;
-        return 1;
+        if (currentLevel >= 40) return 1;
+        if (currentLevel >= 30) return 2;
+        if (currentLevel >= 20) return 3;
+        if (currentLevel >= 10) return 4;
+        return 5;
     }
 }

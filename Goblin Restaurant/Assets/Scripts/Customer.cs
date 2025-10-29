@@ -175,10 +175,11 @@ public class Customer : MonoBehaviour
         else if (totalWaitTime > 45f) satisfactionScore -= 10;
 
         int dishGrade = myOrderedRecipe.GetCurrentGrade();
-        if (dishGrade >= 5) satisfactionScore += 20;
-        else if (dishGrade == 4) satisfactionScore += 15;
-        else if (dishGrade == 3) satisfactionScore += 5;
-        else if (dishGrade == 1) satisfactionScore -= 20;
+        if (dishGrade >= 1) satisfactionScore += 20;
+        else if (dishGrade == 2) satisfactionScore += 15;
+        else if (dishGrade == 3) satisfactionScore += 10;
+        else if (dishGrade == 4) satisfactionScore += 5;
+        else if (dishGrade == 5) satisfactionScore += 0;
 
         if (RestaurantManager.instance.cleanliness >= 90) satisfactionScore += 10;
         else if (RestaurantManager.instance.cleanliness < 50) satisfactionScore -= 10;
