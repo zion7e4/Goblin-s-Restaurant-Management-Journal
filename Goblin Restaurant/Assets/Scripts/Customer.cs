@@ -55,12 +55,16 @@ public class Customer : MonoBehaviour
         Debug.Log("손님이 메뉴를 고르는 중...");
         yield return new WaitForSeconds(Random.Range(2f, 5f));
 
-        var availableMenu = MenuPlanner.instance.dailyMenu.Where(r => r != null).ToList();
+        var dailyMenu = MenuPlanner.instance.dailyMenu.Where(r => r != null);
 
-        if (availableMenu.Count > 0)
+        var availableMenuWithStock = dailyMenu
+        .Where(r => MenuPlanner.instance.GetRemainingStock(r.data.id) > 0)
+        .ToList();
+
+        if (availableMenuWithStock.Count > 0)
         {
-            int randomIndex = Random.Range(0, availableMenu.Count);
-            myOrderedRecipe = availableMenu[randomIndex];
+            int randomIndex = Random.Range(0, availableMenuWithStock.Count);
+            myOrderedRecipe = availableMenuWithStock[randomIndex];
 
             Debug.Log($"{myOrderedRecipe.data.recipeName} 결정! 주방에 주문을 넣습니다.");
 
@@ -78,11 +82,14 @@ public class Customer : MonoBehaviour
             KitchenOrder newOrder = new KitchenOrder(this, myOrderedRecipe, null); // foodObject는 나중에 추가
             RestaurantManager.instance.OrderQueue.Add(newOrder);
 
+            MenuPlanner.instance.RecordSale(myOrderedRecipe.data.id);
+
             currentState = CustomerState.WaitingForFood;
         }
         else
         {
             Debug.LogError("손님이 주문할 메뉴가 오늘의 메뉴에 하나도 편성되어 있지 않습니다!");
+            currentState = CustomerState.Leaving;
         }
     }
 

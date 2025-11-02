@@ -62,6 +62,8 @@ public class GameManager : MonoBehaviour
     public GameObject shopPanel; // 상점 패널
     public GameObject recipeShopPanel; // 레시피 상점 패널
     public GameObject ingredientShopPanel; // 재료 상점 패널
+    public GameObject panelBlocker; //버튼 눌림 방지용 패널
+    public GameObject PopupManager; // 팝업 매니저 오브젝트
 
     private InputSystem_Actions inputActions; // 생성된 Input Action C# 클래스
 
@@ -153,6 +155,7 @@ public class GameManager : MonoBehaviour
             currentState = GameState.Open;
             menuPlanner.SetActive(false); // 메뉴 기획 패널 닫기
             MenuPlanner.instance.ConsumeIngredientsForToday();
+            MenuPlanner.instance.StartDaySales();
             Debug.Log("영업 시작");
         }
     }
@@ -249,52 +252,68 @@ public class GameManager : MonoBehaviour
     public void OpenMenuPlanner()
     {
         menuPlanner.SetActive(true);
+        PopupManager.SetActive(true);
     }
 
     public void CloseMenuPlanner()
     {
         menuPlanner.SetActive(false);
+        PopupManager.SetActive(false);
     }
 
     public void OpenRecipeSelection()
     {
         RecipeSelection.SetActive(true);
+        panelBlocker.SetActive(true);
+        PopupManager.SetActive(true);
     }
 
     public void CloseRecipeSelection()
     {
         RecipeSelection.SetActive(false);
+        panelBlocker.SetActive(false);
+        PopupManager.SetActive(false);
     }
 
     public void OpenRecipeIngredientsPanel()
     {
         recipeIngredientsPanel.SetActive(true);
+        PopupManager.SetActive(true);
     }
 
     public void CloseRecipeIngredientsPanel()
     {
         recipeIngredientsPanel.SetActive(false);
+        PopupManager.SetActive(false);
     }
 
     public void OpenInventoryPanel()
     {
         inventoryUI.OpenInventory();
         CloseRecipeIngredientsPanel();
+        panelBlocker.SetActive(true);
+        PopupManager.SetActive(true);
     }
 
     public void CloseInventoryPanel()
     {
         inventoryUI.CloseInventory();
+        panelBlocker.SetActive(false);
+        PopupManager.SetActive(false);
     }
 
     public void OpenShopPanel()
     {
         shopPanel.SetActive(true);
+        panelBlocker.SetActive(true);
+        PopupManager.SetActive(true);
     }
 
     public void CloseShopPanel()
     {
         shopPanel.SetActive(false);
+        panelBlocker.SetActive(false);
+        PopupManager.SetActive(false);
     }
 
     public void OpenRecipeShopPanel()

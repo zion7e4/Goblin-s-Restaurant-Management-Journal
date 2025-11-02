@@ -18,6 +18,13 @@ public class CustomerSpawner : MonoBehaviour
             return;
         }
 
+        if (GameManager.instance.currentState == GameManager.GameState.Open &&
+            !MenuPlanner.instance.AreAnyItemsLeftToSell())
+        {
+            Debug.Log("모든 메뉴 완판! 손님 스폰을 중지합니다.");
+            return; // Update 함수 종료
+        }
+
         spawnTimer += Time.deltaTime;
 
         if (spawnTimer >= spawnInterval)
@@ -29,6 +36,11 @@ public class CustomerSpawner : MonoBehaviour
 
     void TrySpawnCustomer()
     {
+        if (!MenuPlanner.instance.AreAnyItemsLeftToSell() && GameManager.instance.currentState == GameManager.GameState.Open)
+        {
+            return;
+        }
+
         Table emptyTable = FindEmptyTable();
 
         if (emptyTable != null)

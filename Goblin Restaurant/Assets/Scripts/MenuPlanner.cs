@@ -8,6 +8,7 @@ public class MenuPlanner : MonoBehaviour
     public static MenuPlanner instance;
     public PlayerRecipe[] dailyMenu = new PlayerRecipe[5];
     public Dictionary<int, int> dailyMenuQuantities = new Dictionary<int, int>();
+    public Dictionary<int, int> dailyMenuSalesTracker = new Dictionary<int, int>();
 
     private void Awake()
     {
@@ -94,5 +95,36 @@ public class MenuPlanner : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void StartDaySales()
+    {
+        dailyMenuSalesTracker.Clear();
+        foreach (var item in dailyMenuQuantities)
+        {
+            dailyMenuSalesTracker[item.Key] = item.Value;
+        }
+        Debug.Log($"오늘의 판매 재고가 확정되었습니다. (총 {dailyMenuSalesTracker.Count} 종류)");
+    }
+
+    public void RecordSale(int recipeId)
+    {
+        if (dailyMenuSalesTracker.ContainsKey(recipeId) && dailyMenuSalesTracker[recipeId] > 0)
+        {
+            dailyMenuSalesTracker[recipeId]--;
+            Debug.Log($"[판매 기록] ID {recipeId} 메뉴 판매. 남은 재고: {dailyMenuSalesTracker[recipeId]}");
+        }
+    }
+
+    public int GetRemainingStock(int recipeId)
+    {
+        dailyMenuSalesTracker.TryGetValue(recipeId, out int stock);
+        return stock;
+    }
+
+    public bool AreAnyItemsLeftToSell()
+    {
+        // 재고(Value)가 0보다 큰 아이템이 하나라도(Any) 있으면 true 반환
+        return dailyMenuSalesTracker.Values.Any(stock => stock > 0);
     }
 }
