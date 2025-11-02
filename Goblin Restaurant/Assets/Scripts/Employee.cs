@@ -47,9 +47,14 @@ public class Employee : MonoBehaviour
                 FindTask();
                 break;
             case EmployeeState.MovingToIdle:
+                FindTask();
+
                 if (idlePosition != null)
                 {
-                    MoveTo(idlePosition.position, () => { currentState = EmployeeState.Idle; });
+                    if (currentState == EmployeeState.MovingToIdle)
+                    {
+                        MoveTo(idlePosition.position, () => { currentState = EmployeeState.Idle; });
+                    }
                 }
                 else
                 {

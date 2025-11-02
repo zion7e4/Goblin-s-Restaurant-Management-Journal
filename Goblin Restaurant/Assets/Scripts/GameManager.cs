@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public enum GameState { Preparing, Open, Closing }
+    public enum GameState { Preparing, Open, Closing, Settlement}
     public GameState _currentState;
     public GameState currentState
     {
@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
             _currentState = value;
             UpdateButtonUI();
 
-            if (_currentState == GameState.Closing)
+            if (_currentState == GameState.Settlement)
             {
                 ShowSettlementPanal(); // 일일 정산 패널 표시
             }
@@ -141,8 +141,23 @@ public class GameManager : MonoBehaviour
             if (currentTimeOfDay >= 18 * 3600)
             {
                 currentState = GameState.Closing;
-                Debug.Log("영업 종료");
+                Debug.Log("영업 시간 종료! 남은 손님과 청소를 처리합니다.");
+            }
+        }
 
+        if (currentState == GameState.Closing)
+        {
+            //식당에 손님이 한 명이라도 있는지 확인
+            bool hasCustomers = RestaurantManager.instance.customers.Count > 0;
+
+            //더러운 테이블이 하나라도 있는지 확인
+            bool hasDirtyTables = RestaurantManager.instance.tables.Any(t => t.isDirty);
+
+            //손님도 없고, 더러운 테이블도 없을 때만 '정산' 상태로 넘어감
+            if (!hasCustomers && !hasDirtyTables)
+            {
+                currentState = GameState.Settlement;
+                Debug.Log("모든 손님 퇴장 및 청소 완료. 정산을 시작합니다.");
             }
         }
     }
@@ -150,7 +165,7 @@ public class GameManager : MonoBehaviour
     private void UpdateButtonUI()
     {
         PreparePanel.SetActive(currentState == GameState.Preparing);
-        NextDayButton.SetActive(currentState == GameState.Closing);
+        NextDayButton.SetActive(currentState == GameState.Settlement);
 
         bool isPreparing = (currentState == GameState.Preparing);
 
