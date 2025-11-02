@@ -970,7 +970,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 79.200005
+    y: 24
     width: 383
     height: 676.4
   m_SerializedDataModeController:
@@ -986,9 +986,9 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_SceneHierarchy:
     m_TreeViewState:
-      scrollPos: {x: 0, y: 36.599976}
-      m_SelectedIDs: 4015fdff
-      m_LastClickedID: -191168
+      scrollPos: {x: 0, y: 0}
+      m_SelectedIDs: 
+      m_LastClickedID: 0
       m_ExpandedIDs: 4015fdff566cfdff78f9fffff4ffffff8ab7000006b9000072b90000b2b90000bab90000deba00005ebc0000b0bc0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
@@ -1035,8 +1035,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 384
-    y: 79.200005
+    x: 385
+    y: 24
     width: 1115.6
     height: 676.4
   m_SerializedDataModeController:
@@ -1108,7 +1108,7 @@ MonoBehaviour:
       height: 902.3794
     m_MinimalGUI: 1
   m_defaultScale: 0.7263021
-  m_LastWindowPixelSize: {x: 1394.5, y: 845.5}
+  m_LastWindowPixelSize: {x: 1115.6, y: 676.4}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000000000000000000
@@ -1273,7 +1273,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 83.599976}
     m_SelectedIDs: cec00000
     m_LastClickedID: 49358
-    m_ExpandedIDs: 0000000066c0000068c000006ac00000c6c00000cec0000000ca9a3b
+    m_ExpandedIDs: 00000000fabf0000fcbf0000febf000000c00000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1302,7 +1302,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000066c0000068c000006ac00000
+    m_ExpandedIDs: 00000000fabf0000fcbf0000febf000000c00000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1365,7 +1365,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 781.60004
+    y: 726.4
     width: 1500.6
     height: 276.40002
   m_SerializedDataModeController:
@@ -1400,8 +1400,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1501.6
-    y: 79.200005
+    x: 1502.6
+    y: 24
     width: 545.4
     height: 978.80005
   m_SerializedDataModeController:

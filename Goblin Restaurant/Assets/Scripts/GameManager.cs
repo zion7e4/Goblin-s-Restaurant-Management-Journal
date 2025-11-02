@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -119,6 +120,22 @@ public class GameManager : MonoBehaviour
             int minutes = (int)((currentTimeOfDay % 3600) / 60);
             timeText.text = string.Format("{0:D2}:{1:D2}", hours, minutes);
             dayText.text = "Day " + DayCount;
+
+            if (MenuPlanner.instance.isSoldOut)
+            {
+                //손님이 0명인지 확인
+                bool noCustomers = (RestaurantManager.instance.customers.Count == 0);
+
+                //더러운 테이블이 있는지 확인 
+                bool anyDirtyTables = RestaurantManager.instance.tables.Any(t => t.isDirty);
+
+                //손님이 없고, 더러운 테이블도 없을 때만 영업 종료
+                if (noCustomers && !anyDirtyTables)
+                {
+                    Debug.Log("완판 후 모든 손님 퇴장 및 테이블 청소 완료. 영업을 종료합니다.");
+                    currentState = GameState.Closing; // 조기 마감
+                }
+            }
 
             // 18시가 되면 마감 상태로 변경
             if (currentTimeOfDay >= 18 * 3600)
@@ -272,7 +289,6 @@ public class GameManager : MonoBehaviour
     {
         RecipeSelection.SetActive(false);
         panelBlocker.SetActive(false);
-        PopupManager.SetActive(false);
     }
 
     public void OpenRecipeIngredientsPanel()

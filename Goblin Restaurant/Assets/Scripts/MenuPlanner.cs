@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class MenuPlanner : MonoBehaviour
 {
     public static MenuPlanner instance;
+    public bool isSoldOut = false;
     public PlayerRecipe[] dailyMenu = new PlayerRecipe[5];
     public Dictionary<int, int> dailyMenuQuantities = new Dictionary<int, int>();
     public Dictionary<int, int> dailyMenuSalesTracker = new Dictionary<int, int>();
@@ -113,6 +114,12 @@ public class MenuPlanner : MonoBehaviour
         {
             dailyMenuSalesTracker[recipeId]--;
             Debug.Log($"[판매 기록] ID {recipeId} 메뉴 판매. 남은 재고: {dailyMenuSalesTracker[recipeId]}");
+        }
+
+        if (!AreAnyItemsLeftToSell())
+        {
+            isSoldOut = true;
+            NotificationController.instance.ShowNotification("준비한 메뉴가 모두 판매되었습니다! (완판)");
         }
     }
 

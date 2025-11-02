@@ -13,7 +13,7 @@ public class CustomerSpawner : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.instance.currentState != GameManager.GameState.Open)
+        if (GameManager.instance.currentState != GameManager.GameState.Open || MenuPlanner.instance.isSoldOut)
         {
             return;
         }
