@@ -10,7 +10,7 @@ public class GameDataManager : MonoBehaviour
     [SerializeField] private List<RecipeData> allRecipeDataList;
     public RecipeLevelTable recipeLevelTable;
 
-    // ▼▼▼ 1. 재료 리스트 변수 추가 (이름은 실제 변수명에 맞게 수정) ▼▼▼
+    // (이 리스트는 이전에 연결했습니다)
     [SerializeField] private List<IngredientData> allIngredientDataList;
 
     void Awake()
@@ -38,23 +38,17 @@ public class GameDataManager : MonoBehaviour
         return allRecipeDataList;
     }
 
-    // --- ▼▼▼ 2. 이 함수가 새로 추가되었습니다 ▼▼▼ ---
-    // (InventoryUIController가 이 함수를 찾고 있습니다)
-
     /// <summary>
     /// 모든 재료 데이터 리스트를 반환합니다.
     /// </summary>
     public List<IngredientData> GetAllIngredientData()
     {
-        // (TODO: 이 부분은 실제 재료 리스트 변수명에 맞게 수정하세요)
         if (allIngredientDataList == null)
         {
             allIngredientDataList = new List<IngredientData>();
         }
         return allIngredientDataList;
     }
-    // --- ▲▲▲ 함수 추가 완료 ▲▲▲ ---
-
 
     /// <summary>
     /// ID로 특정 레시피 데이터를 찾아서 반환합니다.
@@ -65,6 +59,27 @@ public class GameDataManager : MonoBehaviour
 
         return allRecipeDataList.Find(recipe => recipe.id == id);
     }
+
+    // --- ▼▼▼ 1. 이 함수가 새로 추가되었습니다 ▼▼▼ ---
+
+    /// <summary>
+    /// ID로 특정 '재료' 데이터를 찾아서 반환합니다.
+    /// (RecipeBook_UI가 재료 이름을 표시하기 위해 호출)
+    /// </summary>
+    public IngredientData GetIngredientDataById(string id)
+    {
+        if (allIngredientDataList == null)
+        {
+            Debug.LogError("GameDataManager에 allIngredientDataList가 비어있습니다.");
+            return null;
+        }
+
+        // (가정: IngredientData.cs 스크립트에도 'id'라는 이름의 string 변수가 있다고 가정)
+        // (만약 'ingredientID'라면 'item.id == id'를 'item.ingredientID == id'로 수정하세요)
+        return allIngredientDataList.Find(item => item.id == id);
+    }
+    // --- ▲▲▲ 함수 추가 완료 ▲▲▲ ---
+
 
     /// <summary>
     /// 레벨 테이블에서 특정 레벨(level)에 대한 강화 데이터를 반환합니다.

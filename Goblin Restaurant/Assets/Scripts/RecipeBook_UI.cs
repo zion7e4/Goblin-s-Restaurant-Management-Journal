@@ -3,10 +3,11 @@ using UnityEngine.UI; // Button, Image 사용
 using TMPro; // TextMeshProUGUI 사용
 using System.Linq; // .Count() 사용
 using System.Collections.Generic; // Dictionary 사용
+using System.Text; // ★ StringBuilder를 사용하기 위해 추가
 
 /// <summary>
 /// 레시피 도감 UI의 모든 기능을 관리합니다.
-/// (수집 현황 표시, 보유 레시피 목록 표시, 상세 정보 패널 표시, 열기/닫기, 강화)
+/// (수집 현황, 목록 표시, 상세 정보, 강화, 열기/닫기, 다음 강화 비용/이름 표시)
 /// </summary>
 public class RecipeBook_UI : MonoBehaviour
 {
@@ -29,6 +30,12 @@ public class RecipeBook_UI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI detailRecipeLevelText;
     [SerializeField] private Button enhanceButton; // 강화 버튼
 
+    [Tooltip("강화에 필요한 기본 재료를 표시할 텍스트")]
+    [SerializeField] private TextMeshProUGUI detailBaseIngredientsText;
+
+    [Tooltip("다음 강화에 필요한 비용(골드/재료)을 표시할 텍스트")]
+    [SerializeField] private TextMeshProUGUI detailNextUpgradeCostText;
+
     /// <summary>
     /// 현재 상세창에서 보고 있는 레시피의 ID
     /// </summary>
@@ -45,7 +52,6 @@ public class RecipeBook_UI : MonoBehaviour
         }
         RefreshBook();
     }
-
 
     /// <summary>
     /// 게임 시작 시 강화 버튼에 클릭 이벤트를 연결합니다.
@@ -91,14 +97,8 @@ public class RecipeBook_UI : MonoBehaviour
     /// </summary>
     void OnEnhanceButtonClick()
     {
-        // ▼▼▼ 진단용 로그 1 ▼▼▼
-        Debug.Log("--- [RecipeBook_UI] 강화 버튼 클릭됨 ---");
-
         // RecipeManager에게 현재 ID의 레시피 강화를 요청합니다.
         bool success = RecipeManager.instance.UpgradeRecipe(currentRecipeID);
-
-        // ▼▼▼ 진단용 로그 2 ▼▼▼
-        Debug.Log($"--- [RecipeBook_UI] 강화 시도 결과: {success} ---");
 
         // 강화에 성공했다면
         if (success)
@@ -161,17 +161,68 @@ public class RecipeBook_UI : MonoBehaviour
             return;
         }
 
-        RecipeData data = playerRecipe.data; // 원본 데이터
+        RecipeData data = playerRecipe.data;
+        int currentLevel = playerRecipe.currentLevel;
 
-        // 3. 상세창 UI 컴포넌트에 데이터 채우기
+        // 3. 기본 UI 정보 채우기
         if (detailPanel != null)
         {
             detailRecipeImage.sprite = data.icon;
             detailRecipeNameText.text = data.recipeName;
             detailRecipeDescriptionText.text = data.description;
-            detailRecipeLevelText.text = $"현재 레벨: {playerRecipe.currentLevel}";
+            detailRecipeLevelText.text = $"현재 레벨: {currentLevel}";
+        }
 
-            // 4. 상세창 패널 활성화
+        // 4. "기본 필요 재료" 텍스트 채우기 (ID를 이름으로 변환)
+        if (detailBaseIngredientsText != null)
+        {
+            StringBuilder sb = new StringBuilder("기본 재료: \n");
+            foreach (IngredientRequirement req in data.requiredIngredients)
+            {
+                // GameDataManager에서 '재료 데이터'를 가져옴
+                IngredientData ingredient = GameDataManager.instance.GetIngredientDataById(req.ingredientID);
+
+                string ingredientName = req.ingredientID; // 기본값은 ID로 설정
+                if (ingredient != null)
+                {
+                    // 재료 데이터를 찾았다면 '이름'으로 교체
+                    // (가정: IngredientData.cs에 'ingredientName' 변수가 있음)
+                    ingredientName = ingredient.ingredientName;
+                }
+
+                sb.AppendLine($"- {ingredientName} {req.amount}개");
+            }
+            detailBaseIngredientsText.text = sb.ToString();
+        }
+
+        // 5. "다음 강화 필요 재료" 텍스트 채우기
+        if (detailNextUpgradeCostText != null)
+        {
+            int nextLevel = currentLevel + 1;
+            RecipeLevelEntry nextLevelData = GameDataManager.instance.GetRecipeLevelData(nextLevel);
+
+            if (nextLevelData == null)
+            {
+                // 최대 레벨이거나 데이터 테이블에 다음 레벨 정보가 없는 경우
+                detailNextUpgradeCostText.text = "최대 레벨입니다 (Lv.Max)";
+                enhanceButton.interactable = false; // 강화 버튼 비활성화
+            }
+            else
+            {
+                // 다음 레벨 강화 정보를 텍스트로 표시
+                int requiredGold = nextLevelData.Required_Gold;
+                int materialMultiplier = nextLevelData.Required_Item_Count;
+
+                detailNextUpgradeCostText.text = $"다음 강화 (Lv.{nextLevel}) 필요:\n" +
+                                                 $"- 골드: {requiredGold} G\n" +
+                                                 $"- 재료 배수: x{materialMultiplier}";
+                enhanceButton.interactable = true; // 강화 버튼 활성화
+            }
+        }
+
+        // 6. 상세창 활성화
+        if (detailPanel != null)
+        {
             detailPanel.SetActive(true);
         }
     }
@@ -184,5 +235,4 @@ public class RecipeBook_UI : MonoBehaviour
         int totalCount = GameDataManager.instance.GetAllRecipeData().Count();
         collectionStatusText.text = $"수집 현황: {acquiredCount} / {totalCount} 개";
     }
-
 }
