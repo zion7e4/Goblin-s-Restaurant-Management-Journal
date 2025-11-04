@@ -27,7 +27,6 @@ public class MenuPlannerUI_Controller : MonoBehaviour
         recipeSelectionPanel.SetActive(true);
         recipeSelectionPanel.transform.SetAsLastSibling();
         UpdateSelectableRecipeList();
-        GameManager.instance.panelBlocker.SetActive(true);
     }
 
     public void OnRecipeSelectedFromPopup(PlayerRecipe selectedRecipe)
@@ -39,7 +38,6 @@ public class MenuPlannerUI_Controller : MonoBehaviour
 
         UpdateAllSlotsUI(); 
         recipeSelectionPanel.SetActive(false);
-        GameManager.instance.panelBlocker.SetActive(false);
     }
 
     public void RemoveRecipeFromDailyMenu(DailyMenuSlotUI slot)

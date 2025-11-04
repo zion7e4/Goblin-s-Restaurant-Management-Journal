@@ -16,11 +16,10 @@ MonoBehaviour:
   recipeName: "\uC640\uC774\uBC88 \uB0A0\uAC1C \uAD6C\uC774"
   description: "\uD558\uB298\uC744 \uB098\uB294 \uB9DB"
   icon: {fileID: -366640382669270601, guid: cb05f6d629990c341b48cfcb2d0acdf5, type: 3}
-  foodPrefab: {fileID: 8793362396894766806, guid: 60996783382063c4386dfdee4601cdca, type: 3}
+  foodPrefab: {fileID: 0}
   basePrice: 300
   baseCookTime: 25
-  RecipeLevel: 1
-  rarity: 2
+  rarity: 0
   requiredIngredients:
   - ingredientID: ING20
     amount: 1
