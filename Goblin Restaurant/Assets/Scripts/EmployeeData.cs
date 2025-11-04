@@ -43,4 +43,7 @@ public class EmployeeData : ScriptableObject
     [Header("보유 가능 특성")]
     [Tooltip("이 종족이 가질 수 있는 모든 특성 목록. Trait 에셋 파일을 연결해주세요.")]
     public List<Trait> possibleTraits;
+
+    [Header("맵 스폰용 프리팹")]
+    public GameObject speciesPrefab;
 }

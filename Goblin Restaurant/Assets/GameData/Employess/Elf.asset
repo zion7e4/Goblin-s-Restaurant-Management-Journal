@@ -36,3 +36,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 213de414dccd35d408e3a495cf22dad3, type: 2}
   - {fileID: 11400000, guid: 6e39f296822c1274c8d6a1afafc6b5c4, type: 2}
   - {fileID: 11400000, guid: 0a7da602979a4d44d8533b81b545f260, type: 2}
+  speciesPrefab: {fileID: 4620295542457393389, guid: b27b4c9364d15e44c96ec0212d3fc41a, type: 3}
