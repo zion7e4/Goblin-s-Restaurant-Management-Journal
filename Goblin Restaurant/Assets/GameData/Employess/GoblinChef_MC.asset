@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d70737cca42aa446808fdc5cc5f3dde, type: 3}
+  m_Name: GoblinChef_MC
+  m_EditorClassIdentifier: Assembly-CSharp::EmployeeData
+  speciesName: "\uACE0\uBE14\uB9B0\uC250\uD504"
+  possibleFirstNames: []
+  portrait: {fileID: -2201901916909894332, guid: c8c51958a05596e4a974e7301a3e7c1e, type: 3}
+  requiredFameTier: 1
+  baseCookingStat: 1
+  baseServingStat: 1
+  baseCleaningStat: 1
+  cookingGrowthFactor: 0.1
+  servingGrowthFactor: 0.1
+  cleaningGrowthFactor: 0.1
+  salary: 100
+  possibleTraits:
+  - {fileID: 11400000, guid: 993cda5459ca4b04dba8fb560b6c531f, type: 2}
