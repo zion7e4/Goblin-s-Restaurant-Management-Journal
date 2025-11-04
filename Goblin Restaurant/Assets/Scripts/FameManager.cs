@@ -5,9 +5,23 @@ public class FameManager : MonoBehaviour
 {
     public static FameManager instance;
 
-    public float CurrentFamePoints { get; private set; }
+    [SerializeField]
+    private float currentFamePoints;
 
-    public int CurrentFameLevel { get; private set; }
+    public float CurrentFamePoints
+    {
+        get { return currentFamePoints; }
+        private set { currentFamePoints = value; }
+    }
+
+    [SerializeField]
+    private int currentFameLevel;
+
+    public int CurrentFameLevel
+    {
+        get { return currentFameLevel; }
+        private set { currentFameLevel = value; }
+    }
 
     private readonly List<int> fameLevelThresholds = new List<int> { 10, 25, 50, 100, 200, 400 };
 
