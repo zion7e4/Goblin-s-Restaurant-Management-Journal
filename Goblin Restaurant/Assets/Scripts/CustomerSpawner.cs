@@ -5,12 +5,11 @@ using System.Collections.Generic;
 public class CustomerSpawner : MonoBehaviour
 {
     public GameObject customerPrefab; // 스폰할 고객 프리팹
-    public List<Table> tables; // 가게 내 테이블 리스트
     public Transform spawnPoint; // 고객이 스폰될 위치
 
     public float spawnInterval = 5f; // 스폰 시도 간격
     private float spawnTimer;
-    
+
 
     private void Update()
     {
@@ -41,7 +40,7 @@ public class CustomerSpawner : MonoBehaviour
 
             RestaurantManager.instance.customers.Add(newCustomer);
 
-            newCustomer.SetTable(emptyTable.transform);
+            newCustomer.Initialize(emptyTable.transform, spawnPoint);
             emptyTable.isOccupied = true;
         }
 
@@ -53,13 +52,19 @@ public class CustomerSpawner : MonoBehaviour
 
     Table FindEmptyTable()
     {
-        foreach (Table table in tables)
+        if (RestaurantManager.instance == null || RestaurantManager.instance.tables == null)
         {
-            if (!table.isOccupied)
+            Debug.LogError("RestaurantManager 또는 테이블 리스트가 없습니다!");
+            return null;
+        }
+
+        foreach (Table table in RestaurantManager.instance.tables)
+        {
+            if (table != null && !table.isOccupied && !table.isDirty)
             {
                 return table;
             }
         }
-        return null; // 모든 테이블이 꽉 찼음
+        return null;
     }
 }
