@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9163255576148599289}
   - component: {fileID: 9084094141245971557}
   m_Layer: 0
-  m_Name: Human
+  m_Name: Dwarf
   m_TagString: owner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.6603774, g: 0.27618462, b: 0, a: 1}
+  m_Color: {r: 0.09714311, g: 0.3490566, b: 0.34417304, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

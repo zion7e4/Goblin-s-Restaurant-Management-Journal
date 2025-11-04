@@ -13,6 +13,7 @@ public class CustomerSpawner : MonoBehaviour
 
     private void Update()
     {
+     
         if (GameManager.instance.currentState != GameManager.GameState.Open)
         {
             return;
@@ -25,6 +26,7 @@ public class CustomerSpawner : MonoBehaviour
             spawnTimer = 0f;
             TrySpawnCustomer();
         }
+
     }
 
     void TrySpawnCustomer()
