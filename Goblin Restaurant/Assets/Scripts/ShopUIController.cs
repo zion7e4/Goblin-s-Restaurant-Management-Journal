@@ -28,6 +28,14 @@ public class ShopUIController : MonoBehaviour
         SwitchToRecipeTab();
     }
 
+    void OnDisable()
+    {
+        if (TooltipSystem.instance != null)
+        {
+            TooltipSystem.instance.Hide();
+        }
+    }
+
     public void SwitchToRecipeTab()
     {
         recipeShopPanel.SetActive(true);

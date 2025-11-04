@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public enum GameState { Preparing, Open, Closing, Settlement}
+    public enum GameState { Preparing, Open, Closing, Settlement }
     public GameState _currentState;
     public GameState currentState
     {
@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI dayText; // 화면에 날짜를 표시할 UI 텍스트
     public TextMeshProUGUI totalGold; // 화면에 총 골드를 표시할 UI 텍스트
 
+    public Button TimeScaleButton; // 시간 배속 버튼
     public Button OpenButton; // 오픈 버튼
     public GameObject PreparePanel; // 오픈 준비 패널
     public GameObject NextDayButton; // 다음 날 버튼 ui
@@ -65,6 +66,7 @@ public class GameManager : MonoBehaviour
     public GameObject ingredientShopPanel; // 재료 상점 패널
     public GameObject panelBlocker; //버튼 눌림 방지용 패널
     public GameObject PopupManager; // 팝업 매니저 오브젝트
+    public GameObject UpgradeTablePanel; // 테이블 업그레이드 패널
 
     private InputSystem_Actions inputActions; // 생성된 Input Action C# 클래스
 
@@ -101,7 +103,7 @@ public class GameManager : MonoBehaviour
         currentTimeOfDay = 9 * 3600; // 오전 9시에서 시작 (초 단위)
         timeText.text = "09:00";
         dayText.text = "Day " + DayCount;
-        totalGold.text = "Gold: " + totalGoldAmount; // 총 골드 초기화
+        totalGold.text = totalGoldAmount.ToString(); // 총 골드 초기화
         Time.timeScale = 1; // 초기 시간 배속
         TimeScaleButtonText.text = "X1";
         Debug.Log("오픈 준비 시간입니다.");
@@ -169,6 +171,11 @@ public class GameManager : MonoBehaviour
 
         bool isPreparing = (currentState == GameState.Preparing);
 
+        if (TimeScaleButton != null)
+        {
+            TimeScaleButton.gameObject.SetActive(currentState == GameState.Open);
+        }
+
         foreach (GameObject button in upgradeTableButtons)
         {
             if (button != null)
@@ -184,6 +191,12 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.Preparing)
         {
+            if (currentTimeOfDay > 9 * 3600)
+            {
+                currentTimeOfDay = 9 * 3600;
+                timeText.text = "09:00";
+            }
+
             currentState = GameState.Open;
             menuPlanner.SetActive(false); // 메뉴 기획 패널 닫기
             MenuPlanner.instance.ConsumeIngredientsForToday();
@@ -202,11 +215,12 @@ public class GameManager : MonoBehaviour
 
     public void MoveToNextDay()
     {
-        if (currentState == GameState.Closing)
+        if (currentState == GameState.Settlement)
         {
             timeText.text = "09:00";
             todaysGold = 0; // 오늘 번 골드 초기화
             todaysCustomers = 0; // 오늘 방문객 수 초기화
+            MenuPlanner.instance.isSoldOut = false; // 완판 상태 초기화
 
             if (MenuPlanner.instance != null)
             {
@@ -246,13 +260,13 @@ public class GameManager : MonoBehaviour
     {
         totalGoldAmount += amount; // 총 골드에 추가
         todaysGold += amount; // 오늘 번 골드에 추가
-        totalGold.text = "Gold: " + totalGoldAmount; // UI 업데이트
+        totalGold.text = totalGoldAmount.ToString(); // UI 업데이트
     }
 
     public void SpendGold(int amount)
     {
         totalGoldAmount -= amount; // 총 골드 차감
-        totalGold.text = "Gold: " + totalGoldAmount; // UI 업데이트
+        totalGold.text = totalGoldAmount.ToString(); // UI 업데이트
     }
 
     public void AddCustomerCount()
@@ -279,6 +293,13 @@ public class GameManager : MonoBehaviour
                 TimeScaleButtonText.text = "||";
                 break;
         }
+    }
+
+    public void OpenUpgradeTablePanel()
+    {
+        UpgradeTablePanel.SetActive(true);
+        panelBlocker.SetActive(true);
+        PopupManager.SetActive(true);
     }
 
     public void OpenMenuPlanner()
@@ -371,7 +392,7 @@ public class GameManager : MonoBehaviour
 
         // 골드 차감 로직
         totalGoldAmount -= tablePrice;
-        totalGold.text = "Gold: " + totalGoldAmount;
+        totalGold.text = totalGoldAmount.ToString();
 
         // 스크린 좌표를 월드 좌표로 변환
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(buttonTransform.position);
@@ -389,3 +410,4 @@ public class GameManager : MonoBehaviour
         Debug.Log($"테이블을 {worldPosition} 위치에 생성했습니다.");
     }
 }
+

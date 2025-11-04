@@ -860,9 +860,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 864.5523, y: 600.16406, z: -6.4137764}
+    m_Target: {x: 1156.4374, y: 822.0219, z: 1.609618}
     speed: 2
-    m_Value: {x: 864.5523, y: 600.16406, z: -6.4137764}
+    m_Value: {x: 1156.4374, y: 822.0219, z: 1.609618}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -912,9 +912,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 744.4546
+    m_Target: 507.08
     speed: 2
-    m_Value: 744.4546
+    m_Value: 507.08
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -987,9 +987,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: f8b90000
-      m_LastClickedID: 47608
-      m_ExpandedIDs: 04fbfffff4ffffffa6bb0000
+      m_SelectedIDs: 10bc0000eebc000020ba000086bd0000
+      m_LastClickedID: 48518
+      m_ExpandedIDs: 04fbfffff4ffffffbcb60000b8b700000ab8000014b8000046b8000078b8000084b80000beb8000006b9000018b9000066b900008ab90000b0b9000004ba00002cba000002bb00001cbb000038bb00004ebb0000b6bb000004bd000064bd0000a0bd0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1080,7 +1080,7 @@ MonoBehaviour:
     m_VAllowExceedBaseRangeMin: 1
     m_VAllowExceedBaseRangeMax: 1
     m_ScaleWithWindow: 0
-    m_HSlider: 0
+    m_HSlider: 1
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
     m_EnableMouseInput: 1
@@ -1094,18 +1094,18 @@ MonoBehaviour:
       y: 21
       width: 1115.6
       height: 655.4
-    m_Scale: {x: 0.7263021, y: 0.7263021}
-    m_Translation: {x: 557.8, y: 327.7}
+    m_Scale: {x: 0.7374243, y: 0.7374243}
+    m_Translation: {x: 566.3418, y: 327.7}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -768
-      y: -451.1897
-      width: 1536
-      height: 902.3794
+      x: -767.9999
+      y: -444.3846
+      width: 1512.8331
+      height: 888.7692
     m_MinimalGUI: 1
   m_defaultScale: 0.7263021
   m_LastWindowPixelSize: {x: 1394.5, y: 845.5}
@@ -1206,7 +1206,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 47608
+  m_LastSelectedObjectID: 46978
 --- !u!114 &17
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1254,7 +1254,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Prefabs
+    - Assets/Scripts
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1264,16 +1264,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Prefabs
+  - Assets/Scripts
   m_LastFoldersGridSize: 16
   m_LastProjectPath: D:\Git\Goblin-s-Restaurant-Management-Journal\Goblin Restaurant
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 83.599976}
-    m_SelectedIDs: 00c00000
-    m_LastClickedID: 49152
-    m_ExpandedIDs: 00000000fabf0000fcbf0000febf000000c0000060c0000000ca9a3b
+    scrollPos: {x: 0, y: 95.599976}
+    m_SelectedIDs: 74c10000
+    m_LastClickedID: 49524
+    m_ExpandedIDs: 0000000046c0000048c000004ac000004cc0000060c1000078c1000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1302,7 +1302,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000fabf0000fcbf0000febf000000c00000
+    m_ExpandedIDs: 0000000046c0000048c000004ac000004cc00000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1328,9 +1328,9 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_SelectedInstanceIDs: 10bc0000
+    m_LastClickedInstanceID: 48144
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c62300000c660000f6600000006100006cbf00006c620000a6850000000000003c0c0100601a0100b01a01006463000080be00000abe00007cbe00002cbe0000
     m_CreateAssetUtility:
       m_EndAction: {fileID: 0}
@@ -1339,7 +1339,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 0}
+    m_ScrollPosition: {x: 0, y: 278.59998}
     m_GridSize: 16
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 207

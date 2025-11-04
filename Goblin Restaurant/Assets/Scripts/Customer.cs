@@ -116,22 +116,28 @@ public class Customer : MonoBehaviour
         Debug.Log("½Ä»ç ½ÃÀÛ");
         yield return new WaitForSeconds(2f); // 2ÃÊ°£ ½Ä»ç
         Debug.Log("½Ä»ç ¿Ï·á");
+
         CalculateSatisfaction();
         SatisfactionLevel level = GetSatisfactionLevel();
-
         int price = myOrderedRecipe.GetCurrentPrice();
         float tipRate = 0f;
 
         switch (level)
         {
             case SatisfactionLevel.VerySatisfied:
-                tipRate = 0.20f; // 20% ÆÁ
+                tipRate = 0.20f;
+                FameManager.instance.AddFame(20f);
                 break;
             case SatisfactionLevel.Satisfied:
-                tipRate = 0.10f; // 10% ÆÁ
+                tipRate = 0.10f;
+                FameManager.instance.AddFame(10f);
                 break;
             case SatisfactionLevel.Normal:
-                tipRate = 0.05f; // 5% ÆÁ
+                FameManager.instance.AddFame(5f);
+                tipRate = 0.05f;
+                break;
+            case SatisfactionLevel.VeryDissatisfied:
+                FameManager.instance.DecreaseFame(1f);
                 break;
         }
 
