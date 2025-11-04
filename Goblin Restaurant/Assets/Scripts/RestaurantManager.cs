@@ -93,4 +93,41 @@ public class RestaurantManager : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// 단일 직원을 맵에 스폰합니다. (게임 중 고용 시 사용)
+    /// </summary>
+    /// <param name="employeeData">스폰할 직원의 인스턴스 데이터</param>
+    /// <param name="employeePrefab">해당 직원의 외형 프리팹</param>
+    public void SpawnSingleWorker(EmployeeInstance employeeData, GameObject employeePrefab)
+    {
+        // --- 스폰 지점 확인 ---
+        if (spawnPoint == null)
+        {
+            Debug.LogError("RestaurantManager ERROR: Spawn Point is not set! Cannot spawn worker.");
+            return;
+        }
+        // --- 프리팹 확인 ---
+        if (employeePrefab == null)
+        {
+            Debug.LogWarning($"Skipping spawn for {employeeData.firstName}: Prefab is missing!");
+            return;
+        }
+
+        // --- Worker 오브젝트 생성 ---
+        // (this.transform을 부모로 설정)
+        GameObject workerObject = Instantiate(employeePrefab, spawnPoint.position, Quaternion.identity, this.transform);
+
+        // --- Employee.cs 스크립트 가져오기 및 초기화 ---
+        Employee workerComponent = workerObject.GetComponent<Employee>();
+        if (workerComponent != null)
+        {
+            workerComponent.Initialize(employeeData, spawnPoint);
+            workerObject.name = $"Worker - {employeeData.firstName} ({employeeData.BaseData.speciesName})";
+        }
+        else
+        {
+            Debug.LogError($"Employee Prefab에 Employee.cs 스크립트가 없습니다: {workerObject.name}");
+            Destroy(workerObject);
+        }
+    }
 }
