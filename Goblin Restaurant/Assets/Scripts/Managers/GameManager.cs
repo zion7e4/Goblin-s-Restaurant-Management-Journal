@@ -177,6 +177,33 @@ public class GameManager : MonoBehaviour
             workersToSpawn.Add((mainWorker, greenPrefab));
         }
 
+        // --- 2. 테스트 직원 1 (Red Prefab 사용) ---
+        if (testSpeciesTemplate != null && redPrefab != null)
+        {
+            EmployeeInstance redWorker = new EmployeeInstance(testSpeciesTemplate);
+            redWorker.firstName = "RedWorker";
+            EmployeeManager.Instance.hiredEmployees.Add(redWorker);
+            workersToSpawn.Add((redWorker, redPrefab));
+        }
+        else
+        {
+            Debug.LogWarning("RedWorker 테스트를 위한 템플릿/프리팹이 연결되지 않았습니다.");
+        }
+
+        // --- 3. 테스트 직원 2 (Blue Prefab 사용) ---
+        if (testSpeciesTemplate != null && bluePrefab != null)
+        {
+            EmployeeInstance blueWorker = new EmployeeInstance(testSpeciesTemplate);
+            blueWorker.firstName = "BlueWorker";
+            EmployeeManager.Instance.hiredEmployees.Add(blueWorker);
+            workersToSpawn.Add((blueWorker, bluePrefab));
+        }
+        else
+        {
+            Debug.LogWarning("BlueWorker 테스트를 위한 템플릿/프리팹이 연결되지 않았습니다.");
+        }
+        // ---------------------------------------------------
+
         // 2. ★★★ 고용된 직원들을 맵에 스폰
         restaurantManager.SpawnWorkersWithPrefabs(workersToSpawn);
     }
@@ -416,30 +443,5 @@ public class GameManager : MonoBehaviour
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(buttonTransform.position);
         worldPosition.z = 0f;
         GameObject newTableObject = Instantiate(TablePrefab, worldPosition, Quaternion.identity);
-    }
-    /// <summary>
-    /// (UI 등에서 호출) 새로운 직원을 고용하고, 리스트에 추가한 뒤, 맵에 스폰합니다.
-    /// </summary>
-    /// <param name="dataTemplate">직원의 기본 정보가 되는 ScriptableObject (예: testSpeciesTemplate)</param>
-    /// <param name="prefabToSpawn">직원의 외형이 될 프리팹 (예: redPrefab, bluePrefab 등)</param>
-    public void HireAndSpawnEmployee(EmployeeData dataTemplate, GameObject prefabToSpawn)
-    {
-        // 1. 새로운 직원 인스턴스(데이터) 생성
-        EmployeeInstance newEmployee = new EmployeeInstance(dataTemplate);
-        // (필요시 newEmployee.firstName = "임의의 이름" 등으로 설정)
-
-        // 2. EmployeeManager의 전체 직원 목록에 이 직원을 추가
-        EmployeeManager.Instance.hiredEmployees.Add(newEmployee);
-        Debug.Log($"{newEmployee.firstName}이(가) 고용되어 리스트에 추가되었습니다.");
-
-        // 3. (1단계에서 만든) RestaurantManager의 스폰 함수를 즉시 호출
-        if (restaurantManager != null)
-        {
-            restaurantManager.SpawnSingleWorker(newEmployee, prefabToSpawn);
-        }
-        else
-        {
-            Debug.LogError("GameManager: Restaurant Manager가 연결되지 않았습니다!");
-        }
     }
 }
