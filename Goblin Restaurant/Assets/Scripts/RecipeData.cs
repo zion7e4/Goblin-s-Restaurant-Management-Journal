@@ -8,7 +8,7 @@ public class IngredientRequirement
     public int amount;
 }
 
-public enum  Rarity { common, Uncommon, Rare, Legendary}
+
 
 [CreateAssetMenu(fileName = "RecipeData", menuName = "Scriptable Objects/RecipeData")]
 public class RecipeData : ScriptableObject
@@ -25,6 +25,7 @@ public class RecipeData : ScriptableObject
     [Header("±‚∫ª Ω∫≈»")]
     public int basePrice;
     public float baseCookTime;
+    public int Level;
     public Rarity rarity;
     public List<IngredientRequirement> requiredIngredients;
 }

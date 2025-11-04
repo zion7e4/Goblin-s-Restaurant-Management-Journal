@@ -32,6 +32,17 @@ public class ShopRecipeItemUI : MonoBehaviour
             buyButton.interactable = true;
             buyButton.onClick.AddListener(OnBuyButtonClick);
         }
+
+        string tooltip = "필요 재료:\n";
+        foreach (var req in GameDataManager.instance.GetRecipeDataById(recipeData.id).requiredIngredients)
+        {
+            var ingredientData = GameDataManager.instance.GetIngredientDataById(req.ingredientID);
+            tooltip += $"- {ingredientData.ingredientName} x{req.amount}\n";
+        }
+
+
+        // 툴팁 트리거에 내용 전달
+        GetComponentInChildren<TooltipTrigger>().SetTooltipText(tooltip);
     }
 
     void OnBuyButtonClick()

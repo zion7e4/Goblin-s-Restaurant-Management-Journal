@@ -17,9 +17,10 @@ MonoBehaviour:
   description: "\uC624\uB798 \uBCF4\uAD00 \uAC00\uB2A5\uD558\uC9C0\uB9CC \uB9DB\uC740
     \uBCF4\uC7A5 \uBABB\uD568"
   icon: {fileID: 2522654840535620013, guid: 828ca3b95ac5fc04bad1efbbba8c1457, type: 3}
+  foodPrefab: {fileID: 8793362396894766806, guid: 1eff44d9a71d3d8458956ea8e9ea332e, type: 3}
   basePrice: 25
   baseCookTime: 6
-  rarity: 0
+  RecipeLevel: 1
   requiredIngredients:
   - ingredientID: ING04
     amount: 2
