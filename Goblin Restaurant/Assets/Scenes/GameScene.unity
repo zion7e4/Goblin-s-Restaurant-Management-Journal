@@ -2140,6 +2140,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 646e00e4c10272d4b828e33b7559ee81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RestaurantManager
+  employeePrefab: {fileID: 0}
+  spawnPoint: {fileID: 0}
   customers: []
   tables:
   - {fileID: 1425325133}
@@ -9878,6 +9880,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6f1e9a72b1528641bbc3ac6404b7f6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameDataManager
+  allRecipeDataList: []
+  recipeLevelTable: {fileID: 0}
+  allIngredientDataList: []
 --- !u!114 &809728579
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9904,6 +9909,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 147ed761dcdff48459a6bf56f507aa7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FameManager
+  currentFamePoints: 0
+  currentFameLevel: 0
 --- !u!114 &809728581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10743,9 +10750,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67999af4b5566a7419ab73904c904b12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  restaurantManager: {fileID: 125082561}
   _currentState: 0
   dayDurationInSeconds: 45
+  currentFame: 100
   totalGoldAmount: 500
+  DayCount: 1
+  mainCharacterTemplate: {fileID: 11400000, guid: 73599de3c8e5a6a41a97a5583acee7e8, type: 2}
+  testSpeciesTemplate: {fileID: 0}
+  greenPrefab: {fileID: 0}
+  redPrefab: {fileID: 0}
+  bluePrefab: {fileID: 0}
   upgradeTableButtons:
   - {fileID: 1616242648}
   - {fileID: 1960288134}
@@ -10755,7 +10770,6 @@ MonoBehaviour:
   timeText: {fileID: 1564339060}
   dayText: {fileID: 2064170289}
   totalGold: {fileID: 1204839684}
-  TimeScaleButton: {fileID: 1474165262}
   OpenButton: {fileID: 339260025}
   PreparePanel: {fileID: 1153230781}
   NextDayButton: {fileID: 786050625}
@@ -10775,9 +10789,11 @@ MonoBehaviour:
   shopPanel: {fileID: 576219769}
   recipeShopPanel: {fileID: 574270569}
   ingredientShopPanel: {fileID: 2016777626}
+  TimeScaleButton: {fileID: 1474165262}
   panelBlocker: {fileID: 1777553055}
   PopupManager: {fileID: 210998733}
   UpgradeTablePanel: {fileID: 2043181331}
+  employeeSubMenuPanel: {fileID: 0}
 --- !u!4 &989197970
 Transform:
   m_ObjectHideFlags: 0
