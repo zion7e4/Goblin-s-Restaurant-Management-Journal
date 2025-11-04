@@ -13,7 +13,11 @@ public class CustomerSpawner : MonoBehaviour
 
     private void Update()
     {
+<<<<<<< HEAD
         if (GameManager.instance.currentState != GameManager.GameState.Open || MenuPlanner.instance.isSoldOut)
+=======
+        if (GameManager.instance.currentState != GameManager.GameState.Open)
+>>>>>>> parent of eb02e60 (Merge pull request #5 from zion7e4/test1)
         {
             return;
         }

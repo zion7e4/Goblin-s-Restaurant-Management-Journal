@@ -194,6 +194,33 @@ public class GameManager : MonoBehaviour
             workersToSpawn.Add((mainWorker, greenPrefab));
         }
 
+        // --- 2. 테스트 직원 1 (Red Prefab 사용) ---
+        if (testSpeciesTemplate != null && redPrefab != null)
+        {
+            EmployeeInstance redWorker = new EmployeeInstance(testSpeciesTemplate);
+            redWorker.firstName = "RedWorker";
+            EmployeeManager.Instance.hiredEmployees.Add(redWorker);
+            workersToSpawn.Add((redWorker, redPrefab));
+        }
+        else
+        {
+            Debug.LogWarning("RedWorker 테스트를 위한 템플릿/프리팹이 연결되지 않았습니다.");
+        }
+
+        // --- 3. 테스트 직원 2 (Blue Prefab 사용) ---
+        if (testSpeciesTemplate != null && bluePrefab != null)
+        {
+            EmployeeInstance blueWorker = new EmployeeInstance(testSpeciesTemplate);
+            blueWorker.firstName = "BlueWorker";
+            EmployeeManager.Instance.hiredEmployees.Add(blueWorker);
+            workersToSpawn.Add((blueWorker, bluePrefab));
+        }
+        else
+        {
+            Debug.LogWarning("BlueWorker 테스트를 위한 템플릿/프리팹이 연결되지 않았습니다.");
+        }
+        // ---------------------------------------------------
+
         // 2. ★★★ 고용된 직원들을 맵에 스폰
         // (참고: V1의 Start 로직은 기본 주인공만 스폰하고 있습니다. 
         // 빨간/파란 프리팹 스폰 로직은 HireAndSpawnEmployee 함수로 분리되었습니다.)
@@ -579,6 +606,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"테이블을 {worldPosition} 위치에 생성했습니다.");
     }
+<<<<<<< HEAD
 
     // --- [V1] 직원 고용 및 스폰 함수 ---
     public void HireAndSpawnEmployee(EmployeeData dataTemplate, GameObject prefabToSpawn)
@@ -600,4 +628,6 @@ public class GameManager : MonoBehaviour
             Debug.LogError("GameManager: Restaurant Manager가 연결되지 않았습니다!");
         }
     }
+=======
+>>>>>>> parent of eb02e60 (Merge pull request #5 from zion7e4/test1)
 }

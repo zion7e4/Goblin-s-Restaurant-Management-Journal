@@ -27,4 +27,3 @@ MonoBehaviour:
   salary: 100
   possibleTraits:
   - {fileID: 11400000, guid: 9e778799308ff9a4b8c6ae4c5400a35b, type: 2}
-  speciesPrefab: {fileID: 3110601555778287819, guid: 05b121b883130d149a51483dc397a55d, type: 3}

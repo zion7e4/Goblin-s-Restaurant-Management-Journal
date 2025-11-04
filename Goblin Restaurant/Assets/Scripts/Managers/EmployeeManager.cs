@@ -128,31 +128,12 @@ public class EmployeeManager : MonoBehaviour
             int hiringCost = applicantToHire.BaseSpeciesData.salary;
             // TODO: 경제 시스템 연동 시 여기에 SpendMoney() 체크 추가
 
-            // 1. 새 직원 인스턴스(데이터) 생성
             EmployeeInstance newEmployee = new EmployeeInstance(applicantToHire);
-
-            // 2. 데이터 리스트에 추가
             hiredEmployees.Add(newEmployee);
             applicants.Remove(applicantToHire);
             Debug.Log($"{newEmployee.BaseData.speciesName} {newEmployee.firstName}(을)를 {hiringCost}원에 고용했습니다.");
 
-            // ▼▼▼▼▼ [스폰 로직 추가] ▼▼▼▼▼
-            // 3. 스폰할 프리팹 가져오기 (EmployeeData에 speciesPrefab 변수 필요)
-            GameObject prefabToSpawn = applicantToHire.BaseSpeciesData.speciesPrefab;
-
-            // 4. RestaurantManager의 스폰 함수 호출
-            if (RestaurantManager.instance != null && prefabToSpawn != null)
-            {
-                RestaurantManager.instance.SpawnSingleWorker(newEmployee, prefabToSpawn);
-            }
-            else
-            {
-                Debug.LogError($"[EmployeeManager] 스폰 실패! RestaurantManager.instance가 없거나 " +
-                               $"{newEmployee.firstName}의 Prefab ({newEmployee.BaseData.speciesName})이 null입니다.");
-            }
-            // ▲▲▲▲▲ [스폰 로직 추가 완료] ▲▲▲▲▲
-
-            // 5. UI 갱신 (기존 코드)
+            // UI 갱신 (Null 체크 추가)
             if (EmployeeUI_Controller.Instance != null)
             {
                 // 지원자 목록과 고용된 직원 목록 모두 갱신
@@ -167,7 +148,6 @@ public class EmployeeManager : MonoBehaviour
     /// </summary>
     public void DismissEmployee(EmployeeInstance employeeToDismiss)
     {
-        // (이 함수는 수정되지 않았습니다)
         if (hiredEmployees.Contains(employeeToDismiss))
         {
             hiredEmployees.Remove(employeeToDismiss);
