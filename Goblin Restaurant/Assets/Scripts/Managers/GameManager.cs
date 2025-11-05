@@ -96,6 +96,7 @@ public class GameManager : MonoBehaviour
     public GameObject shopPanel;
     public GameObject recipeShopPanel;
     public GameObject ingredientShopPanel;
+    public GameObject RecipeBook;
 
     // [V2] UI 추가 필드
     public Button TimeScaleButton; // V2
@@ -156,19 +157,19 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // 1. [클린 스폰] 이전에 스폰되었던 Employee 오브젝트를 모두 제거합니다.
-        Employee[] existingWorkers = FindObjectsByType<Employee>(FindObjectsSortMode.None);
+       /* Employee[] existingWorkers = FindObjectsByType<Employee>(FindObjectsSortMode.None);
         foreach (Employee worker in existingWorkers)
         {
             Destroy(worker.gameObject);
         }
-
+*/
         // [공통] 초기화
         currentState = GameState.Preparing;
         timeScale = (9 * 60 * 60) / dayDurationInSeconds;
         currentTimeOfDay = 9 * 3600;
         timeText.text = "09:00";
         dayText.text = "Day " + DayCount;
-        totalGold.text = "Gold: " + totalGoldAmount; // V1의 포맷
+        totalGold.text = totalGoldAmount.ToString(); // V1의 포맷
 
         Time.timeScale = 1;
         TimeScaleButtonText.text = "X1";
@@ -364,14 +365,14 @@ public class GameManager : MonoBehaviour
     {
         totalGoldAmount += amount;
         todaysGold += amount;
-        totalGold.text = "Gold: " + totalGoldAmount;
+        totalGold.text = totalGoldAmount.ToString();
     }
 
     // [공통] SpendGold (V1 포맷 사용)
     public void SpendGold(int amount)
     {
         totalGoldAmount -= amount;
-        totalGold.text = "Gold: " + totalGoldAmount;
+        totalGold.text = totalGoldAmount.ToString();
     }
 
     // [공통] AddCustomerCount
@@ -396,6 +397,21 @@ public class GameManager : MonoBehaviour
     // [병합] 패널 여닫기 함수 (V1의 패널 닫기 + V2의 팝업/블로커 관리)
     // ---------------------------------------------------
 
+    public void OpenRecipeBook()
+    {
+        if (RecipeBook != null) RecipeBook.SetActive(true);
+        if (panelBlocker != null) panelBlocker.SetActive(true);
+        if (PopupManager != null) PopupManager.SetActive(true); // V2
+        CloseRecipeIngredientsPanel();
+    }
+
+    public void CloseRecipeBook()
+    {
+        if (RecipeBook != null) RecipeBook.SetActive(false);
+        if (panelBlocker != null) panelBlocker.SetActive(false);
+        if (PopupManager != null) PopupManager.SetActive(false); // V2
+    }
+
     // [V2]
     public void OpenUpgradeTablePanel()
     {
@@ -409,10 +425,6 @@ public class GameManager : MonoBehaviour
     {
         if (menuPlanner != null) menuPlanner.SetActive(true);
         if (PopupManager != null) PopupManager.SetActive(true); // V2
-
-        // V1
-        if (shopPanel != null) CloseShopPanel();
-        if (employeeSubMenuPanel != null) CloseEmployeeSubMenu();
     }
 
     // [V2]
@@ -448,7 +460,6 @@ public class GameManager : MonoBehaviour
     public void CloseRecipeIngredientsPanel()
     {
         if (recipeIngredientsPanel != null) recipeIngredientsPanel.SetActive(false);
-        if (PopupManager != null) PopupManager.SetActive(false);
     }
 
     // [V2]
@@ -474,10 +485,6 @@ public class GameManager : MonoBehaviour
         if (shopPanel != null) shopPanel.SetActive(true);
         if (panelBlocker != null) panelBlocker.SetActive(true); // V2
         if (PopupManager != null) PopupManager.SetActive(true); // V2
-
-        // V1
-        if (menuPlanner != null) CloseMenuPlanner();
-        if (employeeSubMenuPanel != null) CloseEmployeeSubMenu();
     }
 
     // [V2]
@@ -515,7 +522,7 @@ public class GameManager : MonoBehaviour
         if (shopPanel != null) CloseShopPanel();
 
         // V2: 팝업/블로커 활성화
-        if (panelBlocker != null) panelBlocker.SetActive(true);
+        //if (panelBlocker != null) panelBlocker.SetActive(true);
         if (PopupManager != null) PopupManager.SetActive(true);
 
         // V1: EmployeeUI_Controller 호출
@@ -537,7 +544,7 @@ public class GameManager : MonoBehaviour
         }
 
         // V2
-        if (panelBlocker != null) panelBlocker.SetActive(false);
+        //if (panelBlocker != null) panelBlocker.SetActive(false);
         if (PopupManager != null) PopupManager.SetActive(false);
     }
 
@@ -564,7 +571,7 @@ public class GameManager : MonoBehaviour
 
         // V1 포맷 사용
         totalGoldAmount -= tablePrice;
-        totalGold.text = "Gold: " + totalGoldAmount;
+        totalGold.text = totalGoldAmount.ToString();
 
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(buttonTransform.position);
         worldPosition.z = 0f;
