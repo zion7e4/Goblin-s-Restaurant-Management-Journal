@@ -159,7 +159,6 @@ public class Employee : MonoBehaviour
             currentState = EmployeeState.MovingToIdle;
         }
     }
-
     // 요리 코루틴
     IEnumerator CookFoodCoroutine()
     {
@@ -193,12 +192,33 @@ public class Employee : MonoBehaviour
         finalCookTime = Mathf.Max(0.5f, finalCookTime); // (최소 0.5초 보장)
 
         Debug.Log($"[{employeeData.firstName}] 요리 시간 계산 (기획서 공식). " +
-                  $"기본시간: {baseRecipeTime:F1}s, 스탯: {cookingStat}, 최종시간: {finalCookTime:F1}s");
+                    $"기본시간: {baseRecipeTime:F1}s, 스탯: {cookingStat}, 최종시간: {finalCookTime:F1}s");
 
         // 계산된 최종 요리 시간만큼 대기
         yield return new WaitForSeconds(finalCookTime);
 
         Debug.Log($"{employeeData?.firstName ?? "Worker"} 요리 완성");
+
+        // --- 식재료 절약 확률 적용 ---
+        float totalSaveChance = 0f;
+
+        // 1. "완벽주의 주방" 같은 시너지 보너스 획득 [cite: 110-112]
+        if (SynergyManager.Instance != null)
+        {
+            totalSaveChance += SynergyManager.Instance.GetIngredientSaveChance(); // (예: 0.05)
+        }
+
+        // 2. (TODO) 직원의 "손재주" 특성 보너스 획득 
+        // (EmployeeInstance.cs에 HasTrait("손재주") 같은 함수가 필요합니다)
+        // if (employeeData.HasTrait("손재주")) { totalSaveChance += 0.15f; } // 15%
+
+        // 3. 확률 실행
+        if (totalSaveChance > 0 && UnityEngine.Random.Range(0f, 1f) < totalSaveChance)
+        {
+            Debug.Log($"[식재료 절약!] {employeeData.firstName}이(가) 요리 재료를 절약했습니다! (확률: {totalSaveChance * 100:F0}%)");
+            // (TODO: GameManager.instance.RefundIngredients(targetOrder.recipe) 같은 재료 반환 함수 호출)
+        }
+        // --- 적용 완료 ---
 
         targetOrder.status = OrderStatus.ReadyToServe;
         targetCustomer = targetOrder.customer;
@@ -212,7 +232,6 @@ public class Employee : MonoBehaviour
 
         // 서빙 로직으로 이동
     }
-
     // 음식 서빙
     void ServeFood()
     {
@@ -295,7 +314,20 @@ public class Employee : MonoBehaviour
     // 목표 지점까지 이동하고, 도착하면 지정된 행동(Action)을 실행하는 함수
     void MoveTo(Vector3 destination, Action onArrived)
     {
-        transform.position = Vector2.MoveTowards(transform.position, destination, movespeed * Time.deltaTime);
+        // 1. 시너지 매니저에서 현재 '이동 속도' 보너스 총합을 가져옵니다.
+        // (예: "우울한 작업장"이 발동 중이면 -0.05f 반환)
+        float synergySpeedBonus = 0f;
+        if (SynergyManager.Instance != null)
+        {
+            synergySpeedBonus = SynergyManager.Instance.GetMoveSpeedMultiplier();
+        }
+
+        // 2. (1.0f + 보너스)를 곱하여 최종 속도 계산
+        // (예: 1.0 + (-0.05) = 0.95 (즉 95% 속도))
+        float finalMoveSpeed = movespeed * (1.0f + synergySpeedBonus);
+
+        // 3. 최종 속도를 적용하여 이동
+        transform.position = Vector2.MoveTowards(transform.position, destination, finalMoveSpeed * Time.deltaTime);
 
         if (Vector2.Distance(transform.position, destination) < 0.1f)
         {

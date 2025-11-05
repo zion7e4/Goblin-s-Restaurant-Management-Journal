@@ -237,6 +237,18 @@ public class Customer : MonoBehaviour
         if (RestaurantManager.instance.cleanliness >= 90) satisfactionScore += 10;
         else if (RestaurantManager.instance.cleanliness < 50) satisfactionScore -= 10;
 
+        // --- 시너지로 인한 서비스 점수 보너스 적용 ---
+        if (SynergyManager.Instance != null)
+        {
+            int serviceBonus = SynergyManager.Instance.GetServiceScoreBonus();
+            satisfactionScore += serviceBonus; // "활기찬 식당"(+2) 또는 "공포의 홀"(-2) [cite: 107, 116]
+            if (serviceBonus != 0)
+            {
+                Debug.Log($"[시너지] 서비스 점수 보너스 {serviceBonus}점 적용!");
+            }
+        }
+        // --- 적용 완료 ---
+
         satisfactionScore = Mathf.Clamp(satisfactionScore, 0, 100); // 최종 점수를 0~100 사이로 고정
     }
 
@@ -244,7 +256,7 @@ public class Customer : MonoBehaviour
     {
         if (satisfactionScore <= 20) return SatisfactionLevel.VeryDissatisfied;
         if (satisfactionScore <= 40) return SatisfactionLevel.Dissatisfied;
-        if (satisfactionScore <= 60) return SatisfactionLevel.Normal; 
+        if (satisfactionScore <= 60) return SatisfactionLevel.Normal;
         if (satisfactionScore <= 80) return SatisfactionLevel.Satisfied;
         return SatisfactionLevel.VerySatisfied;
     }

@@ -8976,6 +8976,7 @@ GameObject:
   - component: {fileID: 809728581}
   - component: {fileID: 809728582}
   - component: {fileID: 809728583}
+  - component: {fileID: 809728584}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -9166,6 +9167,20 @@ MonoBehaviour:
     currentServingStat: 0
     currentCharmStat: 0
     currentTraits: []
+--- !u!114 &809728584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 809728573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6599db8c05372f04295ab0fd154c6cea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SynergyManager
+  allSynergies: []
+  activeSynergies: []
 --- !u!1 &831281429
 GameObject:
   m_ObjectHideFlags: 0
