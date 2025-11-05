@@ -28,7 +28,9 @@ public class Employee : MonoBehaviour
     // [수정: private에서 public으로 변경]
     [SerializeField]
     private float movespeed = 3f;
-    public float cookingtime = 5f;
+
+    // 이 변수는 CookFoodCoroutine에서 'finalCookTime'으로 대체되었습니다.
+    // public float cookingtime = 5f; 
 
     /*[SerializeField]
     private int cookingskill = 1; // 추후 기능 추가 예정*/
@@ -48,12 +50,10 @@ public class Employee : MonoBehaviour
         this.employeeData = data;
         this.idlePosition = defaultIdlePosition;
 
-        // EmployeeInstance 데이터에서 능력치를 가져와 설정
-        // 요리 시간은 능력치에 반비례하여 설정 (최소 1초)
-        cookingtime = Mathf.Max(1f, 5f - (data.currentCookingStat * 0.1f));
+        // (낡은 요리 시간 계산 로직 제거)
 
         // 디버그
-        Debug.Log($"{data.firstName} 스폰 완료. Cooking Time: {cookingtime}s");
+        Debug.Log($"{data.firstName} 스폰 완료. (요리 시간은 레시피에 따라 결정됩니다)");
 
         currentState = EmployeeState.Idle;
     }
@@ -172,8 +172,31 @@ public class Employee : MonoBehaviour
             targetOrder.foodObject.SetActive(true);
         }
 
-        // 직원 능력치(cookingtime) 반영
-        yield return new WaitForSeconds(cookingtime);
+        // 1. 레시피의 '기본 요리 시간'을 가져옵니다. (RecipeData의 'Base Cook Time')
+        float baseRecipeTime = 10f; // (오류 시 기본값)
+        if (targetOrder.recipe != null && targetOrder.recipe.data != null)
+        {
+            // RecipeData.cs에 'baseCookTime' 변수가 있다고 가정 (스크린샷 확인)
+            baseRecipeTime = targetOrder.recipe.data.baseCookTime;
+        }
+        else
+        {
+            Debug.LogError("CookFoodCoroutine: targetOrder.recipe.data가 null입니다!");
+        }
+
+        // 2. 이 직원의 '요리' 스탯을 가져옵니다.
+        int cookingStat = employeeData.currentCookingStat;
+
+        // 3. 기획서 공식으로 최종 요리 시간을 계산합니다.
+        float finalCookTime = baseRecipeTime / (1 + (cookingStat * 0.008f));
+
+        finalCookTime = Mathf.Max(0.5f, finalCookTime); // (최소 0.5초 보장)
+
+        Debug.Log($"[{employeeData.firstName}] 요리 시간 계산 (기획서 공식). " +
+                  $"기본시간: {baseRecipeTime:F1}s, 스탯: {cookingStat}, 최종시간: {finalCookTime:F1}s");
+
+        // 계산된 최종 요리 시간만큼 대기
+        yield return new WaitForSeconds(finalCookTime);
 
         Debug.Log($"{employeeData?.firstName ?? "Worker"} 요리 완성");
 
@@ -196,7 +219,8 @@ public class Employee : MonoBehaviour
         Debug.Log($"{employeeData?.firstName ?? "Worker"} 서빙 완료");
         if (targetCustomer != null)
         {
-            targetCustomer.ReceiveFood();
+            // [수정] Customer.ReceiveFood 함수에 내 직원 데이터(employeeData)를 전달합니다.
+            targetCustomer.ReceiveFood(this.employeeData);
         }
 
         if (targetOrder.foodObject != null)
@@ -232,13 +256,31 @@ public class Employee : MonoBehaviour
     }
 
     // 테이블 청소
+    // 테이블 청소
     IEnumerator CleaningTable()
     {
         currentState = EmployeeState.Cleaning;
         Debug.Log($"{employeeData?.firstName ?? "Worker"} 테이블 청소 시작");
 
-        // 직원 능력치(청소 능력) 반영이 필요
-        yield return new WaitForSeconds(1f); // 청소 시간 고정 (나중에 능력치로 변경)
+        // ▼▼▼ [수정] '서빙' 스탯으로 '청소 시간' 계산 (기획서 공식) ▼▼▼
+
+        // 1. '기본 청소 시간'을 설정합니다. (임시로 2초 설정)
+        float baseCleaningTime = 2f;
+
+        // 2. 이 직원의 '서빙' 스탯을 가져옵니다.
+        int servingStat = employeeData.currentServingStat;
+
+        // 3. 기획서 공식으로 최종 청소 시간을 계산합니다.
+        float finalCleaningTime = baseCleaningTime / (1 + (servingStat * 0.008f));
+        finalCleaningTime = Mathf.Max(0.5f, finalCleaningTime); // (최소 0.5초 보장)
+
+        Debug.Log($"[{employeeData.firstName}] 청소 시간 계산. " +
+                  $"기본시간: {baseCleaningTime:F1}s, 서빙스탯: {servingStat}, 최종시간: {finalCleaningTime:F1}s");
+
+        // yield return new WaitForSeconds(1f); // <-- 이 줄 대신
+        yield return new WaitForSeconds(finalCleaningTime); // <-- 이 줄을 사용
+
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         Debug.Log($"{employeeData?.firstName ?? "Worker"} 테이블 청소 완료");
         if (targetTable != null)
