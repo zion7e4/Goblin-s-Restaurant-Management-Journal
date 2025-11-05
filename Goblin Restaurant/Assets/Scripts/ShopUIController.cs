@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 
 public class ShopUIController : MonoBehaviour
 {
@@ -25,6 +26,14 @@ public class ShopUIController : MonoBehaviour
     void OnEnable()
     {
         SwitchToRecipeTab();
+    }
+
+    void OnDisable()
+    {
+        if (TooltipSystem.instance != null)
+        {
+            TooltipSystem.instance.Hide();
+        }
     }
 
     public void SwitchToRecipeTab()
@@ -76,6 +85,8 @@ public class ShopUIController : MonoBehaviour
             RecipeManager.instance.UnlockRecipe(recipeData.id);
             Debug.Log($"'{recipeData.recipeName}' 레시피 구매 성공!");
             PopulateRecipeShop();
+
+            NotificationController.instance.ShowNotification($"-{price} G\n (레시피 구매)");
         }
         else
         {
@@ -92,6 +103,8 @@ public class ShopUIController : MonoBehaviour
             GameManager.instance.SpendGold(totalPrice);
             InventoryManager.instance.AddIngredient(ingredientData.id, quantity);
             Debug.Log($"'{ingredientData.ingredientName}' {quantity}개 구매 성공!");
+
+            NotificationController.instance.ShowNotification($"-{totalPrice} G\n ({ingredientData.ingredientName} {quantity}개 구매)");
         }
         else
         {

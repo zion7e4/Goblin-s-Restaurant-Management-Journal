@@ -33,6 +33,21 @@ public class ShopIngredientItemUI : MonoBehaviour
         quantityInput.onValueChanged.AddListener(OnInputValueChanged);
 
         UpdateUI();
+
+        string tooltip = "사용되는 레시피:\n";
+        foreach (var recipe in GameDataManager.instance.GetAllRecipeData())
+        {
+            foreach (var req in recipe.requiredIngredients)
+            {
+                if (req.ingredientID == ingredientData.id)
+                {
+                    tooltip += $"- {recipe.recipeName}\n";
+                    break;
+                }
+            }
+        }
+
+        GetComponentInChildren<TooltipTrigger>().SetTooltipText(tooltip);
     }
 
     void ChangeQuantity(int amount)

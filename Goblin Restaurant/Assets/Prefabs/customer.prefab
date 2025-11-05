@@ -186,6 +186,7 @@ MonoBehaviour:
   currentState: 0
   orderIconPrefab: {fileID: 2058904831228565475, guid: 42a5a75c17de6a248b085350e21f3cde, type: 3}
   iconSpawnPoint: {fileID: 6138806475234682332}
+  RestaurantReviwe: {fileID: 5381422328315369704, guid: f3b5d14a7ec66de45af6b56aa3e1753d, type: 3}
   speed: 3
 --- !u!1 &8866038012476259947
 GameObject:

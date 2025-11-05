@@ -17,6 +17,7 @@ public class RestaurantManager : MonoBehaviour
     public List<Customer> customers;
     public List<Table> tables;
     public List<CounterTop> counterTops;
+    public int cleanliness = 100; // 식당 청결도 (0 ~ 100)
     [SerializeField]
     private List<KitchenOrder> orderQueue;
 
