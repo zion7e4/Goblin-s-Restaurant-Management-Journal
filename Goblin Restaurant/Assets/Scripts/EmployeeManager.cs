@@ -15,7 +15,7 @@ public class EmployeeManager : MonoBehaviour
 
     // 상수 정의
     private const int MAX_TOTAL_EMPLOYEES = 10; // 고블린 쉐프 포함 총 직원 수 제한
-    private const int MAX_APPLICANTS = 10;      // 지원자 목록에 표시될 최대 수
+    private const int MAX_APPLICANTS = 10;     // 지원자 목록에 표시될 최대 수
 
     void Awake()
     {
@@ -47,11 +47,15 @@ public class EmployeeManager : MonoBehaviour
             return;
         }
 
-        // 1. 명성도에 따른 최소/최대값 계산 (원본 값)
-        int minApplicantsRaw = 1 + (currentFame / 1500);
-        int maxApplicantsRaw = 2 + (currentFame / 1000);
+        // (기존 명성도 기반 계산식 주석 처리)
+        // int minApplicantsRaw = 1 + (currentFame / 1500);
+        // int maxApplicantsRaw = 2 + (currentFame / 1000);
 
-        // 2. 최종 최대 상한을 10으로 제한합니다.
+        // 기획서 기준으로 3~5명의 후보가 등장 
+        int minApplicantsRaw = 3;
+        int maxApplicantsRaw = 5;
+
+        // 2. 최종 최대 상한을 10으로 제한합니다. (MAX_APPLICANTS 값은 유지)
         int finalMaxLimit = Mathf.Min(maxApplicantsRaw, MAX_APPLICANTS);
 
         // 3. 최종 최소 하한을 계산합니다: (Random.Range 오류 방지)
@@ -61,7 +65,7 @@ public class EmployeeManager : MonoBehaviour
         int applicantCount = Random.Range(finalMinLimit, finalMaxLimit + 1);
 
         // 최종 생성될 지원자 수를 확인합니다.
-        Debug.Log($"[지원자 수 제한 확인] 명성도: {currentFame}, 최종 생성 수: {applicantCount} (MAX: {MAX_APPLICANTS})");
+        Debug.Log($"[지원자 수 제한 확인] 명성도: {currentFame}, 최종 생성 수: {applicantCount} (기획서 기준 3~5명)");
 
 
         for (int i = 0; i < applicantCount; i++)
@@ -69,15 +73,18 @@ public class EmployeeManager : MonoBehaviour
             // 유효한 템플릿 리스트 중에서 랜덤 선택
             EmployeeData selectedSpecies = validTemplates[Random.Range(0, validTemplates.Count)];
 
+            // (능력치 배율) 최대 4.0까지 (0 ~ 400 / 100)
             float fameMultiplier = (float)currentFame / 100f;
 
+            // [참고] 이 스탯 계산식은 기획서의 '등급' 기반이 아닌 '명성도' 기반으로 유지했습니다.
+            // 스탯이 너무 낮다면, EmployeeData의 base...Stat이나 ...GrowthFactor 값을 조정해주세요.
             int finalCook = Random.Range(selectedSpecies.baseCookingStat + (int)(fameMultiplier * selectedSpecies.cookingGrowthFactor * 0.8f), selectedSpecies.baseCookingStat + (int)(fameMultiplier * selectedSpecies.cookingGrowthFactor * 1.2f) + 1);
             int finalServe = Random.Range(selectedSpecies.baseServingStat + (int)(fameMultiplier * selectedSpecies.servingGrowthFactor * 0.8f), selectedSpecies.baseServingStat + (int)(fameMultiplier * selectedSpecies.servingGrowthFactor * 1.2f) + 1);
-            int finalClean = Random.Range(selectedSpecies.baseCleaningStat + (int)(fameMultiplier * selectedSpecies.cleaningGrowthFactor * 0.8f), selectedSpecies.baseCleaningStat + (int)(fameMultiplier * selectedSpecies.cleaningGrowthFactor * 1.2f) + 1);
+            int finalCharm = Random.Range(selectedSpecies.baseCharmStat + (int)(fameMultiplier * selectedSpecies.charmGrowthFactor * 0.8f), selectedSpecies.baseCharmStat + (int)(fameMultiplier * selectedSpecies.charmGrowthFactor * 1.2f) + 1);
 
             string jobTitle = "신입";
-            if (finalCook >= finalServe && finalCook >= finalClean) { jobTitle = "요리사"; }
-            else if (finalServe > finalCook && finalServe >= finalClean) { jobTitle = "서버"; }
+            if (finalCook >= finalServe && finalCook >= finalCharm) { jobTitle = "요리사"; }
+            else if (finalServe > finalCook && finalServe >= finalCharm) { jobTitle = "서버"; }
             else { jobTitle = "매니저"; }
 
             string firstName = selectedSpecies.speciesName;
@@ -92,7 +99,16 @@ public class EmployeeManager : MonoBehaviour
             // Null 체크: possibleTraits 리스트가 Null이 아니며, 항목이 있는지 확인
             if (selectedSpecies.possibleTraits != null && selectedSpecies.possibleTraits.Any())
             {
-                float traitChance = Mathf.Min(5 + (currentFame / 100f), 90);
+                // (기존 코드 주석 처리)
+                // float famePercent = (float)currentFame / 400f;
+                // float traitChance = 5f + (famePercent * 40f); 
+
+                // 40%를 기본 확률로, 100 명성도당 10%씩 증가
+                float traitChance = 40f + ((float)currentFame / 100f) * 10f;
+
+                // (안전 장치) 확률이 100%를 넘지 않도록 제한합니다.
+                traitChance = Mathf.Min(traitChance, 100f);
+
                 if (Random.Range(0, 100) < traitChance)
                 {
                     Trait selectedTrait = selectedSpecies.possibleTraits[Random.Range(0, selectedSpecies.possibleTraits.Count)];
@@ -103,8 +119,7 @@ public class EmployeeManager : MonoBehaviour
                 }
             }
 
-            GeneratedApplicant newApplicant = new GeneratedApplicant(selectedSpecies, firstName, jobTitle, finalCook, finalServe, finalClean, finalTraits);
-            applicants.Add(newApplicant);
+            GeneratedApplicant newApplicant = new GeneratedApplicant(selectedSpecies, firstName, jobTitle, finalCook, finalServe, finalCharm, finalTraits);
         }
 
         // 지원자 목록 UI 갱신 (Null 체크 추가)
@@ -136,7 +151,6 @@ public class EmployeeManager : MonoBehaviour
             applicants.Remove(applicantToHire);
             Debug.Log($"{newEmployee.BaseData.speciesName} {newEmployee.firstName}(을)를 {hiringCost}원에 고용했습니다.");
 
-            // ▼▼▼▼▼ [스폰 로직 추가] ▼▼▼▼▼
             // 3. 스폰할 프리팹 가져오기 (EmployeeData에 speciesPrefab 변수 필요)
             GameObject prefabToSpawn = applicantToHire.BaseSpeciesData.speciesPrefab;
 
@@ -150,7 +164,6 @@ public class EmployeeManager : MonoBehaviour
                 Debug.LogError($"[EmployeeManager] 스폰 실패! RestaurantManager.instance가 없거나 " +
                                $"{newEmployee.firstName}의 Prefab ({newEmployee.BaseData.speciesName})이 null입니다.");
             }
-            // ▲▲▲▲▲ [스폰 로직 추가 완료] ▲▲▲▲▲
 
             // 5. UI 갱신 (기존 코드)
             if (EmployeeUI_Controller.Instance != null)

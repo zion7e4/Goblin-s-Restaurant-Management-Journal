@@ -6063,67 +6063,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
---- !u!1001 &492890401
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3110601555778287819, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_Name
-      value: Goblin
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.94081
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -1.14244
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5670436035741474170, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9084094141245971557, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-      propertyPath: idlePosition
-      value: 
-      objectReference: {fileID: 1864346188}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
 --- !u!1 &498219991
 GameObject:
   m_ObjectHideFlags: 0
@@ -9215,7 +9154,6 @@ MonoBehaviour:
   allSpeciesTemplates:
   - {fileID: 11400000, guid: 89d1c4c591e5fb841884de071a335b15, type: 2}
   - {fileID: 11400000, guid: 0631174b83db9be4eb9200b7e0972e5c, type: 2}
-  - {fileID: 11400000, guid: 73599de3c8e5a6a41a97a5583acee7e8, type: 2}
   - {fileID: 11400000, guid: 92d89a49f24b0c8469fc94d87e127d30, type: 2}
   - {fileID: 11400000, guid: a74f50ebeb66b0b43b591c30c203a283, type: 2}
   hiredEmployees:
@@ -9226,7 +9164,7 @@ MonoBehaviour:
     currentSalary: 0
     currentCookingStat: 0
     currentServingStat: 0
-    currentCleaningStat: 0
+    currentCharmStat: 0
     currentTraits: []
 --- !u!1 &831281429
 GameObject:
@@ -21081,7 +21019,6 @@ SceneRoots:
   - {fileID: 2130565179}
   - {fileID: 1501608340674881074}
   - {fileID: 1450713432}
-  - {fileID: 492890401}
   - {fileID: 1893014593}
   - {fileID: 989197970}
   - {fileID: 210998735}

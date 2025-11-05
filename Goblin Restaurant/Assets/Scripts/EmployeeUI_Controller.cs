@@ -187,7 +187,7 @@ public class EmployeeUI_Controller : MonoBehaviour
             foreach (EmployeeInstance employee in EmployeeManager.Instance.hiredEmployees)
             {
                 employee.currentLevel += 1;
-                employee.skillPoints += 5;
+                employee.skillPoints += 1;
                 Debug.Log($"{employee.firstName}의 레벨이 {employee.currentLevel}로 증가했고, 스킬 포인트 5점을 얻었습니다.");
             }
             UpdateHiredEmployeeListUI();
@@ -319,7 +319,7 @@ public class EmployeeUI_Controller : MonoBehaviour
             var statsBuilder = new System.Text.StringBuilder();
             statsBuilder.AppendLine($"요리: {applicant.GeneratedCookingStat}");
             statsBuilder.AppendLine($"서빙: {applicant.GeneratedServingStat}");
-            statsBuilder.AppendLine($"정리: {applicant.GeneratedCleaningStat}");
+            statsBuilder.AppendLine($"매력: {applicant.GeneratedCharmStat}"); // '정리' -> '매력'
 
             // 특성 리스트와 특성 객체 자체에 대한 널 체크 강화
             if (applicant.GeneratedTraits != null && applicant.GeneratedTraits.Any())
@@ -352,9 +352,12 @@ public class EmployeeUI_Controller : MonoBehaviour
         Image portraitImage = card.transform.Find("PortraitImage")?.GetComponent<Image>();
         TextMeshProUGUI nameText = card.transform.Find("NameText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI statsText = card.transform.Find("StatsText")?.GetComponent<TextMeshProUGUI>();
+
+        // --- 버튼 찾기 ---
+        Button levelUpBtn = card.transform.Find("LevelUpButton")?.GetComponent<Button>();
         Button cookUpBtn = card.transform.Find("CookUpgradeButton")?.GetComponent<Button>();
         Button serveUpBtn = card.transform.Find("ServeUpgradeButton")?.GetComponent<Button>();
-        Button cleanUpBtn = card.transform.Find("CleanUpgradeButton")?.GetComponent<Button>();
+        Button charmUpBtn = card.transform.Find("CharmUpgradeButton")?.GetComponent<Button>();
         Button dismissBtn = card.transform.Find("DismissButton")?.GetComponent<Button>();
 
         // Null 체크 강화
@@ -371,7 +374,7 @@ public class EmployeeUI_Controller : MonoBehaviour
             var statsBuilder = new System.Text.StringBuilder();
             statsBuilder.AppendLine($"요리: {employee.currentCookingStat}");
             statsBuilder.AppendLine($"서빙: {employee.currentServingStat}");
-            statsBuilder.AppendLine($"정리: {employee.currentCleaningStat}");
+            statsBuilder.AppendLine($"매력: {employee.currentCharmStat}");
 
             // 특성 리스트와 특성 객체 자체에 대한 널 체크 강화
             if (employee.currentTraits != null && employee.currentTraits.Any())
@@ -391,6 +394,22 @@ public class EmployeeUI_Controller : MonoBehaviour
         // =======================================================
         if (EmployeeManager.Instance != null)
         {
+            // --- 레벨업 버튼 (SP 획득) ---
+            if (levelUpBtn != null)
+            {
+                // (참고: TryLevelUp 함수 내부에서 골드/최대레벨을 체크합니다)
+                levelUpBtn.onClick.RemoveAllListeners();
+                // 레벨업 성공 시(SP 1 획득) UI 전체 갱신
+                levelUpBtn.onClick.AddListener(() => {
+                    if (employee.TryLevelUp())
+                    {
+                        UpdateHiredEmployeeListUI();
+                    }
+                });
+            }
+
+            // --- 스탯 분배 버튼 (SP 소모) ---
+
             // 요리 스탯 업그레이드 버튼
             if (cookUpBtn != null)
             {
@@ -409,13 +428,13 @@ public class EmployeeUI_Controller : MonoBehaviour
                 serveUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); });
             }
 
-            // 정리 스탯 업그레이드 버튼
-            if (cleanUpBtn != null)
+            // 매력 스탯 업그레이드 버튼
+            if (charmUpBtn != null)
             {
-                cleanUpBtn.interactable = employee.skillPoints > 0;
-                cleanUpBtn.onClick.RemoveAllListeners();
+                charmUpBtn.interactable = employee.skillPoints > 0;
+                charmUpBtn.onClick.RemoveAllListeners();
                 // 스탯 증가 성공 시 UI 갱신 (핵심)
-                cleanUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCleaning()) UpdateHiredEmployeeListUI(); });
+                charmUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCharm()) UpdateHiredEmployeeListUI(); });
             }
 
             // 해고 버튼 로직 (Null 체크 포함)

@@ -9922,6 +9922,7 @@ MonoBehaviour:
   shopPanel: {fileID: 576219769}
   recipeShopPanel: {fileID: 574270569}
   ingredientShopPanel: {fileID: 2016777626}
+  RecipeBook: {fileID: 0}
   TimeScaleButton: {fileID: 0}
   panelBlocker: {fileID: 0}
   PopupManager: {fileID: 0}
@@ -21958,6 +21959,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1488921538}
     m_Modifications:
+    - target: {fileID: 265135517097672031, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 265135517097672031, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2358303425346053133, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -22038,9 +22047,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4945050739544707150, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4945050739544707150, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4945050739544707150, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -17
+      objectReference: {fileID: 0}
     - target: {fileID: 8311103261983744965, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: m_Name
       value: RecipeBookPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 8311103261983744965, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
