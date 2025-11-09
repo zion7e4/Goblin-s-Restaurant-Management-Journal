@@ -23,7 +23,7 @@ MonoBehaviour:
   cookingGrowthFactor: 0.1
   servingGrowthFactor: 0.1
   charmGrowthFactor: 0.1
-  salary: 70
+  salary: 100
   possibleTraits:
   - {fileID: 11400000, guid: 993cda5459ca4b04dba8fb560b6c531f, type: 2}
   speciesPrefab: {fileID: 0}
