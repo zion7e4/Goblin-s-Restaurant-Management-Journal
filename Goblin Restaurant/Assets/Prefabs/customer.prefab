@@ -187,6 +187,17 @@ MonoBehaviour:
   orderIconPrefab: {fileID: 2058904831228565475, guid: 42a5a75c17de6a248b085350e21f3cde, type: 3}
   iconSpawnPoint: {fileID: 6138806475234682332}
   RestaurantReviwe: {fileID: 5381422328315369704, guid: f3b5d14a7ec66de45af6b56aa3e1753d, type: 3}
+  satisfactionIcons:
+  - level: 0
+    icon: {fileID: -913879567285403450, guid: ea9d71b2b6e26e8498656ee570d06b48, type: 3}
+  - level: 1
+    icon: {fileID: -913879567285403450, guid: ea9d71b2b6e26e8498656ee570d06b48, type: 3}
+  - level: 2
+    icon: {fileID: 8608301280326347297, guid: 81dbb2b9fb4fbd0418e5105be172c5e1, type: 3}
+  - level: 3
+    icon: {fileID: -2951221726194618990, guid: b8eccb2365c1cd34b8347b98faa9dbcd, type: 3}
+  - level: 4
+    icon: {fileID: -2951221726194618990, guid: b8eccb2365c1cd34b8347b98faa9dbcd, type: 3}
   speed: 3
 --- !u!1 &8866038012476259947
 GameObject:

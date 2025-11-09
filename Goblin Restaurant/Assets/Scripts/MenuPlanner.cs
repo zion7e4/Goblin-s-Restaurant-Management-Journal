@@ -92,7 +92,7 @@ public class MenuPlanner : MonoBehaviour
                 // InventoryManager에 재료 소모를 요청합니다.
                 if (totalAmountNeeded > 0)
                 {
-                    InventoryManager.instance.ConsumeIngredient(requirement.ingredientID, totalAmountNeeded);
+                    InventoryManager.instance.RemoveIngredients(requirement.ingredientID, totalAmountNeeded);
                 }
             }
         }

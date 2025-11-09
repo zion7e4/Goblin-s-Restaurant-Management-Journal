@@ -1,15 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
+using UnityEngine.InputSystem; // V2에서 사용
 using TMPro;
+using UnityEngine.EventSystems; // V1에서 사용
+using System.Collections; // V1에서 사용
 using System.Linq;
 
+// 역할: 게임의 시간, 명성, 돈, 게임 상태 등 전반적인 상태를 관리합니다.
 public class GameManager : MonoBehaviour
 {
+    // [공통] 싱글톤 인스턴스
     public static GameManager instance;
 
-    public enum GameState { Preparing, Open, Closing, Settlement }
+    // [V1] RestaurantManager 참조 (V2는 instance로 접근했으나, V1의 명시적 연결 사용)
+    [Header("Restaurant Management")]
+    [Tooltip("Restaurant Manager 스크립트를 가진 오브젝트를 연결하세요.")]
+    public RestaurantManager restaurantManager;
+
+    // --- [V2의 정교한 게임 상태] ---
+    public enum GameState { Preparing, Open, Closing, Settlement } // V2의 'Settlement' 상태 포함
     public GameState _currentState;
     public GameState currentState
     {
@@ -19,60 +29,93 @@ public class GameManager : MonoBehaviour
             _currentState = value;
             UpdateButtonUI();
 
-            if (_currentState == GameState.Settlement)
+            if (_currentState == GameState.Settlement) // V2의 로직
             {
-                ShowSettlementPanal(); // 일일 정산 패널 표시
+                ShowSettlementPanal();
             }
         }
     }
 
-    public float dayDurationInSeconds = 600f; // 실제 하루 길이 (10분)
-    public int totalGoldAmount = 0; // 총 골드 변수 추가
-    private int todaysGold = 0; // 오늘 번 골드
-    private int todaysCustomers = 0; // 오늘 방문한 고객 수
+    // --- [공통] 게임 시간 설정 ---
+    public float dayDurationInSeconds = 600f;
     private float currentTimeOfDay;
-    private int DayCount = 1; // 며칠째인지 세는 변수 추가
-    private float timeScale; // 게임 내 시간 흐름 속도
-    private int speedState = 0; // 시간 배속 상태 변수 추가
-    private bool hasPlacedTable = false; // 테이블 배치 여부 변수 추가
+    private float timeScale;
+    private int speedState = 0;
+
+    // --- [병합] 게임 상태 변수 ---
+    [Header("게임 상태 변수 (병합됨)")]
+    [Tooltip("현재 식당의 명성도 (직원 생성에 사용)")]
+    public int currentFame = 100; // [V1]
+    public int totalGoldAmount = 0; // [공통]
+    private int todaysGold = 0;
+    private int todaysCustomers = 0;
+    [SerializeField] private int DayCount = 1;
     private Camera mainCamera;
 
-    public List<GameObject> upgradeTableButtons; // 업그레이드 가능한 테이블 버튼 리스트
-    public int tablePrice = 100; // 테이블 가격
+    // --- [V1] 주인공 및 직원 테스트 설정 ---
+    [Header("주인공 설정 (V1)")]
+    [Tooltip("주인공으로 사용할 직원의 설계도(EmployeeData 에셋)")]
+    public EmployeeData mainCharacterTemplate;
 
-    public TextMeshProUGUI timeText; // 화면에 시간을 표시할 UI 텍스트
-    public TextMeshProUGUI dayText; // 화면에 날짜를 표시할 UI 텍스트
-    public TextMeshProUGUI totalGold; // 화면에 총 골드를 표시할 UI 텍스트
+    [Header("TEST: 단일 종족 & 색상별 프리팹 (V1)")]
+    [Tooltip("테스트에 사용할 EmployeeData 에셋을 연결하세요 (예: Dwarf)")]
+    public EmployeeData testSpeciesTemplate;
+    [Tooltip("초록색 프리팹 (주인공)")]
+    public GameObject greenPrefab;
+    [Tooltip("빨간색 프리팹 (테스트 1)")]
+    public GameObject redPrefab;
+    [Tooltip("파란색 프리팹 (테스트 2)")]
+    public GameObject bluePrefab;
+    // ---
 
-    public Button TimeScaleButton; // 시간 배속 버튼
-    public Button OpenButton; // 오픈 버튼
-    public GameObject PreparePanel; // 오픈 준비 패널
-    public GameObject NextDayButton; // 다음 날 버튼 ui
-    public GameObject TablePrefab; // 테이블 프리팹
-    public GameObject settlementPanel; // 일일 정산 패널
-    public GameObject CheckButton; // 확인 버튼
+    // --- [병합] UI 및 프리팹 참조 ---
+    [Header("UI 및 프리팹 (병합됨)")]
+    public List<GameObject> upgradeTableButtons;
+    public int tablePrice = 100;
+
+    public TextMeshProUGUI timeText;
+    public TextMeshProUGUI dayText;
+    public TextMeshProUGUI totalGold;
+
+    public Button OpenButton;
+    public GameObject PreparePanel;
+    public GameObject NextDayButton;
+    public GameObject TablePrefab;
+    public GameObject settlementPanel;
+    public GameObject CheckButton;
     public TextMeshProUGUI todaysGoldText;
     public TextMeshProUGUI totalGoldText;
     public TextMeshProUGUI customerCountText;
-    public GameObject menuPlanner; // 메뉴 기획 패널
-    public GameObject RecipeSelection; // 레시피 선택 패널
-    public GameObject UpgradeTableButton; // 테이블 업그레이드 버튼
-    public GameObject recipeIngredientsPanel; // 레시피 재료 패널
+    public GameObject menuPlanner;
+    public GameObject RecipeSelection;
+    public GameObject UpgradeTableButton;
+    public GameObject recipeIngredientsPanel;
     public TextMeshProUGUI TimeScaleButtonText;
-    public MenuPlannerUI_Controller menuPlannerUI; // 메뉴 기획 UI 컨트롤러
-    public InventoryUIController inventoryUI; // 인벤토리 UI 컨트롤러
-    public GameObject shopPanel; // 상점 패널
-    public GameObject recipeShopPanel; // 레시피 상점 패널
-    public GameObject ingredientShopPanel; // 재료 상점 패널
-    public GameObject panelBlocker; //버튼 눌림 방지용 패널
-    public GameObject PopupManager; // 팝업 매니저 오브젝트
-    public GameObject UpgradeTablePanel; // 테이블 업그레이드 패널
+    public MenuPlannerUI_Controller menuPlannerUI;
+    public InventoryUIController inventoryUI;
+    public GameObject shopPanel;
+    public GameObject recipeShopPanel;
+    public GameObject ingredientShopPanel;
+    public GameObject RecipeBook;
 
-    private InputSystem_Actions inputActions; // 생성된 Input Action C# 클래스
+    // [V2] UI 추가 필드
+    public Button TimeScaleButton; // V2
+    public GameObject panelBlocker; // V2
+    public GameObject PopupManager; // V2
+    public GameObject UpgradeTablePanel; // V2
 
+    // [V1] 직원 UI 추가 필드
+    [Header("직원 UI (V1)")]
+    [Tooltip("PreparePanel에서 열릴 '직원 서브 메뉴' 패널을 연결하세요.")]
+    public GameObject employeeSubMenuPanel; // V1 (EmployeeUI_Controller가 제어)
+
+    // [V2] Input System
+    private InputSystem_Actions inputActions;
+
+    // [V2의 Awake] (Input System 초기화 포함)
     private void Awake()
     {
-        inputActions = new InputSystem_Actions();
+        inputActions = new InputSystem_Actions(); // V2
 
         if (instance == null)
         {
@@ -85,6 +128,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // [V2] Input System 활성화/비활성화
     private void OnEnable()
     {
         inputActions.Enable();
@@ -95,43 +139,87 @@ public class GameManager : MonoBehaviour
         inputActions.Disable();
     }
 
+    // [V1] 주인공 생성 함수
+    void CreateMainCharacter()
+    {
+        if (mainCharacterTemplate != null && EmployeeManager.Instance != null)
+        {
+            if (!EmployeeManager.Instance.hiredEmployees.Any(e => e.isProtagonist))
+            {
+                EmployeeInstance mainCharacter = new EmployeeInstance(mainCharacterTemplate);
+                EmployeeManager.Instance.hiredEmployees.Add(mainCharacter);
+                Debug.Log($"주인공 '{mainCharacter.firstName}'이(가) 식당에 합류했습니다! (데이터 추가)");
+            }
+        }
+    }
+
+    // [V1의 Start] (직원 스폰 로직 포함)
     void Start()
     {
+        // 1. [클린 스폰] 이전에 스폰되었던 Employee 오브젝트를 모두 제거합니다.
+       /* Employee[] existingWorkers = FindObjectsByType<Employee>(FindObjectsSortMode.None);
+        foreach (Employee worker in existingWorkers)
+        {
+            Destroy(worker.gameObject);
+        }
+*/
+        // [공통] 초기화
         currentState = GameState.Preparing;
-        // 게임 내 9시간(09~18시)을 실제 10분으로 계산
         timeScale = (9 * 60 * 60) / dayDurationInSeconds;
-        currentTimeOfDay = 9 * 3600; // 오전 9시에서 시작 (초 단위)
+        currentTimeOfDay = 9 * 3600;
         timeText.text = "09:00";
         dayText.text = "Day " + DayCount;
-        totalGold.text = totalGoldAmount.ToString(); // 총 골드 초기화
-        Time.timeScale = 1; // 초기 시간 배속
+        totalGold.text = totalGoldAmount.ToString(); // V1의 포맷
+
+        Time.timeScale = 1;
         TimeScaleButtonText.text = "X1";
         Debug.Log("오픈 준비 시간입니다.");
         mainCamera = Camera.main;
+
+        // [V1] 주인공 데이터 생성 및 고용 리스트에 추가
+        CreateMainCharacter();
+
+        // [V1] 테스트 스폰 로직
+        if (restaurantManager == null)
+        {
+            Debug.LogError("Restaurant Manager가 연결되지 않았습니다! 직원 스폰 불가.");
+            return;
+        }
+
+        List<(EmployeeInstance data, GameObject prefab)> workersToSpawn = new List<(EmployeeInstance, GameObject)>();
+
+        // 1. 주인공 (고블린 쉐프) 데이터 추가
+        EmployeeInstance mainWorker = EmployeeManager.Instance.hiredEmployees.FirstOrDefault(e => e.isProtagonist);
+        if (mainWorker != null && greenPrefab != null)
+        {
+            workersToSpawn.Add((mainWorker, greenPrefab));
+        }
+
+        // 2. ★★★ 고용된 직원들을 맵에 스폰
+        // (참고: V1의 Start 로직은 기본 주인공만 스폰하고 있습니다. 
+        // 빨간/파란 프리팹 스폰 로직은 HireAndSpawnEmployee 함수로 분리되었습니다.)
+        restaurantManager.SpawnWorkersWithPrefabs(workersToSpawn);
     }
 
+    // [V2의 Update] (정교한 상태 관리)
     void Update()
     {
-        // 가게 운영 상태일 때만 시간이 흐름
         if (currentState == GameState.Open)
         {
             currentTimeOfDay += Time.deltaTime * timeScale;
 
-            // 시간 UI 업데이트 (예: 13:30)
             int hours = (int)(currentTimeOfDay / 3600);
             int minutes = (int)((currentTimeOfDay % 3600) / 60);
             timeText.text = string.Format("{0:D2}:{1:D2}", hours, minutes);
             dayText.text = "Day " + DayCount;
 
-            if (MenuPlanner.instance.isSoldOut)
+            // V2의 조기 마감 로직
+            if (MenuPlanner.instance != null && MenuPlanner.instance.isSoldOut)
             {
-                //손님이 0명인지 확인
-                bool noCustomers = (RestaurantManager.instance.customers.Count == 0);
+                // V1의 restaurantManager 필드 사용 (V2의 instance 접근 수정)
+                bool noCustomers = (restaurantManager.customers.Count == 0);
+                bool anyDirtyTables = restaurantManager.tables.Any(t => t.isDirty);
 
-                //더러운 테이블이 있는지 확인 
-                bool anyDirtyTables = RestaurantManager.instance.tables.Any(t => t.isDirty);
-
-                //손님이 없고, 더러운 테이블도 없을 때만 영업 종료
                 if (noCustomers && !anyDirtyTables)
                 {
                     Debug.Log("완판 후 모든 손님 퇴장 및 테이블 청소 완료. 영업을 종료합니다.");
@@ -139,7 +227,7 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            // 18시가 되면 마감 상태로 변경
+            // 정규 마감
             if (currentTimeOfDay >= 18 * 3600)
             {
                 currentState = GameState.Closing;
@@ -149,13 +237,11 @@ public class GameManager : MonoBehaviour
 
         if (currentState == GameState.Closing)
         {
-            //식당에 손님이 한 명이라도 있는지 확인
-            bool hasCustomers = RestaurantManager.instance.customers.Count > 0;
+            // V1의 restaurantManager 필드 사용 (V2의 instance 접근 수정)
+            bool hasCustomers = restaurantManager.customers.Count > 0;
+            bool hasDirtyTables = restaurantManager.tables.Any(t => t.isDirty);
 
-            //더러운 테이블이 하나라도 있는지 확인
-            bool hasDirtyTables = RestaurantManager.instance.tables.Any(t => t.isDirty);
-
-            //손님도 없고, 더러운 테이블도 없을 때만 '정산' 상태로 넘어감
+            // 손님 없고, 더러운 테이블 없으면 '정산'으로
             if (!hasCustomers && !hasDirtyTables)
             {
                 currentState = GameState.Settlement;
@@ -164,14 +250,57 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // [병합] MoveToNextDay (V2의 Settlement 체크 + V1의 지원자 생성 로직)
+    public void MoveToNextDay()
+    {
+        if (currentState == GameState.Settlement) // V2의 상태 체크
+        {
+            // V2의 리셋 로직
+            timeText.text = "09:00";
+            todaysGold = 0;
+            todaysCustomers = 0;
+            if (MenuPlanner.instance != null)
+            {
+                MenuPlanner.instance.isSoldOut = false; // 완판 상태 초기화
+                MenuPlanner.instance.ClearDailyMenu();
+            }
+
+            if (menuPlannerUI != null)
+            {
+                menuPlannerUI.UpdateTodayMenuUI();
+            }
+
+            // 공통 로직
+            currentState = GameState.Preparing;
+            currentTimeOfDay = 9 * 3600;
+            DayCount += 1;
+            dayText.text = "Day " + DayCount;
+            Debug.Log("다음 날 준비를 시작합니다.");
+
+            // [V1의 7일마다 지원자 생성 로직 추가]
+            if ((DayCount - 1) % 7 == 0 && DayCount > 1)
+            {
+                EmployeeManager.Instance.GenerateApplicants(currentFame);
+                Debug.Log($"[GameManager] {DayCount}일차 아침, 새로운 지원자들을 생성합니다.");
+            }
+        }
+    }
+
+
+    // [V2의 UpdateButtonUI] (TimeScaleButton 및 Settlement 상태 처리)
     private void UpdateButtonUI()
     {
         PreparePanel.SetActive(currentState == GameState.Preparing);
-        NextDayButton.SetActive(currentState == GameState.Settlement);
+        NextDayButton.SetActive(currentState == GameState.Settlement); // V2
+
+        if (OpenButton != null)
+        {
+            OpenButton.gameObject.SetActive(currentState == GameState.Preparing);
+        }
 
         bool isPreparing = (currentState == GameState.Preparing);
 
-        if (TimeScaleButton != null)
+        if (TimeScaleButton != null) // V2
         {
             TimeScaleButton.gameObject.SetActive(currentState == GameState.Open);
         }
@@ -183,28 +312,33 @@ public class GameManager : MonoBehaviour
                 bool canShowButton = isPreparing && totalGoldAmount >= tablePrice;
                 button.SetActive(canShowButton);
             }
-
         }
     }
 
+    // [V2의 OpenTheStore] (시간 리셋 및 StartDaySales 호출)
     public void OpenTheStore()
     {
         if (currentState == GameState.Preparing)
         {
-            if (currentTimeOfDay > 9 * 3600)
+            if (currentTimeOfDay > 9 * 3600) // V2
             {
                 currentTimeOfDay = 9 * 3600;
                 timeText.text = "09:00";
             }
 
             currentState = GameState.Open;
-            menuPlanner.SetActive(false); // 메뉴 기획 패널 닫기
-            MenuPlanner.instance.ConsumeIngredientsForToday();
-            MenuPlanner.instance.StartDaySales();
+            if (menuPlanner != null) menuPlanner.SetActive(false);
+
+            if (MenuPlanner.instance != null)
+            {
+                MenuPlanner.instance.ConsumeIngredientsForToday(); // V2
+                MenuPlanner.instance.StartDaySales(); // V2
+            }
             Debug.Log("영업 시작");
         }
     }
 
+    // [공통] SetStartButtonInteractable
     public void SetStartButtonInteractable(bool isInteractable)
     {
         if (OpenButton != null)
@@ -213,175 +347,214 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void MoveToNextDay()
-    {
-        if (currentState == GameState.Settlement)
-        {
-            timeText.text = "09:00";
-            todaysGold = 0; // 오늘 번 골드 초기화
-            todaysCustomers = 0; // 오늘 방문객 수 초기화
-            MenuPlanner.instance.isSoldOut = false; // 완판 상태 초기화
-
-            if (MenuPlanner.instance != null)
-            {
-                MenuPlanner.instance.ClearDailyMenu(); // 오늘의 메뉴 초기화
-            }
-
-            if (menuPlannerUI != null)
-            {
-                menuPlannerUI.UpdateAllSlotsUI(); // 메뉴 기획 UI 업데이트
-            }
-
-            currentState = GameState.Preparing;
-            currentTimeOfDay = 9 * 3600; // 다음 날 오전 9시로 초기화
-            DayCount += 1; // 며칠째인지 증가
-            dayText.text = "Day " + DayCount;
-            Debug.Log("다음 날 준비를 시작합니다.");
-        }
-    }
-
+    // [공통] closeSettlementPanal
     public void closeSettlementPanal()
     {
-        settlementPanel.SetActive(false); // 일일 정산 패널 닫기
-        CheckButton.SetActive(false); // 확인 버튼 닫기
+        settlementPanel.SetActive(false);
+        CheckButton.SetActive(false);
     }
 
+    // [공통] ShowSettlementPanal
     private void ShowSettlementPanal()
     {
         todaysGoldText.text = $"오늘 확득한 골드량: {todaysGold}";
         totalGoldText.text = $"총 보유 골드: {totalGoldAmount}";
         customerCountText.text = $"금일 방문객 수: {todaysCustomers}";
 
-        settlementPanel.SetActive(true); // 일일 정산 패널 열기
-        CheckButton.SetActive(true); // 확인 버튼 열기
+        settlementPanel.SetActive(true);
+        CheckButton.SetActive(true);
     }
 
+    // [공통] AddGold (V1 포맷 사용)
     public void AddGold(int amount)
     {
-        totalGoldAmount += amount; // 총 골드에 추가
-        todaysGold += amount; // 오늘 번 골드에 추가
-        totalGold.text = totalGoldAmount.ToString(); // UI 업데이트
+        totalGoldAmount += amount;
+        todaysGold += amount;
+        totalGold.text = totalGoldAmount.ToString();
     }
 
+    // [공통] SpendGold (V1 포맷 사용)
     public void SpendGold(int amount)
     {
-        totalGoldAmount -= amount; // 총 골드 차감
-        totalGold.text = totalGoldAmount.ToString(); // UI 업데이트
+        totalGoldAmount -= amount;
+        totalGold.text = totalGoldAmount.ToString();
     }
 
+    // [공통] AddCustomerCount
     public void AddCustomerCount()
     {
-        todaysCustomers += 1; // 오늘 방문한 고객 수 증가
+        todaysCustomers += 1;
     }
 
+    // [공통] ChangeTimeScale
     public void ChangeTimeScale()
     {
         speedState = (speedState + 1) % 3;
-
         switch (speedState)
         {
-            case 0:
-                Time.timeScale = 1;
-                TimeScaleButtonText.text = "X1";
-                break;
-            case 1:
-                Time.timeScale = 2;
-                TimeScaleButtonText.text = "X2";
-                break;
-            case 2:
-                Time.timeScale = 0;
-                TimeScaleButtonText.text = "||";
-                break;
+            case 0: Time.timeScale = 1; TimeScaleButtonText.text = "X1"; break;
+            case 1: Time.timeScale = 2; TimeScaleButtonText.text = "X2"; break;
+            case 2: Time.timeScale = 0; TimeScaleButtonText.text = "||"; break;
         }
     }
 
+    // ---------------------------------------------------
+    // [병합] 패널 여닫기 함수 (V1의 패널 닫기 + V2의 팝업/블로커 관리)
+    // ---------------------------------------------------
+
+    public void OpenRecipeBook()
+    {
+        if (RecipeBook != null) RecipeBook.SetActive(true);
+        if (panelBlocker != null) panelBlocker.SetActive(true);
+        if (PopupManager != null) PopupManager.SetActive(true); // V2
+        CloseRecipeIngredientsPanel();
+    }
+
+    public void CloseRecipeBook()
+    {
+        if (RecipeBook != null) RecipeBook.SetActive(false);
+        if (panelBlocker != null) panelBlocker.SetActive(false);
+        if (PopupManager != null) PopupManager.SetActive(false); // V2
+    }
+
+    // [V2]
     public void OpenUpgradeTablePanel()
     {
-        UpgradeTablePanel.SetActive(true);
-        panelBlocker.SetActive(true);
-        PopupManager.SetActive(true);
+        if (UpgradeTablePanel != null) UpgradeTablePanel.SetActive(true);
+        if (panelBlocker != null) panelBlocker.SetActive(true);
+        if (PopupManager != null) PopupManager.SetActive(true);
     }
 
+    // [병합]
     public void OpenMenuPlanner()
     {
-        menuPlanner.SetActive(true);
-        PopupManager.SetActive(true);
+        if (menuPlanner != null) menuPlanner.SetActive(true);
+        if (RecipeSelection != null) RecipeSelection.SetActive(true);
+        if (panelBlocker != null) panelBlocker.SetActive(true);
+        if (PopupManager != null) PopupManager.SetActive(true); // V2
     }
 
+    // [V2]
     public void CloseMenuPlanner()
     {
-        menuPlanner.SetActive(false);
-        PopupManager.SetActive(false);
+        if (menuPlanner != null) menuPlanner.SetActive(false);
+        if (RecipeSelection != null) RecipeSelection.SetActive(false);
+        if (panelBlocker != null) panelBlocker.SetActive(false);
+        if (PopupManager != null) PopupManager.SetActive(false);
     }
 
-    public void OpenRecipeSelection()
-    {
-        RecipeSelection.SetActive(true);
-        panelBlocker.SetActive(true);
-        PopupManager.SetActive(true);
-    }
-
-    public void CloseRecipeSelection()
-    {
-        RecipeSelection.SetActive(false);
-        panelBlocker.SetActive(false);
-    }
-
+    // [V2]
     public void OpenRecipeIngredientsPanel()
     {
-        recipeIngredientsPanel.SetActive(true);
-        PopupManager.SetActive(true);
+        if (recipeIngredientsPanel != null) recipeIngredientsPanel.SetActive(true);
+        if (PopupManager != null) PopupManager.SetActive(true);
     }
 
+    // [V2]
     public void CloseRecipeIngredientsPanel()
     {
-        recipeIngredientsPanel.SetActive(false);
-        PopupManager.SetActive(false);
+        if (recipeIngredientsPanel != null) recipeIngredientsPanel.SetActive(false);
     }
 
+    // [V2]
     public void OpenInventoryPanel()
     {
-        inventoryUI.OpenInventory();
+        if (inventoryUI != null) inventoryUI.OpenInventory();
         CloseRecipeIngredientsPanel();
-        panelBlocker.SetActive(true);
-        PopupManager.SetActive(true);
+        if (panelBlocker != null) panelBlocker.SetActive(true);
+        if (PopupManager != null) PopupManager.SetActive(true);
     }
 
+    // [V2]
     public void CloseInventoryPanel()
     {
-        inventoryUI.CloseInventory();
-        panelBlocker.SetActive(false);
-        PopupManager.SetActive(false);
+        if (inventoryUI != null) inventoryUI.CloseInventory();
+        if (panelBlocker != null) panelBlocker.SetActive(false);
+        if (PopupManager != null) PopupManager.SetActive(false);
     }
 
+    // [병합]
     public void OpenShopPanel()
     {
-        shopPanel.SetActive(true);
-        panelBlocker.SetActive(true);
-        PopupManager.SetActive(true);
+        if (shopPanel != null) shopPanel.SetActive(true);
+        if (panelBlocker != null) panelBlocker.SetActive(true); // V2
+        if (PopupManager != null) PopupManager.SetActive(true); // V2
     }
 
+    // [V2]
     public void CloseShopPanel()
     {
-        shopPanel.SetActive(false);
-        panelBlocker.SetActive(false);
-        PopupManager.SetActive(false);
+        if (shopPanel != null) shopPanel.SetActive(false);
+        if (panelBlocker != null) panelBlocker.SetActive(false);
+        if (PopupManager != null) PopupManager.SetActive(false);
     }
 
+    // [공통]
     public void OpenRecipeShopPanel()
     {
-        recipeShopPanel.SetActive(true);
-        ingredientShopPanel.SetActive(false);
+        if (recipeShopPanel != null) recipeShopPanel.SetActive(true);
+        if (ingredientShopPanel != null) ingredientShopPanel.SetActive(false);
     }
 
+    // [공통]
     public void OpenIngredientShopPanel()
     {
-        ingredientShopPanel.SetActive(true);
-        recipeShopPanel.SetActive(false);
+        if (ingredientShopPanel != null) ingredientShopPanel.SetActive(true);
+        if (recipeShopPanel != null) recipeShopPanel.SetActive(false);
     }
 
 
+    // --- [V1의 직원 서브메뉴 함수] + V2의 팝업/블로커 로직 추가 ---
 
+    // [병합]
+    public void OpenEmployeeSubMenu()
+    {
+        Debug.Log("GameManager가 EmployeeUI_Controller에게 패널 열기를 요청합니다.");
+
+        // V1: 다른 패널 닫기
+        if (menuPlanner != null) CloseMenuPlanner();
+        if (shopPanel != null) CloseShopPanel();
+
+        // V2: 팝업/블로커 활성화
+        //if (panelBlocker != null) panelBlocker.SetActive(true);
+        if (PopupManager != null) PopupManager.SetActive(true);
+
+        // V1: EmployeeUI_Controller 호출
+        if (EmployeeUI_Controller.Instance != null)
+        {
+            EmployeeUI_Controller.Instance.OpenPanel();
+        }
+
+        StartCoroutine(ClearSelectedObjectDeferred());
+    }
+
+    // [병합]
+    public void CloseEmployeeSubMenu()
+    {
+        // V1
+        if (EmployeeUI_Controller.Instance != null)
+        {
+            EmployeeUI_Controller.Instance.ClosePanel();
+        }
+
+        // V2
+        //if (panelBlocker != null) panelBlocker.SetActive(false);
+        if (PopupManager != null) PopupManager.SetActive(false);
+    }
+
+    // [V1]
+    private IEnumerator ClearSelectedObjectDeferred()
+    {
+        yield return null;
+
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            Debug.Log("EventSystem 포커스 초기화 완료.");
+        }
+    }
+
+    // --- [V2의 AddTable] (RestaurantManager와 연동) ---
     public void AddTable(Transform buttonTransform)
     {
         if (TablePrefab == null)
@@ -390,24 +563,42 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // 골드 차감 로직
+        // V1 포맷 사용
         totalGoldAmount -= tablePrice;
         totalGold.text = totalGoldAmount.ToString();
 
-        // 스크린 좌표를 월드 좌표로 변환
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(buttonTransform.position);
         worldPosition.z = 0f;
-
-        // 변환된 위치에 테이블 생성 및 리스트에 추가
         GameObject newTableObject = Instantiate(TablePrefab, worldPosition, Quaternion.identity);
-        Table newTableComponent = newTableObject.GetComponent<Table>();
 
-        if (newTableComponent != null && RestaurantManager.instance != null)
+        // V2의 핵심 로직 (instance -> V1의 restaurantManager 필드로 수정)
+        Table newTableComponent = newTableObject.GetComponent<Table>();
+        if (newTableComponent != null && restaurantManager != null)
         {
-            RestaurantManager.instance.tables.Add(newTableComponent);
+            restaurantManager.tables.Add(newTableComponent);
         }
 
         Debug.Log($"테이블을 {worldPosition} 위치에 생성했습니다.");
     }
-}
 
+    // --- [V1] 직원 고용 및 스폰 함수 ---
+    public void HireAndSpawnEmployee(EmployeeData dataTemplate, GameObject prefabToSpawn)
+    {
+        // 1. 새로운 직원 인스턴스(데이터) 생성
+        EmployeeInstance newEmployee = new EmployeeInstance(dataTemplate);
+
+        // 2. EmployeeManager의 전체 직원 목록에 이 직원을 추가
+        EmployeeManager.Instance.hiredEmployees.Add(newEmployee);
+        Debug.Log($"{newEmployee.firstName}이(가) 고용되어 리스트에 추가되었습니다.");
+
+        // 3. RestaurantManager의 스폰 함수를 즉시 호출
+        if (restaurantManager != null)
+        {
+            restaurantManager.SpawnSingleWorker(newEmployee, prefabToSpawn);
+        }
+        else
+        {
+            Debug.LogError("GameManager: Restaurant Manager가 연결되지 않았습니다!");
+        }
+    }
+}

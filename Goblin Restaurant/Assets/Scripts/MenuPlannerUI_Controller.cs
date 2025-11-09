@@ -5,111 +5,183 @@ using System.Linq;
 
 public class MenuPlannerUI_Controller : MonoBehaviour
 {
-    public GameObject recipeSelectionPanel;      //레시피 선택 팝업 패널
-    public GameObject selectableRecipePrefab;    //팝업 목록에 표시될 레시피 아이템 프리팹
-    public Transform selectableRecipeContent; //팝업 스크롤 뷰의 Content 오브젝트
+    [Header("팝업 패널")]
+    [Tooltip("수량 조절 팝업 패널 (QuantityPopupController.cs)")]
+    public GameObject quantityPopupPanel;
+    private QuantityPopupController quantityPopup;
 
-    public List<DailyMenuSlotUI> dailyMenuSlots; //5개의 일일 메뉴 슬롯 UI 리스트
+    [Header("오늘의 메뉴 (Left Scroll)")]
+    [Tooltip("'오늘의 메뉴' 스크롤뷰의 Content Transform")]
+    public Transform todayMenuContentParent;
+    [Tooltip("'오늘의 메뉴'에 표시될 아이템 프리팹 (DailyMenuSlotUI.cs)")]
+    public GameObject todayMenuItemPrefab;
 
-    private DailyMenuSlotUI currentEditingSlot;
+    [Header("보유 레시피 (Right Grid)")]
+    [Tooltip("보유 레시피 리스트의 부모 (Grid Layout Group)")]
+    public Transform recipeListContentParent;
+    [Tooltip("보유 레시피 아이템 프리팹 (OwnedRecipeitemUI.cs)")]
+    public GameObject recipeListItemPrefab;
+
+    private PlayerRecipe currentSelectedRecipe;
+
+    private bool isInitialized = false;
 
     void Awake()
     {
-        foreach (var slot in dailyMenuSlots)
+        if (quantityPopupPanel != null)
         {
-            slot.Initialize(this);
+            quantityPopup = quantityPopupPanel.GetComponent<QuantityPopupController>();
         }
     }
 
-    public void OpenRecipeSelectionPanel(DailyMenuSlotUI slot)
+    void Start()
     {
-        currentEditingSlot = slot; 
-        recipeSelectionPanel.SetActive(true);
-        recipeSelectionPanel.transform.SetAsLastSibling();
-        UpdateSelectableRecipeList();
-        GameManager.instance.panelBlocker.SetActive(true);
+        RefreshAllUI();
+        isInitialized = true;
     }
 
-    public void OnRecipeSelectedFromPopup(PlayerRecipe selectedRecipe)
+    void OnEnable()
     {
-        if (currentEditingSlot != null)
+        if (isInitialized)
         {
-            MenuPlanner.instance.SetDailyMenu(currentEditingSlot.slotIndex, selectedRecipe, 1);
-        }
-
-        UpdateAllSlotsUI(); 
-        recipeSelectionPanel.SetActive(false);
-        GameManager.instance.panelBlocker.SetActive(false);
-    }
-
-    public void RemoveRecipeFromDailyMenu(DailyMenuSlotUI slot)
-    {
-        MenuPlanner.instance.SetDailyMenu(slot.slotIndex, null, 0);
-        UpdateAllSlotsUI();
-    }
-
-    public void ChangeRecipeQuantity(PlayerRecipe recipe, int amount)
-    {
-        if (recipe == null) return;
-
-        int currentQuantity = MenuPlanner.instance.GetQuantity(recipe.data.id);
-        int maxQuantity = InventoryManager.instance.GetMaxCookableAmount(recipe);
-        int newQuantity = currentQuantity + amount;
-
-        if (newQuantity >= 1 && newQuantity <= maxQuantity)
-        {
-            MenuPlanner.instance.SetQuantity(recipe.data.id, newQuantity);
-            UpdateAllSlotsUI(); 
+            RefreshAllUI();
         }
     }
 
-    private void UpdateSelectableRecipeList()
+    private void RefreshAllUI()
     {
-        foreach (Transform child in selectableRecipeContent)
+        if (MenuPlanner.instance == null || RecipeManager.instance == null)
+        {
+            Debug.LogWarning("MenuPlannerUI: Managers가 아직 준비되지 않았습니다.");
+            return;
+        }
+
+        UpdateTodayMenuUI();
+        PopulateRecipeList();
+
+        if (quantityPopupPanel != null)
+        {
+            quantityPopupPanel.SetActive(false);
+        }
+    }
+
+    void PopulateRecipeList()
+    {
+        if (recipeListContentParent == null || recipeListItemPrefab == null) return;
+
+        foreach (Transform child in recipeListContentParent)
         {
             Destroy(child.gameObject);
         }
 
-        var alreadyAddedIDs = MenuPlanner.instance.dailyMenu.Where(r => r != null).Select(r => r.data.id);
-
-        foreach (var playerRecipe in RecipeManager.instance.playerRecipes.Values)
+        foreach (var recipeData in GameDataManager.instance.GetAllRecipeData())
         {
-            if (!alreadyAddedIDs.Contains(playerRecipe.data.id))
-            {
-                bool canCook = InventoryManager.instance.CanCook(playerRecipe);
+            GameObject itemGO = Instantiate(recipeListItemPrefab, recipeListContentParent);
 
-                GameObject itemGO = Instantiate(selectableRecipePrefab, selectableRecipeContent);
-                itemGO.GetComponent<SelectableRecipeItemUI>().Setup(playerRecipe, canCook, this);
-            }
+            OwnedRecipeItemUI itemUI = itemGO.GetComponent<OwnedRecipeItemUI>();
+
+            itemUI.Setup(recipeData, this);
         }
     }
 
-    public void UpdateAllSlotsUI() // public으로 변경
+    public void UpdateTodayMenuUI()
     {
-        for (int i = 0; i < dailyMenuSlots.Count; i++)
+        if (todayMenuContentParent == null || todayMenuItemPrefab == null) return;
+
+        foreach (Transform child in todayMenuContentParent)
         {
-            PlayerRecipe recipe = MenuPlanner.instance.dailyMenu[i];
+            Destroy(child.gameObject);
+        }
+
+        var dailyMenu = MenuPlanner.instance.dailyMenu;
+
+        bool isEmpty = true; 
+
+        for (int i = 0; i < dailyMenu.Length; i++)
+        {
+            PlayerRecipe recipe = dailyMenu[i];
+            GameObject itemGO = Instantiate(todayMenuItemPrefab, todayMenuContentParent);
+            DailyMenuSlotUI slotUI = itemGO.GetComponent<DailyMenuSlotUI>();
+
             if (recipe != null)
             {
-                int quantity = MenuPlanner.instance.GetQuantity(recipe.data.id);
-                dailyMenuSlots[i].SetData(recipe, quantity);
+                isEmpty = false;
 
-                // int max = InventoryManager.instance.GetMaxCookableAmount(recipe); // InventoryManager 필요
-                int max = 99; // 임시 최대 수량
-                if (dailyMenuSlots[i].plusButton != null) dailyMenuSlots[i].plusButton.interactable = (quantity < max);
-                if (dailyMenuSlots[i].minusButton != null) dailyMenuSlots[i].minusButton.interactable = (quantity > 1);
+                int quantity = MenuPlanner.instance.GetQuantity(recipe.data.id);
+                slotUI.SetData(recipe, quantity);
             }
             else
             {
-                dailyMenuSlots[i].ClearData();
+                slotUI.ClearData();
             }
         }
 
-        bool canStartBusiness = MenuPlanner.instance.dailyMenu.Any(r => r != null);
+        bool canStartBusiness = !isEmpty;
+
         if (GameManager.instance != null)
         {
-            // ★ '영업 시작' 버튼의 '상태'만 변경하도록 수정합니다.
             GameManager.instance.SetStartButtonInteractable(canStartBusiness);
         }
+    }
+
+    public void OpenQuantityPopup(PlayerRecipe recipe)
+    {
+        currentSelectedRecipe = recipe;
+
+        if (quantityPopupPanel != null && quantityPopup != null)
+        {
+            quantityPopupPanel.SetActive(true);
+            quantityPopupPanel.transform.SetAsLastSibling();
+            quantityPopup.Show(recipe, this);
+        }
+    }
+
+    public void OnConfirmQuantity(PlayerRecipe recipe, int quantity)
+    {
+        int emptySlotIndex = -1;
+        for (int i = 0; i < MenuPlanner.instance.dailyMenu.Length; i++)
+        {
+            if (MenuPlanner.instance.dailyMenu[i] == null)
+            {
+                emptySlotIndex = i;
+                break;
+            }
+        }
+
+        if (emptySlotIndex != -1)
+        {
+            MenuPlanner.instance.SetDailyMenu(emptySlotIndex, recipe, quantity);
+        }
+        else
+        {
+            NotificationController.instance.ShowNotification("오늘의 메뉴가 꽉 찼습니다!");
+        }
+
+        RefreshAllUI();
+        CloseQuantityPopup();
+    }
+
+    public void CloseQuantityPopup()
+    {
+        if (quantityPopupPanel != null)
+        {
+            quantityPopupPanel.SetActive(false);
+        }
+    }
+
+    public void RemoveRecipeFromDailyMenu(PlayerRecipe recipe)
+    {
+        if (recipe == null) return;
+
+        for (int i = 0; i < MenuPlanner.instance.dailyMenu.Length; i++)
+        {
+            if (MenuPlanner.instance.dailyMenu[i] == recipe)
+            {
+                MenuPlanner.instance.SetDailyMenu(i, null, 0);
+                break;
+            }
+        }
+
+        RefreshAllUI();
     }
 }

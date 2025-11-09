@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7d606e2f1896dd4d9b8a23ae32566bb, type: 3}
+  m_Name: "\uACE0\uBE14\uB9B0 \uAF2C\uCE58 \uAD6C\uC774"
+  m_EditorClassIdentifier: Assembly-CSharp::RecipeData
+  recipeName: "\uACE0\uBE14\uB9B0 \uAF2C\uCE58 \uAD6C\uC774"
+  icon: {fileID: -8251743597302500618, guid: e7fc0d1f321ad4e4da7da92b01ccb3b0, type: 3}
+  description: "\uACE0\uBE14\uB9B0\uB4E4\uC774 \uC990\uACA8 \uBA39\uB294 \uAC04\uB2E8\uD55C
+    \uAF2C\uCE58\uAD6C\uC774"
+  basePrice: 15
+  baseCookTime: 8
+  requirements:
+  - ingredient: {fileID: 11400000, guid: 7713ebb394143c04e8b3255c42cdf938, type: 2}
+    amount: 2
+  - ingredient: {fileID: 11400000, guid: a8e7a2af922809f4887ad08689990e36, type: 2}
+    amount: 1

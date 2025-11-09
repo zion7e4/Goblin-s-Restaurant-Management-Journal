@@ -3,6 +3,15 @@ using System.Collections;
 using System.Linq;
 using System.Drawing;
 using TMPro;
+using System.Collections.Generic;
+using UnityEngine.UI;
+
+[System.Serializable]
+public class SatisfactionIcon
+{
+    public SatisfactionLevel level; // (SatisfactionManager.cs에 정의됨)
+    public Sprite icon;
+}
 
 public class Customer : MonoBehaviour
 {
@@ -11,6 +20,7 @@ public class Customer : MonoBehaviour
     public GameObject orderIconPrefab; 
     public Transform iconSpawnPoint;   // 아이콘이 표시될 머리 위 위치
     public GameObject RestaurantReviwe; // 만족도 표시 텍스트
+    public List<SatisfactionIcon> satisfactionIcons;
     private GameObject currentOrderIcon; // 현재 떠 있는 아이콘을 저장할 변수
 
     private Transform targetTable;
@@ -20,6 +30,7 @@ public class Customer : MonoBehaviour
     private PlayerRecipe myOrderedRecipe;
     private float foodWaitStartTime; // 음식을 기다리기 시작한 시간
     private int satisfactionScore;   // 최종 만족도 점수
+    private EmployeeInstance serverEmployee;
 
     public void Initialize(Transform table, Transform exit)
     {
@@ -48,6 +59,23 @@ public class Customer : MonoBehaviour
                 Destroy(gameObject, 2f);
                 break;
         }
+    }
+    /// <summary>
+    /// Employee가 이 함수를 호출하여 음식을 전달합니다.
+    /// </summary>
+    /// <param name="server">음식을 가져다준 직원(Employee)의 데이터</param>
+    public void ReceiveFood(EmployeeInstance server) // (수정: 파라미터 추가)
+    {
+        // ▼▼▼ [2. 서빙한 직원 정보 저장] ▼▼▼
+        this.serverEmployee = server;
+
+        if (currentOrderIcon != null)
+        {
+            Destroy(currentOrderIcon);
+        }
+
+        currentState = CustomerState.Eating;
+        StartCoroutine(EatAndLeave());
     }
 
     IEnumerator DecideMenuCoroutine()
@@ -120,39 +148,80 @@ public class Customer : MonoBehaviour
         CalculateSatisfaction();
         SatisfactionLevel level = GetSatisfactionLevel();
         int price = myOrderedRecipe.GetCurrentPrice();
-        float tipRate = 0f;
 
+        // [수정] 팁은 0으로 초기화하고, 확률에 따라 별도 계산
+        int tip = 0;
+
+        // 만족도에 따른 '명성' 변화 (기획서와 다를 수 있으나, 기존 로직 유지)
         switch (level)
         {
             case SatisfactionLevel.VerySatisfied:
-                tipRate = 0.20f;
                 FameManager.instance.AddFame(20f);
                 break;
             case SatisfactionLevel.Satisfied:
-                tipRate = 0.10f;
                 FameManager.instance.AddFame(10f);
                 break;
             case SatisfactionLevel.Normal:
                 FameManager.instance.AddFame(5f);
-                tipRate = 0.05f;
                 break;
             case SatisfactionLevel.VeryDissatisfied:
                 FameManager.instance.DecreaseFame(1f);
                 break;
         }
 
-        int tip = (int)(price * tipRate);
+        // --- [추가] 기획서의 '매력' 기반 팁 공식 적용 --- 
+
+        // 1. 나를 서빙한 직원의 '매력' 스탯을 가져옵니다.
+        int charmStat = 0;
+        if (serverEmployee != null) // (ReceiveFood에서 이 변수가 설정되었어야 함)
+        {
+            charmStat = serverEmployee.currentCharmStat;
+        }
+
+        // 2. 기획서 공식으로 팁 확률 계산 
+        float baseTipChance = 5f; // (기본 팁 확률 5%로 임시 설정)
+        float finalTipChance = baseTipChance + (charmStat * 0.3f);
+        finalTipChance = Mathf.Clamp(finalTipChance, 0f, 100f); // 0~100% 사이로 고정
+
+        // 3. 팁 획득 시도
+        if (Random.Range(0f, 100f) < finalTipChance)
+        {
+            tip = Mathf.RoundToInt(price * 0.1f); // (예: 음식값의 10%)
+            Debug.Log($"[팁 발생!] 매력({charmStat}) 보너스로 {tip}G 팁 획득! (확률: {finalTipChance:F1}%)");
+        }
+
         int totalPayment = price + tip;
         GameManager.instance.AddGold(totalPayment);
 
-        if(RestaurantReviwe != null && iconSpawnPoint != null)
+        if (RestaurantReviwe != null && iconSpawnPoint != null)
         {
             GameObject textObj = Instantiate(RestaurantReviwe, iconSpawnPoint.position, Quaternion.identity);
             textObj.transform.SetParent(iconSpawnPoint);
+
             TextMeshProUGUI textMesh = textObj.GetComponent<TextMeshProUGUI>();
-            if(textMesh != null)
+
+            Image iconImage = textObj.GetComponentInChildren<Image>();
+
+            Sprite spriteToUse = null;
+            if (satisfactionIcons != null)
             {
-                textMesh.text = $"지불금액: {totalPayment}G\n만족도: {GetSatisfactionString(level)}";
+                spriteToUse = satisfactionIcons.FirstOrDefault(s => s.level == level)?.icon;
+            }
+
+            if (iconImage != null && spriteToUse != null)
+            {
+                iconImage.sprite = spriteToUse;
+                iconImage.gameObject.SetActive(true);
+            }
+            else if (iconImage != null)
+            {
+                iconImage.gameObject.SetActive(false);
+            }
+
+            if (textMesh != null)
+            {
+                string tipText = (tip > 0) ? $"\n(팁: {tip}G)" : "";
+                textMesh.text = $"지불금액: {totalPayment}G{tipText}\n만족도: {GetSatisfactionString(level)}";
             }
         }
         Debug.Log($"만족도: {satisfactionScore} ({level}) | 음식값: {price}G + 팁: {tip}G = 총 {totalPayment}G 지불");
@@ -163,7 +232,6 @@ public class Customer : MonoBehaviour
         currentState = CustomerState.Leaving;
         RestaurantManager.instance.customers.Remove(this);
     }
-
     string GetSatisfactionString(SatisfactionLevel level)
     {
         switch (level)
@@ -197,6 +265,18 @@ public class Customer : MonoBehaviour
         if (RestaurantManager.instance.cleanliness >= 90) satisfactionScore += 10;
         else if (RestaurantManager.instance.cleanliness < 50) satisfactionScore -= 10;
 
+        // --- 시너지로 인한 서비스 점수 보너스 적용 ---
+        if (SynergyManager.Instance != null)
+        {
+            int serviceBonus = SynergyManager.Instance.GetServiceScoreBonus();
+            satisfactionScore += serviceBonus; // "활기찬 식당"(+2) 또는 "공포의 홀"(-2) [cite: 107, 116]
+            if (serviceBonus != 0)
+            {
+                Debug.Log($"[시너지] 서비스 점수 보너스 {serviceBonus}점 적용!");
+            }
+        }
+        // --- 적용 완료 ---
+
         satisfactionScore = Mathf.Clamp(satisfactionScore, 0, 100); // 최종 점수를 0~100 사이로 고정
     }
 
@@ -204,7 +284,7 @@ public class Customer : MonoBehaviour
     {
         if (satisfactionScore <= 20) return SatisfactionLevel.VeryDissatisfied;
         if (satisfactionScore <= 40) return SatisfactionLevel.Dissatisfied;
-        if (satisfactionScore <= 60) return SatisfactionLevel.Normal; 
+        if (satisfactionScore <= 60) return SatisfactionLevel.Normal;
         if (satisfactionScore <= 80) return SatisfactionLevel.Satisfied;
         return SatisfactionLevel.VerySatisfied;
     }
