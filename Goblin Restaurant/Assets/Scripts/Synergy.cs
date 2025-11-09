@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System; // EmployeeState를 사용하기 위해 필요 (Employee.cs와 동일한 네임스페이스 가정)
 
 /// <summary>
 /// 시너지 발동을 위한 개별 '종족' 조건 (예: '엘프' 1명)
@@ -17,8 +16,8 @@ public class SynergyCondition
     [Tooltip("특정 위치에 배치되어야 하는지 여부 (예: '주방')")]
     public bool requirePlacement = false;
 
-    [Tooltip("필요한 배치 위치 (Employee.cs의 EmployeeState enum과 일치해야 함)")]
-    public Employee.EmployeeState requiredPlacement; // 'Cooking' 또는 'Serving' 등
+    [Tooltip("필요한 역할 (EmployeeRole enum)")]
+    public EmployeeRole requiredRole;
 }
 
 /// <summary>
@@ -36,8 +35,8 @@ public class SynergyTraitCondition
     [Tooltip("특정 위치에 배치되어야 하는지 여부 (예: '주방')")]
     public bool requirePlacement = false;
 
-    [Tooltip("필요한 배치 위치 (Employee.cs의 EmployeeState enum과 일치해야 함)")]
-    public Employee.EmployeeState requiredPlacement;
+    [Tooltip("필요한 역할 (EmployeeRole enum)")]
+    public EmployeeRole requiredRole;
 }
 
 
@@ -60,7 +59,7 @@ public class Synergy : ScriptableObject
 
     [Header("시너지 발동 조건")]
     [Tooltip("종족 기반 조건 (모두 만족해야 함)")]
-    public List<SynergyCondition> speciesConditions; // (이전 'conditions' 리스트)
+    public List<SynergyCondition> speciesConditions;
 
     [Tooltip("특성 기반 조건 (모두 만족해야 함)")]
     public List<SynergyTraitCondition> traitConditions;

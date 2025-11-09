@@ -66,6 +66,12 @@ public class EmployeeInstance
     /// </summary>
     public List<Trait> currentTraits;
 
+    /// <summary>
+    [Tooltip("직원 관리창에서 할당된 역할 (주방, 홀)")]
+    public EmployeeRole assignedRole = EmployeeRole.Unassigned;
+
+    public EmployeeGrade grade;
+
     // --- 생성자 ---
 
     /// <summary>
@@ -83,6 +89,9 @@ public class EmployeeInstance
         currentCookingStat = applicant.GeneratedCookingStat;
         currentServingStat = applicant.GeneratedServingStat;
         currentCharmStat = applicant.GeneratedCharmStat;
+
+        // 지원자의 등급을 복사합니다.
+        this.grade = applicant.grade;
 
         // 일반 직원은 false로 설정
         isProtagonist = false;
@@ -104,6 +113,9 @@ public class EmployeeInstance
         currentServingStat = baseData.baseServingStat;
         currentCharmStat = baseData.baseCharmStat;
         currentTraits = new List<Trait>(); // 주인공은 기본 특성 없음으로 시작 (수정 가능)
+
+        // (주인공의 기본 등급을 C등급으로 설정. 필요시 수정)
+        this.grade = EmployeeGrade.C;
 
         // 주인공 여부를 설정합니다.
         isProtagonist = true;
@@ -154,13 +166,29 @@ public class EmployeeInstance
         if (skillPoints > 0)
         {
             skillPoints--;
-            currentCharmStat++; // [수정]
-            Debug.Log($"{firstName}: 매력 스탯이 {currentCharmStat}으로 증가했습니다. 남은 포인트: {skillPoints}"); // [수정]
+            currentCharmStat++;
+            Debug.Log($"{firstName}: 매력 스탯이 {currentCharmStat}으로 증가했습니다. 남은 포인트: {skillPoints}");
             return true;
         }
-        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 매력 스탯을 올릴 수 없습니다."); // [수정]
+        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 매력 스탯을 올릴 수 없습니다.");
         return false;
     }
+    /// <summary>
+    /// 이 직원이 가진 모든 특성에서 '식재료 절약' 보너스 총합을 반환합니다.
+    /// </summary>
+    public float GetTraitSaveChance()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+
+        // 모든 특성의 'ingredientSaveChance' 값을 합산
+        // (보통 "손재주" 특성만 0.15f 값을 가질 것입니다)
+        return currentTraits.Sum(trait => trait.ingredientSaveChance);
+    }
+
+
     /// <summary>
     /// (기획서 기준) 직원을 1레벨업 시킵니다.
     /// 골드 소모, 최대 레벨 체크, SP 1 획득이 이루어집니다.
@@ -168,19 +196,34 @@ public class EmployeeInstance
     /// <returns>레벨업 성공 여부</returns>
     public bool TryLevelUp()
     {
-        // 1. 최대 레벨인지 확인 (기획서 기준)
-        // (참고: 이 기능은 EmployeeData에 '등급(Grade)' 변수가 있어야 완벽히 작동합니다)
-        // int maxLevel = BaseData.GetMaxLevelForGrade(); // (예시)
-        int maxLevel = 50; // (임시: 기획서 S등급 최대 레벨 50)
+        // 1. 등급(Grade)에 따라 최대 레벨을 결정합니다. (기획서 기준)
+        int maxLevel;
+        switch (this.grade)
+        {
+            case EmployeeGrade.C:
+                maxLevel = 20;
+                break;
+            case EmployeeGrade.B:
+                maxLevel = 30;
+                break;
+            case EmployeeGrade.A:
+                maxLevel = 40;
+                break;
+            case EmployeeGrade.S:
+                maxLevel = 50;
+                break;
+            default:
+                maxLevel = 20; // 기본값 C등급
+                break;
+        }
 
         if (currentLevel >= maxLevel)
         {
-            Debug.LogWarning($"{firstName}은(는) 이미 최대 레벨({maxLevel})입니다.");
+            Debug.LogWarning($"{firstName}({this.grade}등급)은(는) 이미 최대 레벨({maxLevel})입니다.");
             return false;
         }
 
         // 2. 골드 소모 확인 (기획서 기준)
-        // (TODO: PlayerRecipe처럼 LevelTable을 만들거나 공식을 적용해야 합니다)
         // (기획서 예시: 다음 레벨 비용 = 현재 레벨 비용 * 1.1)
         int requiredGold = (int)(100 * Mathf.Pow(1.1f, currentLevel - 1)); // (기획서 10% 증가 공식 임시 적용)
 
@@ -191,11 +234,64 @@ public class EmployeeInstance
         }
 
         // 3. 골드 소모 및 레벨업 처리
-        GameManager.instance.SpendGold(requiredGold); // (GameManager에 SpendGold 함수가 필요합니다)
+        GameManager.instance.SpendGold(requiredGold);
         currentLevel++;
         skillPoints++; // ★★★ 기획서대로 SP 1 지급 ★★★
 
         Debug.Log($"[레벨업!] {firstName} (Lv. {currentLevel}), SP +1. (비용: {requiredGold}G)");
         return true;
+    }
+    /// <summary>
+    /// 이 직원이 가진 모든 특성에서 '식재료 훔칠' 보너스 총합을 반환합니다.
+    /// </summary>
+    public float GetTraitStealChance()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+
+        // 모든 특성의 'ingredientStealChance' 값을 합산
+        // (보통 "식탐" 특성만 0.15f 값을 가질 것입니다)
+        return currentTraits.Sum(trait => trait.ingredientStealChance);
+    }
+    /// <summary>
+    /// 이 직원이 가진 모든 특성에서 '요리 스탯 배율' 보너스 총합을 반환합니다.
+    /// </summary>
+    public float GetTraitCookingStatMultiplier()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+
+        // 모든 특성의 'cookingStatMultiplier' 값을 합산
+        // (보통 "꼼꼼함" 특성만 0.1f 값을 가질 것입니다)
+        return currentTraits.Sum(trait => trait.cookingStatMultiplier);
+    }
+    /// <summary>
+    /// 이 직원이 가진 모든 특성에서 '이동 속도 배율' 보너스 총합을 반환합니다.
+    /// </summary>
+    public float GetTraitMoveSpeedMultiplier()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+        // "게으름"(-0.1) 같은 특성의 값을 합산
+        return currentTraits.Sum(trait => trait.moveSpeedMultiplier);
+    }
+
+    /// <summary>
+    /// 이 직원이 가진 모든 특성에서 '작업 속도 배율' 보너스 총합을 반환합니다.
+    /// </summary>
+    public float GetTraitWorkSpeedMultiplier()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+        // "게으름"(-0.1) 같은 특성의 값을 합산
+        return currentTraits.Sum(trait => trait.workSpeedMultiplier);
     }
 }

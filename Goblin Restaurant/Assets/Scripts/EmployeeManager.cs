@@ -47,10 +47,6 @@ public class EmployeeManager : MonoBehaviour
             return;
         }
 
-        // (기존 명성도 기반 계산식 주석 처리)
-        // int minApplicantsRaw = 1 + (currentFame / 1500);
-        // int maxApplicantsRaw = 2 + (currentFame / 1000);
-
         // 기획서 기준으로 3~5명의 후보가 등장 
         int minApplicantsRaw = 3;
         int maxApplicantsRaw = 5;
@@ -65,7 +61,7 @@ public class EmployeeManager : MonoBehaviour
         int applicantCount = Random.Range(finalMinLimit, finalMaxLimit + 1);
 
         // 최종 생성될 지원자 수를 확인합니다.
-        Debug.Log($"[지원자 수 제한 확인] 명성도: {currentFame}, 최종 생성 수: {applicantCount} (기획서 기준 3~5명)");
+        Debug.Log($"[지원자 수 제한 확인] 명성도: {currentFame}, 최종 생성 수: {applicantCount}");
 
 
         for (int i = 0; i < applicantCount; i++)
@@ -73,11 +69,8 @@ public class EmployeeManager : MonoBehaviour
             // 유효한 템플릿 리스트 중에서 랜덤 선택
             EmployeeData selectedSpecies = validTemplates[Random.Range(0, validTemplates.Count)];
 
-            // (능력치 배율) 최대 4.0까지 (0 ~ 400 / 100)
             float fameMultiplier = (float)currentFame / 100f;
 
-            // [참고] 이 스탯 계산식은 기획서의 '등급' 기반이 아닌 '명성도' 기반으로 유지했습니다.
-            // 스탯이 너무 낮다면, EmployeeData의 base...Stat이나 ...GrowthFactor 값을 조정해주세요.
             int finalCook = Random.Range(selectedSpecies.baseCookingStat + (int)(fameMultiplier * selectedSpecies.cookingGrowthFactor * 0.8f), selectedSpecies.baseCookingStat + (int)(fameMultiplier * selectedSpecies.cookingGrowthFactor * 1.2f) + 1);
             int finalServe = Random.Range(selectedSpecies.baseServingStat + (int)(fameMultiplier * selectedSpecies.servingGrowthFactor * 0.8f), selectedSpecies.baseServingStat + (int)(fameMultiplier * selectedSpecies.servingGrowthFactor * 1.2f) + 1);
             int finalCharm = Random.Range(selectedSpecies.baseCharmStat + (int)(fameMultiplier * selectedSpecies.charmGrowthFactor * 0.8f), selectedSpecies.baseCharmStat + (int)(fameMultiplier * selectedSpecies.charmGrowthFactor * 1.2f) + 1);
@@ -95,31 +88,34 @@ public class EmployeeManager : MonoBehaviour
                 firstName = selectedSpecies.possibleFirstNames[Random.Range(0, selectedSpecies.possibleFirstNames.Count)];
             }
 
+            // --- 1. 등급(Grade) 추첨 ---
+            EmployeeGrade finalGrade = DetermineGrade(currentFame);
+
+            // --- 2. 특성(Trait) 추첨 ---
             List<Trait> finalTraits = new List<Trait>();
-            // Null 체크: possibleTraits 리스트가 Null이 아니며, 항목이 있는지 확인
             if (selectedSpecies.possibleTraits != null && selectedSpecies.possibleTraits.Any())
             {
-                // (기존 코드 주석 처리)
-                // float famePercent = (float)currentFame / 400f;
-                // float traitChance = 5f + (famePercent * 40f); 
-
                 // 40%를 기본 확률로, 100 명성도당 10%씩 증가
                 float traitChance = 40f + ((float)currentFame / 100f) * 10f;
-
-                // (안전 장치) 확률이 100%를 넘지 않도록 제한합니다.
                 traitChance = Mathf.Min(traitChance, 100f);
 
-                if (Random.Range(0, 100) < traitChance)
+                if (UnityEngine.Random.Range(0, 100) < traitChance)
                 {
                     Trait selectedTrait = selectedSpecies.possibleTraits[Random.Range(0, selectedSpecies.possibleTraits.Count)];
-                    if (selectedTrait != null) // 선택된 특성 객체 자체도 Null인지 체크
+                    if (selectedTrait != null)
                     {
                         finalTraits.Add(selectedTrait);
                     }
                 }
             }
 
-            GeneratedApplicant newApplicant = new GeneratedApplicant(selectedSpecies, firstName, jobTitle, finalCook, finalServe, finalCharm, finalTraits);
+            // --- 3. 생성자 호출 (등급 전달) ---
+            GeneratedApplicant newApplicant = new GeneratedApplicant(
+                selectedSpecies, firstName, jobTitle,
+                finalCook, finalServe, finalCharm,
+                finalTraits, finalGrade);
+
+            applicants.Add(newApplicant);
         }
 
         // 지원자 목록 UI 갱신 (Null 체크 추가)
@@ -128,6 +124,50 @@ public class EmployeeManager : MonoBehaviour
             EmployeeUI_Controller.Instance.UpdateApplicantListUI(applicants);
         }
     }
+
+    /// <summary>
+    /// 현재 명성도를 기반으로 직원의 등급(S,A,B,C)을 랜덤하게 결정합니다.
+    /// (확률 수정을 원하면 이 함수 내부의 숫자만 변경하면 됩니다)
+    /// </summary>
+    private EmployeeGrade DetermineGrade(int currentFame)
+    {
+        // --- 확률 설정 (0.0 ~ 1.0 사이 값) ---
+
+        // 1. 명성 비율을 계산 (0.0 ~ 1.0 사이)
+        float fameRatio = (float)currentFame / 400f;
+
+        // 2. (★수정★) 명성도가 400을 넘어도 비율이 1.0을 넘지 않도록 제한
+        fameRatio = Mathf.Clamp01(fameRatio); // 0.0 ~ 1.0 사이로 고정
+
+        // S등급: 5% (명성 0) ~ 10% (명성 400)
+        float s_Chance = 0.05f + (fameRatio * 0.05f);
+        // A등급: 10% (명성 0) ~ 25% (명성 400)
+        float a_Chance = 0.10f + (fameRatio * 0.15f);
+        // B등급: 25% (명성 0) ~ 30% (명성 400)
+        float b_Chance = 0.25f + (fameRatio * 0.05f);
+        // C등급: 나머지 확률 (자동 계산)
+
+        // --- 추첨 ---
+        float gradeRoll = UnityEngine.Random.Range(0f, 1f);
+
+        if (gradeRoll < s_Chance)
+        {
+            return EmployeeGrade.S;
+        }
+        else if (gradeRoll < s_Chance + a_Chance)
+        {
+            return EmployeeGrade.A;
+        }
+        else if (gradeRoll < s_Chance + a_Chance + b_Chance)
+        {
+            return EmployeeGrade.B;
+        }
+        else
+        {
+            return EmployeeGrade.C;
+        }
+    }
+
 
     public void HireEmployee(GeneratedApplicant applicantToHire)
     {
@@ -180,7 +220,6 @@ public class EmployeeManager : MonoBehaviour
     /// </summary>
     public void DismissEmployee(EmployeeInstance employeeToDismiss)
     {
-        // (이 함수는 수정되지 않았습니다)
         if (hiredEmployees.Contains(employeeToDismiss))
         {
             hiredEmployees.Remove(employeeToDismiss);

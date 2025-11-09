@@ -49,53 +49,36 @@ public class SynergyManager : MonoBehaviour
 
     /// <summary>
     /// 특정 시너지의 모든 발동 조건을 확인합니다.
-    /// (참고: 이 함수는 아직 '배치' 조건은 확인하지 않습니다.)
-    /// </summary>
-    /// <summary>
-    /// 특정 시너지의 모든 발동 조건을 확인합니다.
-    /// (참고: 이 함수는 아직 '배치' 조건은 확인하지 않습니다.)
     /// </summary>
     private bool CheckSynergyConditions(Synergy synergy, List<EmployeeInstance> employees)
     {
         // --- 1. 종족 조건 검사 ---
         if (synergy.speciesConditions != null && synergy.speciesConditions.Count > 0)
         {
-            // 시너지의 '모든' 종족 조건을 만족해야 함
             foreach (SynergyCondition condition in synergy.speciesConditions)
             {
-                // 1. 특정 종족(species)의 직원이
-                // 2. condition.minCount 만큼 있는지 확인
-                int count = employees.Count(emp => emp.BaseData == condition.species);
+                // 배치(Role) 조건까지 포함하여 카운트
+                int count = employees.Count(emp =>
+                    emp.BaseData == condition.species &&
+                    (!condition.requirePlacement || emp.assignedRole == condition.requiredRole)
+                );
 
-                // (TODO: '배치' 조건 확인 로직)
-                // if (condition.requirePlacement) { ... }
-
-                // 조건을 만족하는 직원이 1명이라도 부족하면 즉시 실패
-                if (count < condition.minCount)
-                {
-                    return false;
-                }
+                if (count < condition.minCount) return false;
             }
         }
 
         // --- 2. 특정 특성 조합 검사 ---
         if (synergy.traitConditions != null && synergy.traitConditions.Count > 0)
         {
-            // 시너지의 '모든' 특성 조건을 만족해야 함
             foreach (SynergyTraitCondition condition in synergy.traitConditions)
             {
-                // 1. 특정 특성(requiredTrait)을 가진 직원이
-                // 2. condition.minCount 만큼 있는지 확인
-                int count = employees.Count(emp => emp.currentTraits.Contains(condition.requiredTrait));
+                // 배치(Role) 조건까지 포함하여 카운트
+                int count = employees.Count(emp =>
+                    emp.currentTraits.Contains(condition.requiredTrait) &&
+                    (!condition.requirePlacement || emp.assignedRole == condition.requiredRole)
+                );
 
-                // (TODO: '배치' 조건 확인 로직)
-                // if (condition.requirePlacement) { ... }
-
-                // 조건을 만족하는 직원이 1명이라도 부족하면 즉시 실패
-                if (count < condition.minCount)
-                {
-                    return false;
-                }
+                if (count < condition.minCount) return false;
             }
         }
 
@@ -105,15 +88,10 @@ public class SynergyManager : MonoBehaviour
             int totalNegativeTraits = 0;
             foreach (EmployeeInstance emp in employees)
             {
-                // (Trait.cs에 isPositive 변수가 있다고 가정)
                 totalNegativeTraits += emp.currentTraits.Count(trait => !trait.isPositive);
             }
 
-            // 요구하는 부정적 특성 개수보다 적으면 실패
-            if (totalNegativeTraits < synergy.minNegativeTraitCount)
-            {
-                return false;
-            }
+            if (totalNegativeTraits < synergy.minNegativeTraitCount) return false;
         }
 
         // (예외 처리: 아무 조건도 없으면 발동 안 함)
@@ -132,18 +110,48 @@ public class SynergyManager : MonoBehaviour
     // --- 다른 스크립트가 효과를 물어볼 수 있는 함수들 ---
 
     /// <summary>
-    /// (Employee.cs가 호출) 현재 발동 중인 '요리 속도' 보너스 총합을 반환합니다.
-    /// (예: 0.05f (5%) 반환)
+    /// (Employee.cs가 호출) '특정 직원'에게 적용되는 '요리 속도' 보너스 총합을 반환합니다.
     /// </summary>
-    public float GetCookingSpeedBonus()
+    public float GetCookingSpeedBonus(EmployeeInstance employee)
     {
-        // (TODO: 이 직원이 시너지 대상인지 확인하는 로직 필요)
-        return activeSynergies.Sum(s => s.cookingSpeedBonus);
+        float totalBonus = 0f;
+
+        foreach (Synergy synergy in activeSynergies)
+        {
+            // (GetStatBonuses와 동일한 로직으로 '효과 대상'인지 확인)
+
+            // (1. 종족 시너지인가?)
+            if (synergy.speciesConditions != null && synergy.speciesConditions.Count > 0)
+            {
+                bool isTargeted = synergy.speciesConditions.Any(condition =>
+                    condition.species == employee.BaseData &&
+                    (!condition.requirePlacement || employee.assignedRole == condition.requiredRole)
+                );
+                if (isTargeted) totalBonus += synergy.cookingSpeedBonus;
+            }
+
+            // (2. 특성 시너지인가?)
+            if (synergy.traitConditions != null && synergy.traitConditions.Count > 0)
+            {
+                bool isTargeted = synergy.traitConditions.Any(condition =>
+                    employee.currentTraits.Contains(condition.requiredTrait) &&
+                    (!condition.requirePlacement || employee.assignedRole == condition.requiredRole)
+                );
+                if (isTargeted) totalBonus += synergy.cookingSpeedBonus;
+            }
+
+            // (3. 부정적 특성 시너지인가?)
+            if (synergy.minNegativeTraitCount > 0)
+            {
+                // (이 시너지는 '모든' 직원에게 적용된다고 가정)
+                totalBonus += synergy.cookingSpeedBonus;
+            }
+        }
+        return totalBonus;
     }
 
     /// <summary>
     /// (Customer.cs가 호출) 현재 발동 중인 '명성 획득' 보너스 총합을 반환합니다.
-    /// (예: 0.1f (10%) 반환)
     /// </summary>
     public float GetFameBonusPercent()
     {
@@ -151,45 +159,92 @@ public class SynergyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// (Employee.cs가 호출) 이 직원에게 적용되는 '스탯' 보너스를 반환합니다.
-    /// (참고: 이 함수는 '이 직원'이 시너지 대상인지 확인해야 함 - 지금은 단순 합산)
+    /// (Employee.cs가 호출) '특정 직원'에게 적용되는 '스탯' 보너스 총합을 반환합니다.
     /// </summary>
     public (int cook, int serve, int charm) GetStatBonuses(EmployeeInstance employee)
     {
-        // (TODO: '굳건한 주방'처럼 특정 직원에게만 적용되는 로직 필요)
+        int totalCook = 0;
+        int totalServe = 0;
+        int totalCharm = 0;
 
-        int totalCook = activeSynergies.Sum(s => s.cookingStatBonus);
-        int totalServe = activeSynergies.Sum(s => s.servingStatBonus);
-        int totalCharm = activeSynergies.Sum(s => s.charmStatBonus);
+        // 현재 발동 중인 모든 시너지를 확인
+        foreach (Synergy synergy in activeSynergies)
+        {
+            // --- 이 직원이 이 시너지의 '효과 대상'인지 확인 ---
+
+            // (1. 종족 시너지인가?)
+            if (synergy.speciesConditions != null && synergy.speciesConditions.Count > 0)
+            {
+                // "이 직원의 종족"이 시너지 조건 목록에 포함되어 있는지 확인
+                bool isTargeted = synergy.speciesConditions.Any(condition =>
+                    condition.species == employee.BaseData &&
+                    // (배치 조건 확인) 배치가 필요 없거나, 직원의 역할이 일치하는가?
+                    (!condition.requirePlacement || employee.assignedRole == condition.requiredRole)
+                );
+
+                if (isTargeted)
+                {
+                    totalCook += synergy.cookingStatBonus;
+                    totalServe += synergy.servingStatBonus;
+                    totalCharm += synergy.charmStatBonus;
+                }
+            }
+
+            // (2. 특성 시너지인가?)
+            if (synergy.traitConditions != null && synergy.traitConditions.Count > 0)
+            {
+                // "이 직원의 특성"이 시너지 조건 목록에 포함되어 있는지 확인
+                bool isTargeted = synergy.traitConditions.Any(condition =>
+                    employee.currentTraits.Contains(condition.requiredTrait) &&
+                    // (배치 조건 확인) 배치가 필요 없거나, 직원의 역할이 일치하는가?
+                    (!condition.requirePlacement || employee.assignedRole == condition.requiredRole)
+                );
+
+                if (isTargeted)
+                {
+                    totalCook += synergy.cookingStatBonus;
+                    totalServe += synergy.servingStatBonus;
+                    totalCharm += synergy.charmStatBonus;
+                }
+            }
+
+            // (3. 부정적 특성 시너지인가?)
+            if (synergy.minNegativeTraitCount > 0)
+            {
+                // (이 시너지는 '모든' 직원에게 적용된다고 가정)
+                totalCook += synergy.cookingStatBonus;
+                totalServe += synergy.servingStatBonus;
+                totalCharm += synergy.charmStatBonus;
+            }
+        }
 
         return (totalCook, totalServe, totalCharm);
     }
 
     /// <summary>
     /// (Employee.cs가 호출) 현재 발동 중인 '이동 속도' 보너스 총합을 반환합니다.
-    /// (예: -0.05f (-5%) 반환)
     /// </summary>
     public float GetMoveSpeedMultiplier()
     {
-        // "우울한 작업장"(-0.05) + "활기찬 식당"(+0.1) = +0.05
+        // (참고: 이 함수는 '우울한 작업장'처럼 모든 직원에게 적용됩니다)
         return activeSynergies.Sum(s => s.moveSpeedMultiplier);
     }
 
     /// <summary>
     /// (Customer.cs가 호출) 현재 발동 중인 '서비스 점수' 보너스 총합을 반환합니다.
-    /// (예: +2 또는 -2)
     /// </summary>
     public int GetServiceScoreBonus()
     {
+        // (참고: 이 함수는 '활기찬 식당'처럼 모든 손님에게 적용됩니다)
         return activeSynergies.Sum(s => s.serviceScoreBonus);
     }
 
     /// <summary>
     /// (Employee.cs가 호출) 현재 발동 중인 '식재료 절약' 확률 총합을 반환합니다.
-    /// (예: 0.05f (5%))
     /// </summary>
     public float GetIngredientSaveChance()
     {
+        // (참고: 이 함수는 '완벽주의 주방'처럼 주방 전체에 적용됩니다)
         return activeSynergies.Sum(s => s.ingredientSaveChance);
     }
 }

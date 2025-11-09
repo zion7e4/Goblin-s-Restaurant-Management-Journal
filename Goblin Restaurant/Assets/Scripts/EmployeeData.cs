@@ -29,6 +29,9 @@ public class EmployeeData : ScriptableObject
     [Tooltip("이 종족의 기본 매력 능력치")]
     public int baseCharmStat = 1;
 
+    [Tooltip("이 종족의 기본 이동 속도")]
+    public float baseMoveSpeed = 1f; // (기본값 1)
+
     [Header("종족별 성장 잠재력")]
     [Tooltip("명성 100당 이 능력치가 상승하는 평균값. (예: 0.1로 설정하면 명성 1000당 1 상승)")]
     public float cookingGrowthFactor = 0.1f;

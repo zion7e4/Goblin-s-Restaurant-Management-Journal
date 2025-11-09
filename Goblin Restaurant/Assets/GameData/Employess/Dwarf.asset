@@ -19,13 +19,19 @@ MonoBehaviour:
   - "\uC62C\uB77C\uD504"
   portrait: {fileID: 1237780404017752309, guid: a445eb9653545f64a86084467b16fbec, type: 3}
   requiredFameTier: 1
-  baseCookingStat: 1
+  baseCookingStat: 3
   baseServingStat: 1
-  baseCleaningStat: 3
-  cookingGrowthFactor: 0.1
+  baseCharmStat: 1
+  baseMoveSpeed: 1
+  cookingGrowthFactor: 0.3
   servingGrowthFactor: 0.1
-  cleaningGrowthFactor: 0.1
-  salary: 100
+  charmGrowthFactor: 0.1
+  salary: 40
   possibleTraits:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 65393cc777fcf5244ae7cb8b14215611, type: 2}
+  - {fileID: 11400000, guid: 0a7da602979a4d44d8533b81b545f260, type: 2}
+  - {fileID: 11400000, guid: 5068095763e127f4fabe073bac21bf3a, type: 2}
+  - {fileID: 11400000, guid: 6e39f296822c1274c8d6a1afafc6b5c4, type: 2}
+  - {fileID: 11400000, guid: 8456396fbc9c3ed448a06fabeeb9644b, type: 2}
+  - {fileID: 11400000, guid: 213de414dccd35d408e3a495cf22dad3, type: 2}
   speciesPrefab: {fileID: 3110601555778287819, guid: 9f991aececbbb66408958062e27c6103, type: 3}

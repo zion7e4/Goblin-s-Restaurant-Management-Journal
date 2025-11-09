@@ -15,4 +15,20 @@ public class Trait : ScriptableObject
     public bool isPositive = true; // 기본값은 '긍정'으로 설정
     // TODO: 나중에 여기에 특성의 실제 효과를 정의하는 코드를 추가할 수 있습니다.
     // (예: public float cookingStatBonus;)
+
+    [Header("Trait Effects")]
+    [Tooltip("이 특성으로 인한 식재료 절약 확률 (예: 0.15 = 15%)")]
+    public float ingredientSaveChance = 0f;
+
+    [Tooltip("이 특성으로 인한 식재료 훔칠 확률 (예: 0.15 = 15%)")]
+    public float ingredientStealChance = 0f;
+
+    [Tooltip("이 특성으로 인한 요리 스탯 보너스 (예: 0.1 = +10%)")]
+    public float cookingStatMultiplier = 0f;
+
+    [Tooltip("이 특성으로 인한 이동 속도 배율 (예: 게으름 -0.1 = -10%)")]
+    public float moveSpeedMultiplier = 0f;
+
+    [Tooltip("이 특성으로 인한 작업 속도 배율 (예: 게으름 -0.1 = -10%, 작업 시간 10% 증가)")]
+    public float workSpeedMultiplier = 0f;
 }

@@ -16,7 +16,7 @@ public class EmployeeUI_Controller : MonoBehaviour
 
     [Header("메인 패널 (필수 연결)")]
     [Tooltip("이 스크립트가 켜고 끌 직원 서브 메뉴 패널")]
-    public GameObject employeeSubMenuPanel; // ★★★ 이 스크립트가 제어할 메인 패널
+    public GameObject employeeSubMenuPanel; // 이 스크립트가 제어할 메인 패널
 
     [Header("핵심 컨텐츠 패널 (필수)")]
     [Tooltip("서브 메뉴 안의 탭별 컨텐츠")]
@@ -187,8 +187,8 @@ public class EmployeeUI_Controller : MonoBehaviour
             foreach (EmployeeInstance employee in EmployeeManager.Instance.hiredEmployees)
             {
                 employee.currentLevel += 1;
-                employee.skillPoints += 1;
-                Debug.Log($"{employee.firstName}의 레벨이 {employee.currentLevel}로 증가했고, 스킬 포인트 5점을 얻었습니다.");
+                employee.skillPoints += 1; // 기획서대로 1점 지급
+                Debug.Log($"{employee.firstName}의 레벨이 {employee.currentLevel}로 증가했고, 스킬 포인트 1점을 얻었습니다.");
             }
             UpdateHiredEmployeeListUI();
         }
@@ -305,6 +305,9 @@ public class EmployeeUI_Controller : MonoBehaviour
         TextMeshProUGUI statsText = card.transform.Find("StatsText")?.GetComponent<TextMeshProUGUI>();
         Button hireButton = card.transform.Find("HireButton")?.GetComponent<Button>();
 
+        // 'GradeText' 텍스트 오브젝트 찾기
+        TextMeshProUGUI gradeText = card.transform.Find("GradeText")?.GetComponent<TextMeshProUGUI>();
+
         // Null 체크 강화
         if (portraitImage != null && applicant.BaseSpeciesData.portrait != null)
             portraitImage.sprite = applicant.BaseSpeciesData.portrait;
@@ -314,12 +317,18 @@ public class EmployeeUI_Controller : MonoBehaviour
             nameText.text = $"{applicant.GeneratedFirstName}\n<size=20>({applicant.BaseSpeciesData.speciesName})</size>";
         }
 
+        // GradeText에 등급 표시 (예: "<color=yellow>S</color>등급")
+        if (gradeText != null)
+        {
+            gradeText.text = $"<color=yellow>{applicant.grade.ToString()}</color>등급";
+        }
+
         if (statsText != null)
         {
             var statsBuilder = new System.Text.StringBuilder();
             statsBuilder.AppendLine($"요리: {applicant.GeneratedCookingStat}");
             statsBuilder.AppendLine($"서빙: {applicant.GeneratedServingStat}");
-            statsBuilder.AppendLine($"매력: {applicant.GeneratedCharmStat}"); // '정리' -> '매력'
+            statsBuilder.AppendLine($"매력: {applicant.GeneratedCharmStat}");
 
             // 특성 리스트와 특성 객체 자체에 대한 널 체크 강화
             if (applicant.GeneratedTraits != null && applicant.GeneratedTraits.Any())
@@ -349,16 +358,23 @@ public class EmployeeUI_Controller : MonoBehaviour
         // Null 체크는 이미 UpdateHiredEmployeeListUI에서 했지만, 여기서도 다시 한 번 방어합니다.
         if (employee == null || employee.BaseData == null) return;
 
+        // --- 1. 기본 UI 요소 찾기 ---
         Image portraitImage = card.transform.Find("PortraitImage")?.GetComponent<Image>();
         TextMeshProUGUI nameText = card.transform.Find("NameText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI statsText = card.transform.Find("StatsText")?.GetComponent<TextMeshProUGUI>();
 
-        // --- 버튼 찾기 ---
+        // 'GradeText' 텍스트 오브젝트 찾기
+        TextMeshProUGUI gradeText = card.transform.Find("GradeText")?.GetComponent<TextMeshProUGUI>();
+
+        // --- 2. 버튼 찾기 ---
         Button levelUpBtn = card.transform.Find("LevelUpButton")?.GetComponent<Button>();
         Button cookUpBtn = card.transform.Find("CookUpgradeButton")?.GetComponent<Button>();
         Button serveUpBtn = card.transform.Find("ServeUpgradeButton")?.GetComponent<Button>();
         Button charmUpBtn = card.transform.Find("CharmUpgradeButton")?.GetComponent<Button>();
         Button dismissBtn = card.transform.Find("DismissButton")?.GetComponent<Button>();
+
+        // --- 3. 역할(Role) 드롭다운 찾기 ---
+        TMP_Dropdown roleDropdown = card.transform.Find("RoleDropdown")?.GetComponent<TMP_Dropdown>();
 
         // Null 체크 강화
         if (portraitImage != null && employee.BaseData.portrait != null)
@@ -367,6 +383,12 @@ public class EmployeeUI_Controller : MonoBehaviour
         if (nameText != null)
         {
             nameText.text = $"{employee.firstName}\n<size=24>[Lv. {employee.currentLevel}]<color=yellow>({employee.skillPoints})</color></size>\n<size=20>({employee.BaseData.speciesName})</size>";
+        }
+
+        // GradeText에 등급 표시 (예: "<color=yellow>S</color>등급")
+        if (gradeText != null)
+        {
+            gradeText.text = $"<color=yellow>{employee.grade.ToString()}</color>등급";
         }
 
         if (statsText != null)
@@ -390,7 +412,7 @@ public class EmployeeUI_Controller : MonoBehaviour
         }
 
         // =======================================================
-        // ★★★ 스킬 업그레이드 버튼 로직 복원 (스탯 분배 문제 해결) ★★★
+        // ★★★ 버튼 및 드롭다운 기능 연결 ★★★
         // =======================================================
         if (EmployeeManager.Instance != null)
         {
@@ -409,42 +431,33 @@ public class EmployeeUI_Controller : MonoBehaviour
             }
 
             // --- 스탯 분배 버튼 (SP 소모) ---
-
-            // 요리 스탯 업그레이드 버튼
             if (cookUpBtn != null)
             {
                 cookUpBtn.interactable = employee.skillPoints > 0;
                 cookUpBtn.onClick.RemoveAllListeners();
-                // 스탯 증가 성공 시 UI 갱신 (핵심)
                 cookUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI(); });
             }
 
-            // 서빙 스탯 업그레이드 버튼
             if (serveUpBtn != null)
             {
                 serveUpBtn.interactable = employee.skillPoints > 0;
                 serveUpBtn.onClick.RemoveAllListeners();
-                // 스탯 증가 성공 시 UI 갱신 (핵심)
                 serveUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); });
             }
 
-            // 매력 스탯 업그레이드 버튼
             if (charmUpBtn != null)
             {
                 charmUpBtn.interactable = employee.skillPoints > 0;
                 charmUpBtn.onClick.RemoveAllListeners();
-                // 스탯 증가 성공 시 UI 갱신 (핵심)
                 charmUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCharm()) UpdateHiredEmployeeListUI(); });
             }
 
-            // 해고 버튼 로직 (Null 체크 포함)
+            // --- 해고 버튼 ---
             if (dismissBtn != null)
             {
                 dismissBtn.onClick.RemoveAllListeners();
-
                 bool isProtagonistFlag = employee.isProtagonist;
                 string employeeName = employee.firstName;
-
                 if (isProtagonistFlag || employeeName.Equals("Goblin Chef", System.StringComparison.OrdinalIgnoreCase))
                 {
                     dismissBtn.interactable = false;
@@ -455,6 +468,49 @@ public class EmployeeUI_Controller : MonoBehaviour
                     dismissBtn.onClick.AddListener(() => ShowDismissalConfirmation(employee));
                 }
             }
+
+            // --- 역할(Role) 드롭다운 리스너 연결 ---
+            if (roleDropdown != null)
+            {
+                // 직원이 1명일 때(주인공 혼자)는 드롭다운을 비활성화하고 '미지정'으로 강제
+                if (EmployeeManager.Instance.hiredEmployees.Count == 1)
+                {
+                    employee.assignedRole = EmployeeRole.Unassigned; // 데이터 강제
+                    roleDropdown.value = (int)EmployeeRole.Unassigned; // UI 강제
+                    roleDropdown.interactable = false; // 비활성화
+                }
+                else
+                {
+                    // 직원이 2명 이상일 때만 드롭다운을 활성화하고 리스너 연결
+                    roleDropdown.interactable = true;
+                    roleDropdown.onValueChanged.RemoveAllListeners();
+                    roleDropdown.value = (int)employee.assignedRole;
+                    roleDropdown.onValueChanged.AddListener((newRoleIndex) => {
+                        OnRoleChanged(employee, (EmployeeRole)newRoleIndex);
+                    });
+                }
+            }
         }
+    }
+
+    /// <summary>
+    /// 직원의 역할(Role) 드롭다운 값이 변경되었을 때 호출되는 함수입니다.
+    /// </summary>
+    /// <param name="employee">역할이 변경된 직원 데이터</param>
+    /// <param name="newRole">새롭게 선택된 역할 (Unassigned, Kitchen, Hall)</param>
+    private void OnRoleChanged(EmployeeInstance employee, EmployeeRole newRole)
+    {
+        // 1. 직원의 데이터(EmployeeInstance)에 새 역할을 저장합니다.
+        employee.assignedRole = newRole;
+        Debug.Log($"[역할 변경] {employee.firstName}의 역할이 {newRole.ToString()}(으)로 지정되었습니다.");
+
+        // 2. (★가장 중요★) 시너지 매니저를 호출하여 시너지를 즉시 새로고침합니다.
+        if (SynergyManager.Instance != null && EmployeeManager.Instance != null)
+        {
+            SynergyManager.Instance.UpdateActiveSynergies(EmployeeManager.Instance.hiredEmployees);
+        }
+
+        // 3. (선택 사항) UI를 새로고침하여 이름 옆에 (Kitchen) 등이 표시되게 할 수 있습니다.
+        // UpdateHiredEmployeeListUI();
     }
 }
