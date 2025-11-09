@@ -305,8 +305,8 @@ public class EmployeeUI_Controller : MonoBehaviour
         TextMeshProUGUI statsText = card.transform.Find("StatsText")?.GetComponent<TextMeshProUGUI>();
         Button hireButton = card.transform.Find("HireButton")?.GetComponent<Button>();
 
-        // 'GradeText' 텍스트 오브젝트 찾기
         TextMeshProUGUI gradeText = card.transform.Find("GradeText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI salaryText = card.transform.Find("SalaryText")?.GetComponent<TextMeshProUGUI>(); // 'SalaryText' 찾기
 
         // Null 체크 강화
         if (portraitImage != null && applicant.BaseSpeciesData.portrait != null)
@@ -321,6 +321,12 @@ public class EmployeeUI_Controller : MonoBehaviour
         if (gradeText != null)
         {
             gradeText.text = $"<color=yellow>{applicant.grade.ToString()}</color>등급";
+        }
+
+        // SalaryText에 급여 표시
+        if (salaryText != null)
+        {
+            salaryText.text = $"급여: {applicant.BaseSpeciesData.salary}G";
         }
 
         if (statsText != null)
@@ -363,8 +369,8 @@ public class EmployeeUI_Controller : MonoBehaviour
         TextMeshProUGUI nameText = card.transform.Find("NameText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI statsText = card.transform.Find("StatsText")?.GetComponent<TextMeshProUGUI>();
 
-        // 'GradeText' 텍스트 오브젝트 찾기
         TextMeshProUGUI gradeText = card.transform.Find("GradeText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI salaryText = card.transform.Find("SalaryText")?.GetComponent<TextMeshProUGUI>(); // 'SalaryText' 찾기
 
         // --- 2. 버튼 찾기 ---
         Button levelUpBtn = card.transform.Find("LevelUpButton")?.GetComponent<Button>();
@@ -389,6 +395,12 @@ public class EmployeeUI_Controller : MonoBehaviour
         if (gradeText != null)
         {
             gradeText.text = $"<color=yellow>{employee.grade.ToString()}</color>등급";
+        }
+
+        // SalaryText에 급여 표시
+        if (salaryText != null)
+        {
+            salaryText.text = $"급여: {employee.currentSalary}G";
         }
 
         if (statsText != null)
@@ -504,7 +516,7 @@ public class EmployeeUI_Controller : MonoBehaviour
         employee.assignedRole = newRole;
         Debug.Log($"[역할 변경] {employee.firstName}의 역할이 {newRole.ToString()}(으)로 지정되었습니다.");
 
-        // 2. (★가장 중요★) 시너지 매니저를 호출하여 시너지를 즉시 새로고침합니다.
+        // 2. 시너지 매니저를 호출하여 시너지를 즉시 새로고침합니다.
         if (SynergyManager.Instance != null && EmployeeManager.Instance != null)
         {
             SynergyManager.Instance.UpdateActiveSynergies(EmployeeManager.Instance.hiredEmployees);

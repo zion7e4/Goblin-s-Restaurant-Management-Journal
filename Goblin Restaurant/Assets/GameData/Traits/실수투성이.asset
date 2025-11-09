@@ -16,3 +16,11 @@ MonoBehaviour:
   description: "\uD640 \uB2F4\uB2F9 \uC2DC, \u2018\uC11C\uBE44\uC2A4 \uC810\uC218\u2019\uC5D0
     \uD328\uB110\uD2F0(\uC784\uC2DC: -5\uC810)\uB97C \uC90D\uB2C8\uB2E4"
   isPositive: 0
+  ingredientSaveChance: 0
+  ingredientStealChance: 0
+  cookingStatMultiplier: 0
+  moveSpeedMultiplier: 0
+  workSpeedMultiplier: 0
+  serviceScoreModifier: -5
+  tipChanceBonus: 0
+  allStatMultiplier: 0

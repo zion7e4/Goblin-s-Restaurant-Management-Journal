@@ -8,8 +8,8 @@ public class Customer : MonoBehaviour
 {
     public enum CustomerState { MovingToTable, DecidingMenu, WaitingForFood, Eating, Leaving }
     public CustomerState currentState;
-    public GameObject orderIconPrefab; 
-    public Transform iconSpawnPoint;   // 아이콘이 표시될 머리 위 위치
+    public GameObject orderIconPrefab;
+    public Transform iconSpawnPoint;    // 아이콘이 표시될 머리 위 위치
     public GameObject RestaurantReviwe; // 만족도 표시 텍스트
     private GameObject currentOrderIcon; // 현재 떠 있는 아이콘을 저장할 변수
 
@@ -20,7 +20,7 @@ public class Customer : MonoBehaviour
     private PlayerRecipe myOrderedRecipe;
     private float foodWaitStartTime; // 음식을 기다리기 시작한 시간
     private int satisfactionScore;   // 최종 만족도 점수
-    private EmployeeInstance serverEmployee;
+    private EmployeeInstance serverEmployee; // 나에게 서빙한 직원
 
     public void Initialize(Transform table, Transform exit)
     {
@@ -54,9 +54,9 @@ public class Customer : MonoBehaviour
     /// Employee가 이 함수를 호출하여 음식을 전달합니다.
     /// </summary>
     /// <param name="server">음식을 가져다준 직원(Employee)의 데이터</param>
-    public void ReceiveFood(EmployeeInstance server) // (수정: 파라미터 추가)
+    public void ReceiveFood(EmployeeInstance server)
     {
-        // ▼▼▼ [2. 서빙한 직원 정보 저장] ▼▼▼
+        // 서빙한 직원 정보 저장
         this.serverEmployee = server;
 
         if (currentOrderIcon != null)
@@ -71,7 +71,7 @@ public class Customer : MonoBehaviour
     IEnumerator DecideMenuCoroutine()
     {
         Debug.Log("손님이 메뉴를 고르는 중...");
-        yield return new WaitForSeconds(Random.Range(2f, 5f));
+        yield return new WaitForSeconds(UnityEngine.Random.Range(2f, 5f)); // 모호성 해결
 
         var dailyMenu = MenuPlanner.instance.dailyMenu.Where(r => r != null);
 
@@ -81,7 +81,7 @@ public class Customer : MonoBehaviour
 
         if (availableMenuWithStock.Count > 0)
         {
-            int randomIndex = Random.Range(0, availableMenuWithStock.Count);
+            int randomIndex = UnityEngine.Random.Range(0, availableMenuWithStock.Count); // 모호성 해결
             myOrderedRecipe = availableMenuWithStock[randomIndex];
 
             Debug.Log($"{myOrderedRecipe.data.recipeName} 결정! 주방에 주문을 넣습니다.");
@@ -111,6 +111,7 @@ public class Customer : MonoBehaviour
         }
     }
 
+    // (참고: 이 함수는 Employee.cs가 파라미터가 있는 ReceiveFood(server)를 호출하므로, 현재 사용되지 않음)
     public void ReceiveFood()
     {
         if (currentOrderIcon != null)
@@ -139,10 +140,10 @@ public class Customer : MonoBehaviour
         SatisfactionLevel level = GetSatisfactionLevel();
         int price = myOrderedRecipe.GetCurrentPrice();
 
-        // [수정] 팁은 0으로 초기화하고, 확률에 따라 별도 계산
+        // 팁은 0으로 초기화하고, 확률에 따라 별도 계산
         int tip = 0;
 
-        // 만족도에 따른 '명성' 변화 (기획서와 다를 수 있으나, 기존 로직 유지)
+        // 만족도에 따른 '명성' 변화 (기존 로직 유지)
         switch (level)
         {
             case SatisfactionLevel.VerySatisfied:
@@ -159,25 +160,42 @@ public class Customer : MonoBehaviour
                 break;
         }
 
-        // --- [추가] 기획서의 '매력' 기반 팁 공식 적용 --- 
+        // --- '매력' 기반 팁 공식 적용 --- 
 
         // 1. 나를 서빙한 직원의 '매력' 스탯을 가져옵니다.
-        int charmStat = 0;
+        int baseCharmStat = 0;
+        int bonusCharmStat_Synergy = 0;
+        float traitTipBonus = 0f; // "매혹" 특성 보너스
+        float allStatMultiplier_Trait = 0f; // "주인공" 특성 보너스
+
         if (serverEmployee != null) // (ReceiveFood에서 이 변수가 설정되었어야 함)
         {
-            charmStat = serverEmployee.currentCharmStat;
+            baseCharmStat = serverEmployee.currentCharmStat;
+            traitTipBonus = serverEmployee.GetTraitTipChanceBonus(); // "매혹"
+            allStatMultiplier_Trait = serverEmployee.GetTraitAllStatMultiplier(); // "주인공"
         }
 
-        // 2. 기획서 공식으로 팁 확률 계산 
+        // (시너지 보너스도 가져옴)
+        if (SynergyManager.Instance != null && serverEmployee != null)
+        {
+            var (cook, serve, charm) = SynergyManager.Instance.GetStatBonuses(serverEmployee);
+            bonusCharmStat_Synergy = charm;
+        }
+
+        // 2. 최종 매력 스탯 = (기본 + 시너지) * (1 + 주인공)
+        int finalCharmStat = (int)((baseCharmStat + bonusCharmStat_Synergy) * (1.0f + allStatMultiplier_Trait));
+
+        // 3. 기획서 공식으로 팁 확률 계산 
         float baseTipChance = 5f; // (기본 팁 확률 5%로 임시 설정)
-        float finalTipChance = baseTipChance + (charmStat * 0.3f);
+        // (기본 + (최종 매력 스탯 * 0.3) + 매혹 특성)
+        float finalTipChance = baseTipChance + (finalCharmStat * 0.3f) + traitTipBonus;
         finalTipChance = Mathf.Clamp(finalTipChance, 0f, 100f); // 0~100% 사이로 고정
 
-        // 3. 팁 획득 시도
-        if (Random.Range(0f, 100f) < finalTipChance)
+        // 4. 팁 획득 시도
+        if (UnityEngine.Random.Range(0f, 100f) < finalTipChance) // 모호성 해결
         {
             tip = Mathf.RoundToInt(price * 0.1f); // (예: 음식값의 10%)
-            Debug.Log($"[팁 발생!] 매력({charmStat}) 보너스로 {tip}G 팁 획득! (확률: {finalTipChance:F1}%)");
+            Debug.Log($"[팁 발생!] (최종스탯: {finalCharmStat}, 특성: {traitTipBonus}%) 보너스로 {tip}G 팁 획득! (확률: {finalTipChance:F1}%)");
         }
         // --- [팁 공식 적용 완료] ---
 
@@ -191,7 +209,7 @@ public class Customer : MonoBehaviour
             TextMeshProUGUI textMesh = textObj.GetComponent<TextMeshProUGUI>();
             if (textMesh != null)
             {
-                // [수정] 팁 텍스트가 0보다 클 때만 보이도록 수정
+                // 팁 텍스트가 0보다 클 때만 보이도록 수정
                 string tipText = (tip > 0) ? $"\n(팁: {tip}G)" : "";
                 textMesh.text = $"지불금액: {totalPayment}G{tipText}\n만족도: {GetSatisfactionString(level)}";
             }
@@ -241,13 +259,24 @@ public class Customer : MonoBehaviour
         if (SynergyManager.Instance != null)
         {
             int serviceBonus = SynergyManager.Instance.GetServiceScoreBonus();
-            satisfactionScore += serviceBonus; // "활기찬 식당"(+2) 또는 "공포의 홀"(-2) [cite: 107, 116]
+            satisfactionScore += serviceBonus; // "활기찬 식당"(+2) 또는 "공포의 홀"(-2)
             if (serviceBonus != 0)
             {
                 Debug.Log($"[시너지] 서비스 점수 보너스 {serviceBonus}점 적용!");
             }
         }
-        // --- 적용 완료 ---
+
+        // --- 특성으로 인한 서비스 점수 보너스/페널티 적용 ---
+        if (serverEmployee != null)
+        {
+            // "실수투성이"(-5) 또는 "긍정적"(+?) 특성 효과 적용
+            int traitBonus = serverEmployee.GetTraitServiceScoreBonus();
+            satisfactionScore += traitBonus;
+            if (traitBonus != 0)
+            {
+                Debug.Log($"[특성] {serverEmployee.firstName}의 특성으로 서비스 점수 {traitBonus}점 적용!");
+            }
+        }
 
         satisfactionScore = Mathf.Clamp(satisfactionScore, 0, 100); // 최종 점수를 0~100 사이로 고정
     }
@@ -261,4 +290,3 @@ public class Customer : MonoBehaviour
         return SatisfactionLevel.VerySatisfied;
     }
 }
-

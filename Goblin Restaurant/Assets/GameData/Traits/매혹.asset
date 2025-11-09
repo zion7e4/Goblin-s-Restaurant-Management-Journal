@@ -14,3 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Trait
   traitName: "\uB9E4\uD639"
   description: "\uC74C\uC2DD\uC5D0 \uCD94\uAC00\uAE08\uC744 \uBC1B\uC2B5\uB2C8\uB2E4."
+  isPositive: 1
+  ingredientSaveChance: 0
+  ingredientStealChance: 0
+  cookingStatMultiplier: 0
+  moveSpeedMultiplier: 0
+  workSpeedMultiplier: 0
+  serviceScoreModifier: 0
+  tipChanceBonus: 30
+  allStatMultiplier: 0

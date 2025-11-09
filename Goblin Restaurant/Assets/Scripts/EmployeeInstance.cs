@@ -112,7 +112,10 @@ public class EmployeeInstance
         currentCookingStat = baseData.baseCookingStat;
         currentServingStat = baseData.baseServingStat;
         currentCharmStat = baseData.baseCharmStat;
-        currentTraits = new List<Trait>(); // 주인공은 기본 특성 없음으로 시작 (수정 가능)
+
+        // baseData(mainCharacterTemplate)에 연결된 특성("주인공")을
+        // 이 직원의 현재 특성(currentTraits) 리스트에 복사합니다.
+        currentTraits = new List<Trait>(baseData.possibleTraits);
 
         // (주인공의 기본 등급을 C등급으로 설정. 필요시 수정)
         this.grade = EmployeeGrade.C;
@@ -184,7 +187,6 @@ public class EmployeeInstance
         }
 
         // 모든 특성의 'ingredientSaveChance' 값을 합산
-        // (보통 "손재주" 특성만 0.15f 값을 가질 것입니다)
         return currentTraits.Sum(trait => trait.ingredientSaveChance);
     }
 
@@ -252,7 +254,6 @@ public class EmployeeInstance
         }
 
         // 모든 특성의 'ingredientStealChance' 값을 합산
-        // (보통 "식탐" 특성만 0.15f 값을 가질 것입니다)
         return currentTraits.Sum(trait => trait.ingredientStealChance);
     }
     /// <summary>
@@ -266,7 +267,6 @@ public class EmployeeInstance
         }
 
         // 모든 특성의 'cookingStatMultiplier' 값을 합산
-        // (보통 "꼼꼼함" 특성만 0.1f 값을 가질 것입니다)
         return currentTraits.Sum(trait => trait.cookingStatMultiplier);
     }
     /// <summary>
@@ -293,5 +293,43 @@ public class EmployeeInstance
         }
         // "게으름"(-0.1) 같은 특성의 값을 합산
         return currentTraits.Sum(trait => trait.workSpeedMultiplier);
+    }
+    /// <summary>
+    /// 이 직원이 가진 모든 특성에서 '서비스 점수' 보너스/페널티 총합을 반환합니다.
+    /// </summary>
+    public int GetTraitServiceScoreBonus()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0;
+        }
+
+        // "실수투성이"(-5)나 "긍정적"(+?) 같은 특성의 값을 합산
+        return currentTraits.Sum(trait => trait.serviceScoreModifier);
+    }
+    /// <summary>
+    /// 이 직원이 가진 모든 특성에서 '팁 확률' 보너스 총합을 반환합니다.
+    /// </summary>
+    public float GetTraitTipChanceBonus()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+        // "매혹" 특성의 값을 합산
+        return currentTraits.Sum(trait => trait.tipChanceBonus);
+    }
+
+    /// <summary>
+    /// 이 직원이 가진 모든 특성에서 '모든 스탯 배율' 보너스 총합을 반환합니다.
+    /// </summary>
+    public float GetTraitAllStatMultiplier()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+        // "주인공" 특성의 값을 합산
+        return currentTraits.Sum(trait => trait.allStatMultiplier);
     }
 }

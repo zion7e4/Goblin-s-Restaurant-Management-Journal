@@ -238,8 +238,9 @@ public class Employee : MonoBehaviour
         int baseCookingStat = employeeData.currentCookingStat;
         int bonusCookingStat_Synergy = 0;
         float speedBonusPercent_Synergy = 0f;
-        float statMultiplier_Trait = 0f; // "꼼꼼함" 특성 보너스 (예: 0.1)
-        float workSpeedMultiplier_Trait = 0f; // "게으름" 특성 보너스 (예: -0.1)
+        float specificStatMultiplier_Trait = 0f; // "꼼꼼함" 특성 보너스 (예: 0.1)
+        float allStatMultiplier_Trait = 0f;      // "주인공" 특성 보너스 (예: 0.1)
+        float workSpeedMultiplier_Trait = 0f;    // "게으름/성실함" 특성 보너스 (예: -0.1 또는 +0.1)
 
         if (SynergyManager.Instance != null)
         {
@@ -252,12 +253,14 @@ public class Employee : MonoBehaviour
         // 3. 직원 데이터에게 '특성' 보너스를 물어봅니다.
         if (employeeData != null)
         {
-            statMultiplier_Trait = employeeData.GetTraitCookingStatMultiplier(); // "꼼꼼함"
-            workSpeedMultiplier_Trait = employeeData.GetTraitWorkSpeedMultiplier(); // "게으름"
+            specificStatMultiplier_Trait = employeeData.GetTraitCookingStatMultiplier(); // "꼼꼼함"
+            allStatMultiplier_Trait = employeeData.GetTraitAllStatMultiplier();          // "주인공"
+            workSpeedMultiplier_Trait = employeeData.GetTraitWorkSpeedMultiplier();    // "게으름/성실함"
         }
 
-        // 4. 최종 스탯 = (기본 스탯 + 시너지 스탯) * (1 + 특성 배율)
-        int finalCookingStat = (int)((baseCookingStat + bonusCookingStat_Synergy) * (1.0f + statMultiplier_Trait));
+        // 4. 최종 스탯 = (기본 + 시너지) * (1 + 꼼꼼함 + 주인공)
+        float totalMultiplier = 1.0f + specificStatMultiplier_Trait + allStatMultiplier_Trait;
+        int finalCookingStat = (int)((baseCookingStat + bonusCookingStat_Synergy) * totalMultiplier);
 
         // 5. 기획서 공식으로 '스탯'에 의한 시간 계산
         float finalCookTime = baseRecipeTime / (1 + (finalCookingStat * 0.008f));
@@ -270,7 +273,7 @@ public class Employee : MonoBehaviour
         finalCookTime = Mathf.Max(0.5f, finalCookTime); // (최소 0.5초 보장)
 
         Debug.Log($"[{employeeData.firstName}] 요리 시간 계산. " +
-                    $"기본시간: {baseRecipeTime:F1}s, 스탯: {finalCookingStat}, " +
+                    $"기본시간: {baseRecipeTime:F1}s, 스탯: {finalCookingStat} (기본 {baseCookingStat} + 시너지 {bonusCookingStat_Synergy}) * 특성(x{totalMultiplier}), " +
                     $"속도(시너지): {speedBonusPercent_Synergy * 100}%, 작업속도(특성): {workSpeedMultiplier_Trait * 100}%, " +
                     $"최종시간: {finalCookTime:F1}s");
 
@@ -369,7 +372,8 @@ public class Employee : MonoBehaviour
         // 2. 이 직원의 '기본 서빙' 스탯을 가져옵니다.
         int baseServingStat = employeeData.currentServingStat;
         int bonusServingStat = 0;
-        float workSpeedMultiplier_Trait = 0f; // "게으름" 특성 보너스 (예: -0.1)
+        float allStatMultiplier_Trait = 0f;   // "주인공" 특성 보너스
+        float workSpeedMultiplier_Trait = 0f; // "게으름/성실함" 특성 보너스
 
         // 3. 시너지 매니저에게 '스탯 보너스'를 물어봅니다.
         if (SynergyManager.Instance != null)
@@ -381,11 +385,13 @@ public class Employee : MonoBehaviour
         // 4. 직원 데이터에게 '특성' 보너스를 물어봅니다.
         if (employeeData != null)
         {
-            workSpeedMultiplier_Trait = employeeData.GetTraitWorkSpeedMultiplier(); // "게으름"
+            allStatMultiplier_Trait = employeeData.GetTraitAllStatMultiplier(); // "주인공"
+            workSpeedMultiplier_Trait = employeeData.GetTraitWorkSpeedMultiplier(); // "게으름/성실함"
         }
 
-        // 5. 최종 스탯 = 기본 스탯 + 시너지 보너스
-        int finalServingStat = baseServingStat + bonusServingStat;
+        // 5. 최종 스탯 = (기본 스탯 + 시너지 보너스) * (1 + 주인공)
+        float totalMultiplier = 1.0f + allStatMultiplier_Trait;
+        int finalServingStat = (int)((baseServingStat + bonusServingStat) * totalMultiplier);
 
         // 6. 기획서 공식으로 '스탯'에 의한 시간 계산
         float finalCleaningTime = baseCleaningTime / (1 + (finalServingStat * 0.008f));
@@ -396,7 +402,7 @@ public class Employee : MonoBehaviour
         finalCleaningTime = Mathf.Max(0.5f, finalCleaningTime); // (최소 0.5초 보장)
 
         Debug.Log($"[{employeeData.firstName}] 청소 시간 계산. " +
-                  $"기본시간: {baseCleaningTime:F1}s, 서빙스탯: {finalServingStat}, " +
+                  $"기본시간: {baseCleaningTime:F1}s, 서빙스탯: {finalServingStat} (기본 {baseServingStat} + 보너스 {bonusServingStat}) * 특성(x{totalMultiplier}), " +
                   $"작업속도(특성): {workSpeedMultiplier_Trait * 100}%, 최종시간: {finalCleaningTime:F1}s");
 
         // 계산된 최종 시간만큼 대기

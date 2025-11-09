@@ -31,4 +31,13 @@ public class Trait : ScriptableObject
 
     [Tooltip("이 특성으로 인한 작업 속도 배율 (예: 게으름 -0.1 = -10%, 작업 시간 10% 증가)")]
     public float workSpeedMultiplier = 0f;
+
+    [Tooltip("이 특성으로 인한 서비스 점수 보너스/페널티 (예: -5)")]
+    public int serviceScoreModifier = 0;
+
+    [Tooltip("이 특성으로 인한 팁 획득 '확률' 보너스 (예: 10 = +10%)")]
+    public float tipChanceBonus = 0f;
+
+    [Tooltip("이 특성으로 인한 모든 스탯(요리,서빙,매력) 보너스 (예: 0.1 = +10%)")]
+    public float allStatMultiplier = 0f;
 }
