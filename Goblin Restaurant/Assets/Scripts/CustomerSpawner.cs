@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class CustomerSpawner : MonoBehaviour
 {
-    public GameObject customerPrefab; // 스폰할 고객 프리팹
+    public List<GameObject> customerPrefabs; // 스폰할 고객 프리팹
     public Transform spawnPoint; // 고객이 스폰될 위치
 
     public float spawnInterval = 5f; // 스폰 시도 간격
@@ -45,9 +45,25 @@ public class CustomerSpawner : MonoBehaviour
 
         if (emptyTable != null)
         {
-            Debug.Log("빈 테이블 발견 고객 스폰");
+            if (customerPrefabs == null || customerPrefabs.Count == 0)
+            {
+                Debug.LogError("CustomerSpawner: 'Customer Prefabs' 리스트가 비어있습니다. 인스펙터에서 할당해주세요.");
+                return;
+            }
 
-            GameObject newCustomerObj = Instantiate(customerPrefab, spawnPoint.position, Quaternion.identity);
+            int randomIndex = Random.Range(0, customerPrefabs.Count);
+            GameObject selectedPrefab = customerPrefabs[randomIndex];
+
+            if (selectedPrefab == null)
+            {
+                Debug.LogWarning($"CustomerSpawner: 'Customer Prefabs' 리스트의 {randomIndex}번째 항목이 비어있습니다.");
+                return;
+            }
+
+            Debug.Log("빈 테이블 발견. 랜덤 고객 스폰");
+
+            GameObject newCustomerObj = Instantiate(selectedPrefab, spawnPoint.position, Quaternion.identity);
+
             Customer newCustomer = newCustomerObj.GetComponent<Customer>();
 
             RestaurantManager.instance.customers.Add(newCustomer);

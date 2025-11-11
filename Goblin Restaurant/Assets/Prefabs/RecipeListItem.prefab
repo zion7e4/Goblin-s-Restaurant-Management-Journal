@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 3935534842955570460}
   - component: {fileID: 7656429921993534847}
   - component: {fileID: 900137795401834720}
-  - component: {fileID: 2712416994581693052}
+  - component: {fileID: 1115582065685129391}
   m_Layer: 5
   m_Name: RecipeListItem
   m_TagString: Untagged
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2712416994581693052
+--- !u!114 &1115582065685129391
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
