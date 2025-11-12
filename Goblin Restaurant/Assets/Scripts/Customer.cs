@@ -1,8 +1,18 @@
 using UnityEngine;
 using System.Collections;
 using System.Linq;
-using System.Drawing;
+using System.Drawing; // V1
 using TMPro;
+using System.Collections.Generic; // V2
+using UnityEngine.UI; // V2
+
+// [V2] 만족도 아이콘을 위한 직렬화 클래스
+[System.Serializable]
+public class SatisfactionIcon
+{
+    public SatisfactionLevel level; // (SatisfactionManager.cs에 정의됨)
+    public Sprite icon;
+}
 
 public class Customer : MonoBehaviour
 {
@@ -11,21 +21,27 @@ public class Customer : MonoBehaviour
     public GameObject orderIconPrefab;
     public Transform iconSpawnPoint;    // 아이콘이 표시될 머리 위 위치
     public GameObject RestaurantReviwe; // 만족도 표시 텍스트
+
+    // [V2] 만족도 아이콘 리스트
+    public List<SatisfactionIcon> satisfactionIcons;
+    // [V2] 퇴장 지점 (V1의 exitPoint 대체)
+    public Transform leavingPoint;
+
     private GameObject currentOrderIcon; // 현재 떠 있는 아이콘을 저장할 변수
 
     private Transform targetTable;
-    private Transform exitPoint; // 퇴장 시 이동할 목표 지점
     [SerializeField]
     private float speed = 3f;
     private PlayerRecipe myOrderedRecipe;
     private float foodWaitStartTime; // 음식을 기다리기 시작한 시간
     private int satisfactionScore;   // 최종 만족도 점수
-    private EmployeeInstance serverEmployee; // 나에게 서빙한 직원
+    private EmployeeInstance serverEmployee; // 나에게 서빙한 직원 (V1, V2 공통)
 
+    // [V2] leavingPoint를 사용하도록 수정
     public void Initialize(Transform table, Transform exit)
     {
         targetTable = table;
-        exitPoint = exit;
+        leavingPoint = exit; // V2
         currentState = CustomerState.MovingToTable;
     }
 
@@ -33,28 +49,55 @@ public class Customer : MonoBehaviour
     {
         switch (currentState)
         {
+            // [V2] 테이블의 'seatPosition'으로 이동하는 정교한 로직
             case CustomerState.MovingToTable:
-                // 테이블로 이동
-                transform.position = Vector2.MoveTowards(transform.position, targetTable.position, speed * Time.deltaTime);
-                if (Vector2.Distance(transform.position, targetTable.position) < 0.1f)
+                Table tableComponent = targetTable.GetComponent<Table>();
+                Vector3 targetPosition;
+
+                if (tableComponent != null && tableComponent.seatPosition != null)
+                {
+                    targetPosition = tableComponent.seatPosition.position;
+                }
+                else
+                {
+                    Debug.LogWarning("테이블에 seatPosition이 할당되지 않았습니다. 테이블 중앙으로 이동합니다.");
+                    targetPosition = targetTable.position;
+                }
+
+                transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+
+                if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
                 {
                     currentState = CustomerState.DecidingMenu;
-                    targetTable.GetComponent<Table>().Occupy(gameObject); // 테이블 점유
-
-                    StartCoroutine(DecideMenuCoroutine()); // 메뉴 결정 코루틴 시작
+                    targetTable.GetComponent<Table>().Occupy(gameObject); //
+                    StartCoroutine(DecideMenuCoroutine());
                 }
                 break;
+
+            // [V2] 하드코딩이 아닌 'leavingPoint'로 퇴장하는 로직
             case CustomerState.Leaving:
-                transform.position = Vector2.MoveTowards(transform.position, new Vector2(0, -5), speed * Time.deltaTime);
-                Destroy(gameObject, 2f);
+                if (leavingPoint == null)
+                {
+                    Debug.LogError("leavingPoint가 Customer 스크립트에 할당되지 않았습니다! (Initialize 함수 확인)");
+                    Destroy(gameObject);
+                    break;
+                }
+
+                transform.position = Vector2.MoveTowards(transform.position, leavingPoint.position, speed * Time.deltaTime);
+
+                if (Vector2.Distance(transform.position, leavingPoint.position) < 0.1f)
+                {
+                    Destroy(gameObject); // V2 (도착 시 즉시 파괴)
+                }
                 break;
         }
     }
+
     /// <summary>
     /// Employee가 이 함수를 호출하여 음식을 전달합니다.
     /// </summary>
     /// <param name="server">음식을 가져다준 직원(Employee)의 데이터</param>
-    public void ReceiveFood(EmployeeInstance server)
+    public void ReceiveFood(EmployeeInstance server) // (V1, V2 공통)
     {
         // 서빙한 직원 정보 저장
         this.serverEmployee = server;
@@ -68,10 +111,11 @@ public class Customer : MonoBehaviour
         StartCoroutine(EatAndLeave());
     }
 
+    // [V2] V1의 UnityEngine.Random에서 네임스페이스 제거 (기능 동일)
     IEnumerator DecideMenuCoroutine()
     {
         Debug.Log("손님이 메뉴를 고르는 중...");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(2f, 5f)); // 모호성 해결
+        yield return new WaitForSeconds(Random.Range(2f, 5f)); // V2
 
         var dailyMenu = MenuPlanner.instance.dailyMenu.Where(r => r != null);
 
@@ -81,7 +125,7 @@ public class Customer : MonoBehaviour
 
         if (availableMenuWithStock.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, availableMenuWithStock.Count); // 모호성 해결
+            int randomIndex = Random.Range(0, availableMenuWithStock.Count); // V2
             myOrderedRecipe = availableMenuWithStock[randomIndex];
 
             Debug.Log($"{myOrderedRecipe.data.recipeName} 결정! 주방에 주문을 넣습니다.");
@@ -103,6 +147,9 @@ public class Customer : MonoBehaviour
             MenuPlanner.instance.RecordSale(myOrderedRecipe.data.id);
 
             currentState = CustomerState.WaitingForFood;
+
+            // [V1] 음식 대기 시작 시간 기록 (V1, V2 모두 누락되어 있었으나 V1의 CalculateSatisfaction에서 사용되므로 추가)
+            foodWaitStartTime = Time.time;
         }
         else
         {
@@ -111,17 +158,7 @@ public class Customer : MonoBehaviour
         }
     }
 
-    // (참고: 이 함수는 Employee.cs가 파라미터가 있는 ReceiveFood(server)를 호출하므로, 현재 사용되지 않음)
-    public void ReceiveFood()
-    {
-        if (currentOrderIcon != null)
-        {
-            Destroy(currentOrderIcon);
-        }
-
-        currentState = CustomerState.Eating;
-        StartCoroutine(EatAndLeave());
-    }
+    // (V1에서 '사용 안 함' 주석이 달린 ReceiveFood()는 제거됨)
 
     public void SetTable(Transform table)
     {
@@ -130,6 +167,7 @@ public class Customer : MonoBehaviour
     }
 
 
+    // [병합] V1의 팁 공식 + V2의 아이콘 UI
     System.Collections.IEnumerator EatAndLeave()
     {
         Debug.Log("식사 시작");
@@ -160,9 +198,9 @@ public class Customer : MonoBehaviour
                 break;
         }
 
-        // --- '매력' 기반 팁 공식 적용 --- 
+        // --- [V1] '매력' 기반 팁 공식 적용 (시너지, 특성 포함) --- 
 
-        // 1. 나를 서빙한 직원의 '매력' 스탯을 가져옵니다.
+        // 1. 나를 서빙한 직원의 스탯을 가져옵니다.
         int baseCharmStat = 0;
         int bonusCharmStat_Synergy = 0;
         float traitTipBonus = 0f; // "매혹" 특성 보너스
@@ -197,16 +235,41 @@ public class Customer : MonoBehaviour
             tip = Mathf.RoundToInt(price * 0.1f); // (예: 음식값의 10%)
             Debug.Log($"[팁 발생!] (최종스탯: {finalCharmStat}, 특성: {traitTipBonus}%) 보너스로 {tip}G 팁 획득! (확률: {finalTipChance:F1}%)");
         }
-        // --- [팁 공식 적용 완료] ---
+        // --- [V1 팁 공식 적용 완료] ---
 
         int totalPayment = price + tip;
         GameManager.instance.AddGold(totalPayment);
 
+        // --- [V2] 만족도 아이콘 표시 로직 적용 ---
         if (RestaurantReviwe != null && iconSpawnPoint != null)
         {
             GameObject textObj = Instantiate(RestaurantReviwe, iconSpawnPoint.position, Quaternion.identity);
             textObj.transform.SetParent(iconSpawnPoint);
+
             TextMeshProUGUI textMesh = textObj.GetComponent<TextMeshProUGUI>();
+
+            // V2: 아이콘 이미지 찾기
+            Image iconImage = textObj.GetComponentInChildren<Image>();
+
+            // V2: 만족도 레벨에 맞는 스프라이트 찾기
+            Sprite spriteToUse = null;
+            if (satisfactionIcons != null)
+            {
+                spriteToUse = satisfactionIcons.FirstOrDefault(s => s.level == level)?.icon;
+            }
+
+            // V2: 아이콘 이미지 적용
+            if (iconImage != null && spriteToUse != null)
+            {
+                iconImage.sprite = spriteToUse;
+                iconImage.gameObject.SetActive(true);
+            }
+            else if (iconImage != null)
+            {
+                iconImage.gameObject.SetActive(false); // 맞는 아이콘 없으면 숨김
+            }
+
+            // V1/V2 공통: 텍스트 적용
             if (textMesh != null)
             {
                 // 팁 텍스트가 0보다 클 때만 보이도록 수정
@@ -214,6 +277,8 @@ public class Customer : MonoBehaviour
                 textMesh.text = $"지불금액: {totalPayment}G{tipText}\n만족도: {GetSatisfactionString(level)}";
             }
         }
+        // --- [V2 UI 로직 적용 완료] ---
+
         Debug.Log($"만족도: {satisfactionScore} ({level}) | 음식값: {price}G + 팁: {tip}G = 총 {totalPayment}G 지불");
 
         GameManager.instance.AddCustomerCount();
@@ -222,6 +287,7 @@ public class Customer : MonoBehaviour
         currentState = CustomerState.Leaving;
         RestaurantManager.instance.customers.Remove(this);
     }
+
     string GetSatisfactionString(SatisfactionLevel level)
     {
         switch (level)
@@ -235,6 +301,7 @@ public class Customer : MonoBehaviour
         }
     }
 
+    // [V1] 직원의 특성 보너스까지 계산하는 정교한 로직
     void CalculateSatisfaction()
     {
         satisfactionScore = 50; // 기본 점수 50점 
@@ -266,7 +333,7 @@ public class Customer : MonoBehaviour
             }
         }
 
-        // --- 특성으로 인한 서비스 점수 보너스/페널티 적용 ---
+        // --- [V1] 특성으로 인한 서비스 점수 보너스/페널티 적용 ---
         if (serverEmployee != null)
         {
             // "실수투성이"(-5) 또는 "긍정적"(+?) 특성 효과 적용

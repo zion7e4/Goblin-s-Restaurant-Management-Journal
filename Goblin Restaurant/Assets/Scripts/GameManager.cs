@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     // [공통] 싱글톤 인스턴스
     public static GameManager instance;
 
-    // [V1] RestaurantManager 참조 (V2는 instance로 접근했으나, V1의 명시적 연결 사용)
+    // [V1] RestaurantManager 참조
     [Header("Restaurant Management")]
     [Tooltip("Restaurant Manager 스크립트를 가진 오브젝트를 연결하세요.")]
     public RestaurantManager restaurantManager;
@@ -156,13 +156,6 @@ public class GameManager : MonoBehaviour
     // [V1의 Start] (직원 스폰 로직 포함)
     void Start()
     {
-        // 1. [클린 스폰] 이전에 스폰되었던 Employee 오브젝트를 모두 제거합니다.
-       /* Employee[] existingWorkers = FindObjectsByType<Employee>(FindObjectsSortMode.None);
-        foreach (Employee worker in existingWorkers)
-        {
-            Destroy(worker.gameObject);
-        }
-*/
         // [공통] 초기화
         currentState = GameState.Preparing;
         timeScale = (9 * 60 * 60) / dayDurationInSeconds;
@@ -195,9 +188,7 @@ public class GameManager : MonoBehaviour
             workersToSpawn.Add((mainWorker, greenPrefab));
         }
 
-        // 2. ★★★ 고용된 직원들을 맵에 스폰
-        // (참고: V1의 Start 로직은 기본 주인공만 스폰하고 있습니다. 
-        // 빨간/파란 프리팹 스폰 로직은 HireAndSpawnEmployee 함수로 분리되었습니다.)
+        // 2. 고용된 직원들을 맵에 스폰
         restaurantManager.SpawnWorkersWithPrefabs(workersToSpawn);
     }
 
@@ -216,7 +207,6 @@ public class GameManager : MonoBehaviour
             // V2의 조기 마감 로직
             if (MenuPlanner.instance != null && MenuPlanner.instance.isSoldOut)
             {
-                // V1의 restaurantManager 필드 사용 (V2의 instance 접근 수정)
                 bool noCustomers = (restaurantManager.customers.Count == 0);
                 bool anyDirtyTables = restaurantManager.tables.Any(t => t.isDirty);
 
@@ -237,7 +227,6 @@ public class GameManager : MonoBehaviour
 
         if (currentState == GameState.Closing)
         {
-            // V1의 restaurantManager 필드 사용 (V2의 instance 접근 수정)
             bool hasCustomers = restaurantManager.customers.Count > 0;
             bool hasDirtyTables = restaurantManager.tables.Any(t => t.isDirty);
 
@@ -250,14 +239,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // [병합] MoveToNextDay (V2의 Settlement 체크 + V1의 지원자 생성 로직)
+    // [병합] MoveToNextDay (V2 Settlement 체크 + V1 지원자 생성 + V2 '식탐' 특성)
     public void MoveToNextDay()
     {
         if (currentState == GameState.Settlement) // V2의 상태 체크
         {
+            // [V2] '식탐' 특성 로직
             if (EmployeeManager.Instance != null && InventoryManager.instance != null)
             {
-                // "식탐" 특성을 가진 모든 직원을 찾습니다.
                 foreach (EmployeeInstance emp in EmployeeManager.Instance.hiredEmployees)
                 {
                     float stealChance = emp.GetTraitStealChance();
@@ -281,7 +270,8 @@ public class GameManager : MonoBehaviour
 
             if (menuPlannerUI != null)
             {
-                menuPlannerUI.UpdateAllSlotsUI();
+                // ★★★ 오류 수정 지점 ★★★
+                menuPlannerUI.UpdateTodayMenuUI(); // V1의 UI 업데이트 함수
             }
 
             // 공통 로직
@@ -291,7 +281,7 @@ public class GameManager : MonoBehaviour
             dayText.text = "Day " + DayCount;
             Debug.Log("다음 날 준비를 시작합니다.");
 
-            // [V1의 7일마다 지원자 생성 로직 추가]
+            // [V1] 7일마다 지원자 생성 로직 추가
             if ((DayCount - 1) % 7 == 0 && DayCount > 1)
             {
                 EmployeeManager.Instance.GenerateApplicants(currentFame);
@@ -301,11 +291,17 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // [V2의 UpdateButtonUI] (TimeScaleButton 및 Settlement 상태 처리)
+    // [병합된 UpdateButtonUI]
     private void UpdateButtonUI()
     {
         PreparePanel.SetActive(currentState == GameState.Preparing);
         NextDayButton.SetActive(currentState == GameState.Settlement); // V2
+
+        // [V1] OpenButton 로직 복원
+        if (OpenButton != null)
+        {
+            OpenButton.gameObject.SetActive(currentState == GameState.Preparing);
+        }
 
         bool isPreparing = (currentState == GameState.Preparing);
 
@@ -324,7 +320,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // [V2의 OpenTheStore] (시간 리셋 및 StartDaySales 호출)
+    // [V2의 OpenTheStore]
     public void OpenTheStore()
     {
         if (currentState == GameState.Preparing)
@@ -390,23 +386,17 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    // (Employee.cs가 호출) 식재료 절약 성공 시 재료 1개를 반환합니다.
-    /// <summary>
-    // (Employee.cs가 호출) 식재료 절약 성공 시 재료 1개를 반환합니다.
+    // [V2] (Employee.cs가 호출) 식재료 절약 성공 시 재료 1개를 반환합니다.
     /// </summary>
     public void RefundIngredients(RecipeData recipe)
     {
-        // 1. 레시피 데이터나 재료 목록이 비어있는지 확인합니다.
         if (recipe == null || recipe.requiredIngredients == null || !recipe.requiredIngredients.Any())
         {
             Debug.LogWarning("RefundIngredients: 반환할 재료 데이터를 찾을 수 없습니다.");
             return;
         }
 
-        // 2. 레시피에 필요한 재료 목록(List<IngredientRequirement>)을 가져옵니다.
         var ingredientsList = recipe.requiredIngredients;
-
-        // 3. 그 목록 중 1개를 랜덤으로 선택합니다. (예: 꼬치구이의 [ING01, ING02] 중 ING01 선택)
         IngredientRequirement itemToRefund = ingredientsList[UnityEngine.Random.Range(0, ingredientsList.Count)];
 
         if (itemToRefund == null || string.IsNullOrEmpty(itemToRefund.ingredientID))
@@ -415,7 +405,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // 4. InventoryManager를 호출하여 재료 1개를 인벤토리에 다시 추가합니다.
         if (InventoryManager.instance != null)
         {
             InventoryManager.instance.AddIngredient(itemToRefund.ingredientID, 1);
@@ -446,7 +435,7 @@ public class GameManager : MonoBehaviour
     }
 
     // ---------------------------------------------------
-    // [병합] 패널 여닫기 함수 (V1의 패널 닫기 + V2의 팝업/블로커 관리)
+    // [병합] 패널 여닫기 함수
     // ---------------------------------------------------
 
     public void OpenRecipeBook()
@@ -472,21 +461,21 @@ public class GameManager : MonoBehaviour
         if (PopupManager != null) PopupManager.SetActive(true);
     }
 
-    // [병합]
+    // [병합] V2의 분리된 로직 기준
     public void OpenMenuPlanner()
     {
         if (menuPlanner != null) menuPlanner.SetActive(true);
         if (PopupManager != null) PopupManager.SetActive(true); // V2
     }
 
-    // [V2]
+    // [V2] V2의 분리된 로직 기준
     public void CloseMenuPlanner()
     {
         if (menuPlanner != null) menuPlanner.SetActive(false);
         if (PopupManager != null) PopupManager.SetActive(false);
     }
 
-    // [V2]
+    // [V2] V2에서 새로 추가됨
     public void OpenRecipeSelection()
     {
         if (RecipeSelection != null) RecipeSelection.SetActive(true);
@@ -494,7 +483,7 @@ public class GameManager : MonoBehaviour
         if (PopupManager != null) PopupManager.SetActive(true);
     }
 
-    // [V2]
+    // [V2] V2에서 새로 추가됨
     public void CloseRecipeSelection()
     {
         if (RecipeSelection != null) RecipeSelection.SetActive(false);
@@ -562,7 +551,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // --- [V1의 직원 서브메뉴 함수] + V2의 팝업/블로커 로직 추가 ---
+    // --- [V1] 직원 서브메뉴 함수 + [V2] 팝업/블로커 로직 ---
 
     // [병합]
     public void OpenEmployeeSubMenu()
@@ -574,7 +563,6 @@ public class GameManager : MonoBehaviour
         if (shopPanel != null) CloseShopPanel();
 
         // V2: 팝업/블로커 활성화
-        //if (panelBlocker != null) panelBlocker.SetActive(true);
         if (PopupManager != null) PopupManager.SetActive(true);
 
         // V1: EmployeeUI_Controller 호출
@@ -596,7 +584,6 @@ public class GameManager : MonoBehaviour
         }
 
         // V2
-        //if (panelBlocker != null) panelBlocker.SetActive(false);
         if (PopupManager != null) PopupManager.SetActive(false);
     }
 
@@ -629,7 +616,7 @@ public class GameManager : MonoBehaviour
         worldPosition.z = 0f;
         GameObject newTableObject = Instantiate(TablePrefab, worldPosition, Quaternion.identity);
 
-        // V2의 핵심 로직 (instance -> V1의 restaurantManager 필드로 수정)
+        // V2의 핵심 로직 (V1의 restaurantManager 필드로 수정)
         Table newTableComponent = newTableObject.GetComponent<Table>();
         if (newTableComponent != null && restaurantManager != null)
         {
