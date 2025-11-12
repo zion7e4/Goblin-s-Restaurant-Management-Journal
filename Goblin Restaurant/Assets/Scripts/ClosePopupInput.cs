@@ -11,6 +11,7 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
     public GameObject MenuPlanner;
     public GameObject RecipeIngredientsPanel;
     public GameObject centralUpgradePanel; // 중앙 업그레이드 패널
+    public GameObject QuantityPopupPanel;
 
     public GameObject PanelBlocker;
     public GameObject PopupManager;
@@ -49,9 +50,23 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
 
     public void TryCloseTopPopup()
     {
-        if (RecipeSelection != null && RecipeSelection.activeSelf)
+        if (QuantityPopupPanel != null && QuantityPopupPanel.activeSelf)
         {
+            QuantityPopupPanel.SetActive(false);
+            return;
+        }
+
+        if (MenuPlanner != null && MenuPlanner.activeSelf)
+        {
+            MenuPlanner.SetActive(false);
             RecipeSelection.SetActive(false);
+            PanelBlocker.SetActive(false);
+            return;
+        }
+        
+        if (RecipeBookPanel != null && RecipeBookPanel.activeSelf)
+        {
+            RecipeBookPanel.SetActive(false);
             PanelBlocker.SetActive(false);
             return;
         }
@@ -67,12 +82,6 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
         {
             // 컨트롤러의 OnCancel 함수를 호출하여 패널과 블로커를 모두 닫음
             centralUpgradePanel.GetComponent<UpgradePanelController>().OnCancel();
-            return;
-        }
-
-        if (MenuPlanner != null && MenuPlanner.activeSelf)
-        {
-            MenuPlanner.SetActive(false);
             return;
         }
 
