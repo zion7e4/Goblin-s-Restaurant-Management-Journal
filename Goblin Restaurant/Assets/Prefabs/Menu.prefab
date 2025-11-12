@@ -136,7 +136,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SelectableRecipeItemUI
   selectButton: {fileID: 2851654663693396579}
   recipeNameText: {fileID: 7895010811597743868}
-  recipeIcon: {fileID: 1095155311407523712}
 --- !u!1 &7257281934698426751
 GameObject:
   m_ObjectHideFlags: 0
@@ -204,8 +203,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 83390fdb150211e4ba8d46fcd6f5cd68, type: 2}
-  m_sharedMaterial: {fileID: 1051251644626430405, guid: 83390fdb150211e4ba8d46fcd6f5cd68, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 157247b3519bab246beb5590a1b489d6, type: 2}
+  m_sharedMaterial: {fileID: -3418813170745583811, guid: 157247b3519bab246beb5590a1b489d6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

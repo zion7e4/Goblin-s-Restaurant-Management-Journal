@@ -57,9 +57,9 @@ public class EmployeeInstance
     public int currentServingStat;
 
     /// <summary>
-    /// 직원의 현재 정리 능력치입니다.
+    /// 직원의 현재 매력 능력치입니다.
     /// </summary>
-    public int currentCleaningStat;
+    public int currentCharmStat;
 
     /// <summary>
     /// 직원이 현재 보유한 특성 목록입니다.
@@ -82,7 +82,7 @@ public class EmployeeInstance
         currentTraits = new List<Trait>(applicant.GeneratedTraits);
         currentCookingStat = applicant.GeneratedCookingStat;
         currentServingStat = applicant.GeneratedServingStat;
-        currentCleaningStat = applicant.GeneratedCleaningStat;
+        currentCharmStat = applicant.GeneratedCharmStat;
 
         // 일반 직원은 false로 설정
         isProtagonist = false;
@@ -102,7 +102,7 @@ public class EmployeeInstance
         currentSalary = baseData.salary;
         currentCookingStat = baseData.baseCookingStat;
         currentServingStat = baseData.baseServingStat;
-        currentCleaningStat = baseData.baseCleaningStat;
+        currentCharmStat = baseData.baseCharmStat;
         currentTraits = new List<Trait>(); // 주인공은 기본 특성 없음으로 시작 (수정 가능)
 
         // 주인공 여부를 설정합니다.
@@ -147,18 +147,55 @@ public class EmployeeInstance
     }
 
     /// <summary>
-    /// 정리 스탯에 스킬 포인트를 사용하고 스탯을 증가시킵니다.
+    /// 매력 스탯에 스킬 포인트를 사용하고 스탯을 증가시킵니다.
     /// </summary>
-    public bool SpendSkillPointOnCleaning()
+    public bool SpendSkillPointOnCharm()
     {
         if (skillPoints > 0)
         {
             skillPoints--;
-            currentCleaningStat++;
-            Debug.Log($"{firstName}: 정리 스탯이 {currentCleaningStat}으로 증가했습니다. 남은 포인트: {skillPoints}");
+            currentCharmStat++; // [수정]
+            Debug.Log($"{firstName}: 매력 스탯이 {currentCharmStat}으로 증가했습니다. 남은 포인트: {skillPoints}"); // [수정]
             return true;
         }
-        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 정리 스탯을 올릴 수 없습니다.");
+        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 매력 스탯을 올릴 수 없습니다."); // [수정]
         return false;
+    }
+    /// <summary>
+    /// (기획서 기준) 직원을 1레벨업 시킵니다.
+    /// 골드 소모, 최대 레벨 체크, SP 1 획득이 이루어집니다.
+    /// </summary>
+    /// <returns>레벨업 성공 여부</returns>
+    public bool TryLevelUp()
+    {
+        // 1. 최대 레벨인지 확인 (기획서 기준)
+        // (참고: 이 기능은 EmployeeData에 '등급(Grade)' 변수가 있어야 완벽히 작동합니다)
+        // int maxLevel = BaseData.GetMaxLevelForGrade(); // (예시)
+        int maxLevel = 50; // (임시: 기획서 S등급 최대 레벨 50)
+
+        if (currentLevel >= maxLevel)
+        {
+            Debug.LogWarning($"{firstName}은(는) 이미 최대 레벨({maxLevel})입니다.");
+            return false;
+        }
+
+        // 2. 골드 소모 확인 (기획서 기준)
+        // (TODO: PlayerRecipe처럼 LevelTable을 만들거나 공식을 적용해야 합니다)
+        // (기획서 예시: 다음 레벨 비용 = 현재 레벨 비용 * 1.1)
+        int requiredGold = (int)(100 * Mathf.Pow(1.1f, currentLevel - 1)); // (기획서 10% 증가 공식 임시 적용)
+
+        if (GameManager.instance.totalGoldAmount < requiredGold)
+        {
+            Debug.LogWarning($"{firstName} 레벨업 실패: 골드가 부족합니다. (필요: {requiredGold}G)");
+            return false;
+        }
+
+        // 3. 골드 소모 및 레벨업 처리
+        GameManager.instance.SpendGold(requiredGold); // (GameManager에 SpendGold 함수가 필요합니다)
+        currentLevel++;
+        skillPoints++; // ★★★ 기획서대로 SP 1 지급 ★★★
+
+        Debug.Log($"[레벨업!] {firstName} (Lv. {currentLevel}), SP +1. (비용: {requiredGold}G)");
+        return true;
     }
 }

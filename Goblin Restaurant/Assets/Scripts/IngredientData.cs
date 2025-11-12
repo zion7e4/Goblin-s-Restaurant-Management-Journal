@@ -1,7 +1,9 @@
 using UnityEngine;
 
+public enum Rarity { common, Uncommon, Rare, Legendary }
 
 [CreateAssetMenu(fileName = "Ingredient", menuName = "Game Data/Ingredient Data")]
+
 public class IngredientData : ScriptableObject
 {
     [Header("재료 고유 정보")]
