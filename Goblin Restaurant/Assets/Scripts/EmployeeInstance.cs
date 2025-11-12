@@ -3,73 +3,79 @@ using UnityEngine;
 using System.Linq;
 
 /// <summary>
-/// °í¿ëµÈ °³º° Á÷¿øÀÇ ÇöÀç »óÅÂ(·¹º§, ´É·ÂÄ¡, Æ¯¼º µî)¸¦ ÀúÀåÇÏ°í °ü¸®ÇÏ´Â µ¥ÀÌÅÍ Å¬·¡½ºÀÔ´Ï´Ù.
-/// ÀÌ Å¬·¡½ºÀÇ ÀÎ½ºÅÏ½º°¡ ½ÇÁ¦ ÀúÀå ¹× ·ÎµåÀÇ ´ë»óÀÌ µË´Ï´Ù.
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½, ï¿½É·ï¿½Ä¡, Æ¯ï¿½ï¿½ ï¿½ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.
+/// ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë´Ï´ï¿½.
 /// </summary>
 [System.Serializable]
 public class EmployeeInstance
 {
-    // --- ¸â¹ö º¯¼ö ---
+    // --- ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ---
 
     /// <summary>
-    /// ÀÌ Á÷¿øÀÇ ¿øº»ÀÌ µÇ´Â Á¾Á· µ¥ÀÌÅÍ(ScriptableObject)ÀÔ´Ï´Ù. º¯ÇÏÁö ¾Ê´Â ±âº» Á¤º¸¸¦ ´ã°í ÀÖ½À´Ï´Ù.
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ScriptableObject)ï¿½Ô´Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.
     /// </summary>
     public EmployeeData BaseData { get; private set; }
 
     /// <summary>
-    /// ÀÌ Á÷¿øÀÌ ÁÖÀÎ°øÀÎÁö ¿©ºÎÀÔ´Ï´Ù. (ÇØ°í ¹æÁö¿ë)
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½. (ï¿½Ø°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
     /// </summary>
     public bool isProtagonist { get; private set; }
 
     /// <summary>
-    /// »ý¼º ½Ã ºÎ¿©µÈ Á÷¿øÀÇ ÀÌ¸§ÀÔ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½Ô´Ï´ï¿½.
     /// </summary>
     public string firstName;
 
     /// <summary>
-    /// Á÷¿øÀÇ ÇöÀç ·¹º§ÀÔ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.
     /// </summary>
     public int currentLevel;
 
     /// <summary>
-    /// ÇöÀç ·¹º§¿¡¼­ ½×ÀÎ °æÇèÄ¡ÀÔ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½Ô´Ï´ï¿½.
     /// </summary>
     public float currentExperience;
 
     /// <summary>
-    /// ÅõÀÚ °¡´ÉÇÑ ½ºÅ³ Æ÷ÀÎÆ®ÀÔ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½Ô´Ï´ï¿½.
     /// </summary>
     public int skillPoints;
 
     /// <summary>
-    /// Á÷¿øÀÇ ÇöÀç ±Þ¿©ÀÔ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¿ï¿½ï¿½Ô´Ï´ï¿½.
     /// </summary>
     public int currentSalary;
 
     /// <summary>
-    /// Á÷¿øÀÇ ÇöÀç ¿ä¸® ´É·ÂÄ¡ÀÔ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ä¸® ï¿½É·ï¿½Ä¡ï¿½Ô´Ï´ï¿½.
     /// </summary>
     public int currentCookingStat;
 
     /// <summary>
-    /// Á÷¿øÀÇ ÇöÀç ¼­ºù ´É·ÂÄ¡ÀÔ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½É·ï¿½Ä¡ï¿½Ô´Ï´ï¿½.
     /// </summary>
     public int currentServingStat;
 
     /// <summary>
-    /// Á÷¿øÀÇ ÇöÀç ¸Å·Â ´É·ÂÄ¡ÀÔ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å·ï¿½ ï¿½É·ï¿½Ä¡ï¿½Ô´Ï´ï¿½.
     /// </summary>
     public int currentCharmStat;
 
     /// <summary>
-    /// Á÷¿øÀÌ ÇöÀç º¸À¯ÇÑ Æ¯¼º ¸ñ·ÏÀÔ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.
     /// </summary>
     public List<Trait> currentTraits;
 
-    // --- »ý¼ºÀÚ ---
+    /// <summary>
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¢ï¿½ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ö¹ï¿½, È¦)")]
+    public EmployeeRole assignedRole = EmployeeRole.Unassigned;
+
+    public EmployeeGrade grade;
+
+    // --- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ---
 
     /// <summary>
-    /// 'Áö¿øÀÚ(GeneratedApplicant)' µ¥ÀÌÅÍ¸¦ ¹ÙÅÁÀ¸·Î »õ·Î¿î Á÷¿ø ÀÎ½ºÅÏ½º¸¦ »ý¼ºÇÕ´Ï´Ù. (ÀÏ¹Ý Á÷¿ø)
+    /// 'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(GeneratedApplicant)' ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½. (ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½)
     /// </summary>
     public EmployeeInstance(GeneratedApplicant applicant)
     {
@@ -84,54 +90,63 @@ public class EmployeeInstance
         currentServingStat = applicant.GeneratedServingStat;
         currentCharmStat = applicant.GeneratedCharmStat;
 
-        // ÀÏ¹Ý Á÷¿øÀº false·Î ¼³Á¤
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+        this.grade = applicant.grade;
+
+        // ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ falseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         isProtagonist = false;
     }
 
     /// <summary>
-    /// 'ÁÖÀÎ°ø'Ã³·³ Á¤ÇØÁø ÅÛÇÃ¸´(EmployeeData)¿¡¼­ Á÷Á¢ Á÷¿ø ÀÎ½ºÅÏ½º¸¦ »ý¼ºÇÕ´Ï´Ù.
+    /// 'ï¿½ï¿½ï¿½Î°ï¿½'Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½(EmployeeData)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
     /// </summary>
     public EmployeeInstance(EmployeeData baseData)
     {
         BaseData = baseData;
-        // °íºí¸° ½¦ÇÁ ½Äº°À» À§ÇÑ ±âº» ÀÌ¸§ ¼³Á¤
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Äºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½âº» ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
         firstName = "Goblin Chef";
         currentLevel = 1;
         currentExperience = 0;
-        skillPoints = 5; // ÁÖÀÎ°øÀº ±âº» ½ºÅ³ Æ÷ÀÎÆ® Á¦°ø (¿¹½Ã)
+        skillPoints = 5; // ï¿½ï¿½ï¿½Î°ï¿½ï¿½ï¿½ ï¿½âº» ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½)
         currentSalary = baseData.salary;
         currentCookingStat = baseData.baseCookingStat;
         currentServingStat = baseData.baseServingStat;
         currentCharmStat = baseData.baseCharmStat;
-        currentTraits = new List<Trait>(); // ÁÖÀÎ°øÀº ±âº» Æ¯¼º ¾øÀ½À¸·Î ½ÃÀÛ (¼öÁ¤ °¡´É)
 
-        // ÁÖÀÎ°ø ¿©ºÎ¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+        // baseData(mainCharacterTemplate)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½("ï¿½ï¿½ï¿½Î°ï¿½")ï¿½ï¿½
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½(currentTraits) ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+        currentTraits = new List<Trait>(baseData.possibleTraits);
+
+        // (ï¿½ï¿½ï¿½Î°ï¿½ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½Ê¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        this.grade = EmployeeGrade.C;
+
+        // ï¿½ï¿½ï¿½Î°ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
         isProtagonist = true;
     }
 
-    // --- ÇÙ½É ±â´É ÇÔ¼ö ---
+    // --- ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ---
 
-    // ************* [°æÇèÄ¡ °ü·Ã ÇÔ¼ö´Â ÇöÀç ±¸ÇöµÇÁö ¾Ê¾ÒÀ¸¹Ç·Î »ý·«] *************
+    // ************* [ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½] *************
 
     /// <summary>
-    /// ¿ä¸® ½ºÅÈ¿¡ ½ºÅ³ Æ÷ÀÎÆ®¸¦ »ç¿ëÇÏ°í ½ºÅÈÀ» Áõ°¡½ÃÅµ´Ï´Ù.
+    /// ï¿½ä¸® ï¿½ï¿½ï¿½È¿ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½Ï´ï¿½.
     /// </summary>
-    /// <returns>½ºÅÈ Áõ°¡¿¡ ¼º°øÇßÀ¸¸é true¸¦ ¹ÝÈ¯ÇÕ´Ï´Ù.</returns>
+    /// <returns>ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ trueï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.</returns>
     public bool SpendSkillPointOnCooking()
     {
         if (skillPoints > 0)
         {
             skillPoints--;
             currentCookingStat++;
-            Debug.Log($"{firstName}: ¿ä¸® ½ºÅÈÀÌ {currentCookingStat}À¸·Î Áõ°¡Çß½À´Ï´Ù. ³²Àº Æ÷ÀÎÆ®: {skillPoints}");
+            Debug.Log($"{firstName}: ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {currentCookingStat}ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®: {skillPoints}");
             return true;
         }
-        Debug.LogWarning($"{firstName}: ½ºÅ³ Æ÷ÀÎÆ®°¡ ºÎÁ·ÇÏ¿© ¿ä¸® ½ºÅÈÀ» ¿Ã¸± ¼ö ¾ø½À´Ï´Ù.");
+        Debug.LogWarning($"{firstName}: ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         return false;
     }
 
     /// <summary>
-    /// ¼­ºù ½ºÅÈ¿¡ ½ºÅ³ Æ÷ÀÎÆ®¸¦ »ç¿ëÇÏ°í ½ºÅÈÀ» Áõ°¡½ÃÅµ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½È¿ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½Ï´ï¿½.
     /// </summary>
     public bool SpendSkillPointOnServing()
     {
@@ -139,63 +154,182 @@ public class EmployeeInstance
         {
             skillPoints--;
             currentServingStat++;
-            Debug.Log($"{firstName}: ¼­ºù ½ºÅÈÀÌ {currentServingStat}À¸·Î Áõ°¡Çß½À´Ï´Ù. ³²Àº Æ÷ÀÎÆ®: {skillPoints}");
+            Debug.Log($"{firstName}: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {currentServingStat}ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®: {skillPoints}");
             return true;
         }
-        Debug.LogWarning($"{firstName}: ½ºÅ³ Æ÷ÀÎÆ®°¡ ºÎÁ·ÇÏ¿© ¼­ºù ½ºÅÈÀ» ¿Ã¸± ¼ö ¾ø½À´Ï´Ù.");
+        Debug.LogWarning($"{firstName}: ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         return false;
     }
 
     /// <summary>
-    /// ¸Å·Â ½ºÅÈ¿¡ ½ºÅ³ Æ÷ÀÎÆ®¸¦ »ç¿ëÇÏ°í ½ºÅÈÀ» Áõ°¡½ÃÅµ´Ï´Ù.
+    /// ï¿½Å·ï¿½ ï¿½ï¿½ï¿½È¿ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½Ï´ï¿½.
     /// </summary>
     public bool SpendSkillPointOnCharm()
     {
         if (skillPoints > 0)
         {
             skillPoints--;
-            currentCharmStat++; // [¼öÁ¤]
-            Debug.Log($"{firstName}: ¸Å·Â ½ºÅÈÀÌ {currentCharmStat}À¸·Î Áõ°¡Çß½À´Ï´Ù. ³²Àº Æ÷ÀÎÆ®: {skillPoints}"); // [¼öÁ¤]
+            currentCharmStat++;
+            Debug.Log($"{firstName}: ï¿½Å·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {currentCharmStat}ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®: {skillPoints}");
             return true;
         }
-        Debug.LogWarning($"{firstName}: ½ºÅ³ Æ÷ÀÎÆ®°¡ ºÎÁ·ÇÏ¿© ¸Å·Â ½ºÅÈÀ» ¿Ã¸± ¼ö ¾ø½À´Ï´Ù."); // [¼öÁ¤]
+        Debug.LogWarning($"{firstName}: ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Å·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         return false;
     }
     /// <summary>
-    /// (±âÈ¹¼­ ±âÁØ) Á÷¿øÀ» 1·¹º§¾÷ ½ÃÅµ´Ï´Ù.
-    /// °ñµå ¼Ò¸ð, ÃÖ´ë ·¹º§ Ã¼Å©, SP 1 È¹µæÀÌ ÀÌ·ç¾îÁý´Ï´Ù.
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½ï¿½Ê½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
     /// </summary>
-    /// <returns>·¹º§¾÷ ¼º°ø ¿©ºÎ</returns>
+    public float GetTraitSaveChance()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+
+        // ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ 'ingredientSaveChance' ï¿½ï¿½ï¿½ï¿½ ï¿½Õ»ï¿½
+        return currentTraits.Sum(trait => trait.ingredientSaveChance);
+    }
+
+
+    /// <summary>
+    /// (ï¿½ï¿½È¹ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Åµï¿½Ï´ï¿½.
+    /// ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½, ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©, SP 1 È¹ï¿½ï¿½ï¿½ï¿½ ï¿½Ì·ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
+    /// </summary>
+    /// <returns>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½</returns>
     public bool TryLevelUp()
     {
-        // 1. ÃÖ´ë ·¹º§ÀÎÁö È®ÀÎ (±âÈ¹¼­ ±âÁØ)
-        // (Âü°í: ÀÌ ±â´ÉÀº EmployeeData¿¡ 'µî±Þ(Grade)' º¯¼ö°¡ ÀÖ¾î¾ß ¿Ïº®È÷ ÀÛµ¿ÇÕ´Ï´Ù)
-        // int maxLevel = BaseData.GetMaxLevelForGrade(); // (¿¹½Ã)
-        int maxLevel = 50; // (ÀÓ½Ã: ±âÈ¹¼­ Sµî±Þ ÃÖ´ë ·¹º§ 50)
+        // 1. ï¿½ï¿½ï¿½(Grade)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½. (ï¿½ï¿½È¹ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        int maxLevel;
+        switch (this.grade)
+        {
+            case EmployeeGrade.C:
+                maxLevel = 20;
+                break;
+            case EmployeeGrade.B:
+                maxLevel = 30;
+                break;
+            case EmployeeGrade.A:
+                maxLevel = 40;
+                break;
+            case EmployeeGrade.S:
+                maxLevel = 50;
+                break;
+            default:
+                maxLevel = 20; // ï¿½âº»ï¿½ï¿½ Cï¿½ï¿½ï¿½
+                break;
+        }
 
         if (currentLevel >= maxLevel)
         {
-            Debug.LogWarning($"{firstName}Àº(´Â) ÀÌ¹Ì ÃÖ´ë ·¹º§({maxLevel})ÀÔ´Ï´Ù.");
+            Debug.LogWarning($"{firstName}({this.grade}ï¿½ï¿½ï¿½)ï¿½ï¿½(ï¿½ï¿½) ï¿½Ì¹ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½({maxLevel})ï¿½Ô´Ï´ï¿½.");
             return false;
         }
 
-        // 2. °ñµå ¼Ò¸ð È®ÀÎ (±âÈ¹¼­ ±âÁØ)
-        // (TODO: PlayerRecipeÃ³·³ LevelTableÀ» ¸¸µé°Å³ª °ø½ÄÀ» Àû¿ëÇØ¾ß ÇÕ´Ï´Ù)
-        // (±âÈ¹¼­ ¿¹½Ã: ´ÙÀ½ ·¹º§ ºñ¿ë = ÇöÀç ·¹º§ ºñ¿ë * 1.1)
-        int requiredGold = (int)(100 * Mathf.Pow(1.1f, currentLevel - 1)); // (±âÈ¹¼­ 10% Áõ°¡ °ø½Ä ÀÓ½Ã Àû¿ë)
+        // 2. ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½ È®ï¿½ï¿½ (ï¿½ï¿½È¹ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        // (ï¿½ï¿½È¹ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ = ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ * 1.1)
+        int requiredGold = (int)(100 * Mathf.Pow(1.1f, currentLevel - 1)); // (ï¿½ï¿½È¹ï¿½ï¿½ 10% ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ó½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 
         if (GameManager.instance.totalGoldAmount < requiredGold)
         {
-            Debug.LogWarning($"{firstName} ·¹º§¾÷ ½ÇÆÐ: °ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù. (ÇÊ¿ä: {requiredGold}G)");
+            Debug.LogWarning($"{firstName} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½. (ï¿½Ê¿ï¿½: {requiredGold}G)");
             return false;
         }
 
-        // 3. °ñµå ¼Ò¸ð ¹× ·¹º§¾÷ Ã³¸®
-        GameManager.instance.SpendGold(requiredGold); // (GameManager¿¡ SpendGold ÇÔ¼ö°¡ ÇÊ¿äÇÕ´Ï´Ù)
+        // 3. ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
+        GameManager.instance.SpendGold(requiredGold);
         currentLevel++;
-        skillPoints++; // ¡Ú¡Ú¡Ú ±âÈ¹¼­´ë·Î SP 1 Áö±Þ ¡Ú¡Ú¡Ú
+        skillPoints++; // ï¿½Ú¡Ú¡ï¿½ ï¿½ï¿½È¹ï¿½ï¿½ï¿½ï¿½ï¿½ SP 1 ï¿½ï¿½ï¿½ï¿½ ï¿½Ú¡Ú¡ï¿½
 
-        Debug.Log($"[·¹º§¾÷!] {firstName} (Lv. {currentLevel}), SP +1. (ºñ¿ë: {requiredGold}G)");
+        Debug.Log($"[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!] {firstName} (Lv. {currentLevel}), SP +1. (ï¿½ï¿½ï¿½: {requiredGold}G)");
         return true;
+    }
+    /// <summary>
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¥' ï¿½ï¿½ï¿½Ê½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
+    /// </summary>
+    public float GetTraitStealChance()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+
+        // ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ 'ingredientStealChance' ï¿½ï¿½ï¿½ï¿½ ï¿½Õ»ï¿½
+        return currentTraits.Sum(trait => trait.ingredientStealChance);
+    }
+    /// <summary>
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½ï¿½Ê½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
+    /// </summary>
+    public float GetTraitCookingStatMultiplier()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+
+        // ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ 'cookingStatMultiplier' ï¿½ï¿½ï¿½ï¿½ ï¿½Õ»ï¿½
+        return currentTraits.Sum(trait => trait.cookingStatMultiplier);
+    }
+    /// <summary>
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½Ìµï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½ï¿½Ê½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
+    /// </summary>
+    public float GetTraitMoveSpeedMultiplier()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+        // "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"(-0.1) ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Õ»ï¿½
+        return currentTraits.Sum(trait => trait.moveSpeedMultiplier);
+    }
+
+    /// <summary>
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½Û¾ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½ï¿½Ê½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
+    /// </summary>
+    public float GetTraitWorkSpeedMultiplier()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+        // "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"(-0.1) ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Õ»ï¿½
+        return currentTraits.Sum(trait => trait.workSpeedMultiplier);
+    }
+    /// <summary>
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½ï¿½Ê½ï¿½/ï¿½ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
+    /// </summary>
+    public int GetTraitServiceScoreBonus()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0;
+        }
+
+        // "ï¿½Ç¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"(-5)ï¿½ï¿½ "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"(+?) ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Õ»ï¿½
+        return currentTraits.Sum(trait => trait.serviceScoreModifier);
+    }
+    /// <summary>
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½ È®ï¿½ï¿½' ï¿½ï¿½ï¿½Ê½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
+    /// </summary>
+    public float GetTraitTipChanceBonus()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+        // "ï¿½ï¿½È¤" Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Õ»ï¿½
+        return currentTraits.Sum(trait => trait.tipChanceBonus);
+    }
+
+    /// <summary>
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½ï¿½Ê½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
+    /// </summary>
+    public float GetTraitAllStatMultiplier()
+    {
+        if (currentTraits == null || currentTraits.Count == 0)
+        {
+            return 0f;
+        }
+        // "ï¿½ï¿½ï¿½Î°ï¿½" Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Õ»ï¿½
+        return currentTraits.Sum(trait => trait.allStatMultiplier);
     }
 }

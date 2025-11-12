@@ -255,6 +255,20 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.Settlement) // V2의 상태 체크
         {
+            if (EmployeeManager.Instance != null && InventoryManager.instance != null)
+            {
+                // "식탐" 특성을 가진 모든 직원을 찾습니다.
+                foreach (EmployeeInstance emp in EmployeeManager.Instance.hiredEmployees)
+                {
+                    float stealChance = emp.GetTraitStealChance();
+                    if (stealChance > 0 && UnityEngine.Random.Range(0f, 1f) < stealChance)
+                    {
+                        // 식탐 발동! 인벤토리에서 랜덤 재료 1개 훔치기
+                        InventoryManager.instance.StealRandomIngredient(emp.firstName);
+                    }
+                }
+            }
+
             // V2의 리셋 로직
             timeText.text = "09:00";
             todaysGold = 0;
@@ -267,7 +281,7 @@ public class GameManager : MonoBehaviour
 
             if (menuPlannerUI != null)
             {
-                menuPlannerUI.UpdateTodayMenuUI();
+                menuPlannerUI.UpdateAllSlotsUI();
             }
 
             // 공통 로직
@@ -292,11 +306,6 @@ public class GameManager : MonoBehaviour
     {
         PreparePanel.SetActive(currentState == GameState.Preparing);
         NextDayButton.SetActive(currentState == GameState.Settlement); // V2
-
-        if (OpenButton != null)
-        {
-            OpenButton.gameObject.SetActive(currentState == GameState.Preparing);
-        }
 
         bool isPreparing = (currentState == GameState.Preparing);
 
@@ -380,6 +389,44 @@ public class GameManager : MonoBehaviour
         totalGold.text = totalGoldAmount.ToString();
     }
 
+    /// <summary>
+    // (Employee.cs가 호출) 식재료 절약 성공 시 재료 1개를 반환합니다.
+    /// <summary>
+    // (Employee.cs가 호출) 식재료 절약 성공 시 재료 1개를 반환합니다.
+    /// </summary>
+    public void RefundIngredients(RecipeData recipe)
+    {
+        // 1. 레시피 데이터나 재료 목록이 비어있는지 확인합니다.
+        if (recipe == null || recipe.requiredIngredients == null || !recipe.requiredIngredients.Any())
+        {
+            Debug.LogWarning("RefundIngredients: 반환할 재료 데이터를 찾을 수 없습니다.");
+            return;
+        }
+
+        // 2. 레시피에 필요한 재료 목록(List<IngredientRequirement>)을 가져옵니다.
+        var ingredientsList = recipe.requiredIngredients;
+
+        // 3. 그 목록 중 1개를 랜덤으로 선택합니다. (예: 꼬치구이의 [ING01, ING02] 중 ING01 선택)
+        IngredientRequirement itemToRefund = ingredientsList[UnityEngine.Random.Range(0, ingredientsList.Count)];
+
+        if (itemToRefund == null || string.IsNullOrEmpty(itemToRefund.ingredientID))
+        {
+            Debug.LogWarning("RefundIngredients: 선택된 반환 아이템이 유효하지 않습니다.");
+            return;
+        }
+
+        // 4. InventoryManager를 호출하여 재료 1개를 인벤토리에 다시 추가합니다.
+        if (InventoryManager.instance != null)
+        {
+            InventoryManager.instance.AddIngredient(itemToRefund.ingredientID, 1);
+            Debug.Log($"[재료 반환!] {itemToRefund.ingredientID} 1개를 돌려받았습니다!");
+        }
+        else
+        {
+            Debug.LogError("RefundIngredients: InventoryManager.instance를 찾을 수 없습니다!");
+        }
+    }
+
     // [공통] AddCustomerCount
     public void AddCustomerCount()
     {
@@ -429,8 +476,6 @@ public class GameManager : MonoBehaviour
     public void OpenMenuPlanner()
     {
         if (menuPlanner != null) menuPlanner.SetActive(true);
-        if (RecipeSelection != null) RecipeSelection.SetActive(true);
-        if (panelBlocker != null) panelBlocker.SetActive(true);
         if (PopupManager != null) PopupManager.SetActive(true); // V2
     }
 
@@ -438,9 +483,22 @@ public class GameManager : MonoBehaviour
     public void CloseMenuPlanner()
     {
         if (menuPlanner != null) menuPlanner.SetActive(false);
+        if (PopupManager != null) PopupManager.SetActive(false);
+    }
+
+    // [V2]
+    public void OpenRecipeSelection()
+    {
+        if (RecipeSelection != null) RecipeSelection.SetActive(true);
+        if (panelBlocker != null) panelBlocker.SetActive(true);
+        if (PopupManager != null) PopupManager.SetActive(true);
+    }
+
+    // [V2]
+    public void CloseRecipeSelection()
+    {
         if (RecipeSelection != null) RecipeSelection.SetActive(false);
         if (panelBlocker != null) panelBlocker.SetActive(false);
-        if (PopupManager != null) PopupManager.SetActive(false);
     }
 
     // [V2]

@@ -16,3 +16,7 @@ MonoBehaviour:
   description: "\uC8FC\uBC29 \uB2F4\uB2F9 \uC2DC, \u2018\uC694\uB9AC\u2019 \uC2A4\uD0EF\uC774
     \uC77C\uC815 \uBE44\uC728(\uC784\uC2DC:10%) \uC99D\uAC00\uD55C \uAC83\uC73C\uB85C
     \uBCF4\uC815\uB418\uC5B4 \uC694\uB9AC \uC18D\uB3C4\uAC00 \uD5A5\uC0C1\uB429\uB2C8\uB2E4. "
+  isPositive: 1
+  ingredientSaveChance: 0
+  ingredientStealChance: 0
+  cookingStatMultiplier: 0.1

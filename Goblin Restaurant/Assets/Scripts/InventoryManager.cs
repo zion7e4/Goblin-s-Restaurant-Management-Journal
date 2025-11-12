@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -33,8 +34,31 @@ public class InventoryManager : MonoBehaviour
         Debug.Log($"재료 {ingredientID} {amount}개 추가. 현재 수량: {playerIngredients[ingredientID]}");
     }
 
-    // --- ▼▼▼ 함수 이름 수정 ▼▼▼ ---
-    // (기존 ConsumeIngredient -> RemoveIngredients로 이름 변경)
+    /// <summary>
+    /// (GameManager가 호출) '식탐' 특성이 발동하면 인벤토리에서 랜덤 재료 1개를 훔칩니다.
+    /// </summary>
+    public void StealRandomIngredient(string employeeName)
+    {
+        // 1. 훔칠 재료가 있는지 확인 (재료가 1개 이상 있는 목록)
+        List<string> availableIngredients = playerIngredients
+            .Where(pair => pair.Value > 0)
+            .Select(pair => pair.Key)
+            .ToList();
+
+        if (availableIngredients.Count == 0)
+        {
+            Debug.Log($"[식탐] {employeeName}이(가) 재료를 훔치려 했으나... 인벤토리가 비어있습니다!");
+            return;
+        }
+
+        // 2. 훔칠 재료 1개를 랜덤으로 선택
+        string stolenIngredientID = availableIngredients[UnityEngine.Random.Range(0, availableIngredients.Count)];
+
+        // 3. 재료 1개 제거 (기획서 기준)
+        RemoveIngredients(stolenIngredientID, 1);
+
+        Debug.LogWarning($"[식탐!] {employeeName}이(가) {stolenIngredientID} 1개를 훔쳐 먹었습니다! (남은 수량: {playerIngredients[stolenIngredientID]})");
+    }
     /// <summary>
     /// (RecipeManager가 호출)
     /// 특정 재료를 인벤토리에서 지정된 수량만큼 제거합니다.

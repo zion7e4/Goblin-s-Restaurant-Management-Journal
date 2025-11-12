@@ -16,3 +16,5 @@ MonoBehaviour:
   description: "\uC8FC\uBC29 \uB2F4\uB2F9 \uC2DC, \uC77C\uC815 \uD655\uB960(\uC784\uC2DC:
     15%)\uB85C \uC694\uB9AC\uC5D0 \uC18C\uBAA8\uB41C \uC2DD\uC7AC\uB8CC\uC758 \uC77C\uBD80\uB97C
     \uC808\uC57D\uD569\uB2C8\uB2E4."
+  isPositive: 1
+  ingredientSaveChance: 0.15
