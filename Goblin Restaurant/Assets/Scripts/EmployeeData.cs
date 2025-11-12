@@ -25,8 +25,9 @@ public class EmployeeData : ScriptableObject
     public int baseCookingStat = 1;
     [Tooltip("이 종족의 기본 서빙 능력치")]
     public int baseServingStat = 1;
-    [Tooltip("이 종족의 기본 정리 능력치")]
-    public int baseCleaningStat = 1;
+
+    [Tooltip("이 종족의 기본 매력 능력치")]
+    public int baseCharmStat = 1;
 
     [Header("종족별 성장 잠재력")]
     [Tooltip("명성 100당 이 능력치가 상승하는 평균값. (예: 0.1로 설정하면 명성 1000당 1 상승)")]
@@ -34,7 +35,7 @@ public class EmployeeData : ScriptableObject
     [Tooltip("명성 100당 이 능력치가 상승하는 평균값.")]
     public float servingGrowthFactor = 0.1f;
     [Tooltip("명성 100당 이 능력치가 상승하는 평균값.")]
-    public float cleaningGrowthFactor = 0.1f;
+    public float charmGrowthFactor = 0.1f;
 
     [Header("기본 급여")]
     [Tooltip("이 종족의 기본 급여. 능력치가 높게 생성되면 급여도 보너스를 받습니다.")]
@@ -43,4 +44,7 @@ public class EmployeeData : ScriptableObject
     [Header("보유 가능 특성")]
     [Tooltip("이 종족이 가질 수 있는 모든 특성 목록. Trait 에셋 파일을 연결해주세요.")]
     public List<Trait> possibleTraits;
+
+    [Header("맵 스폰용 프리팹")]
+    public GameObject speciesPrefab;
 }
