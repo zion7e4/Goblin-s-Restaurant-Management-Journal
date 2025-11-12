@@ -321,7 +321,6 @@ public class Employee : MonoBehaviour
         }
 
         // ���� �������� �̵�
-    }
 
         // 2. 'Ȧ' ������ �Ⱦ��� �� �ֵ���, �丮�� �Ϸ�� ī���� ��ġ�� �ֹ����� ����
         targetOrder.cookedOnCounterTop = this.targetCountertop;
@@ -470,5 +469,37 @@ public class Employee : MonoBehaviour
         {
             onArrived?.Invoke();
         }
+    }
+
+    IEnumerator PickupFoodCoroutine()
+    {
+        currentState = EmployeeState.Idle; // 임시로 Idle (혹시 버그 생길까봐)
+        Debug.Log($"{employeeData?.firstName ?? "Worker"}이(가) {targetOrder.recipe.data.recipeName} 픽업 완료.");
+
+        // 1. 카운터에 있던 음식(foodObject)을 이 직원(this.transform)의 자식으로 붙입니다.
+        if (targetOrder.foodObject != null)
+        {
+            targetOrder.foodObject.transform.SetParent(this.transform);
+            targetOrder.foodObject.transform.localPosition = new Vector3(0, 1.2f, 0);
+        }
+        else
+        {
+            Debug.LogError($"[픽업 오류] {targetOrder.recipe.data.recipeName}의 foodObject가 null입니다!");
+        }
+
+        // 2. 음식을 픽업했으니, 이 카운터는 더 이상 '요리 완료' 상태가 아님
+        if (targetCountertop != null)
+        {
+            // (참고: 요리사가 isBeingUsed는 이미 false로 풀었음)
+        }
+
+        // 3. 주문서에서 '요리 완료된 카운터' 정보 제거 (이제 내가 들고 있으므로)
+        targetOrder.cookedOnCounterTop = null;
+
+        // 4. 이제 '서빙' 상태로 변경하고 손님에게 이동
+        currentState = EmployeeState.MovingToServe;
+
+        // (targetCustomer는 FindTask에서 이미 설정됨)
+        yield return null;
     }
 }
