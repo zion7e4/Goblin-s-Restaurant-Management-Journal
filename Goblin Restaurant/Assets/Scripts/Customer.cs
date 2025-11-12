@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Linq;
-using System.Drawing; // (참고: 이 using문은 UnityEngine.Color와 충돌할 수 있으니, 필요 없다면 지우는 것이 좋습니다)
+// using System.Drawing; // (참고: UnityEngine.Color와 충돌할 수 있으니, 필요 없다면 지우는 것이 좋습니다)
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -18,7 +18,7 @@ public class Customer : MonoBehaviour
     public enum CustomerState { MovingToTable, DecidingMenu, WaitingForFood, Eating, Leaving }
     public CustomerState currentState;
     public GameObject orderIconPrefab;
-    public Transform iconSpawnPoint;     // 아이콘이 표시될 머리 위 위치
+    public Transform iconSpawnPoint;    // 아이콘이 표시될 머리 위 위치
     public GameObject RestaurantReviwe; // 만족도 표시 텍스트
     public List<SatisfactionIcon> satisfactionIcons; //
     public Transform leavingPoint; // 퇴장 지점
@@ -29,7 +29,7 @@ public class Customer : MonoBehaviour
     private float speed = 3f;
     private PlayerRecipe myOrderedRecipe;
     private float foodWaitStartTime; // 음식을 기다리기 시작한 시간
-    private int satisfactionScore;   // 최종 만족도 점수
+    private int satisfactionScore;  // 최종 만족도 점수
     private EmployeeInstance serverEmployee;
 
     public void Initialize(Transform table, Transform exit)
@@ -135,12 +135,40 @@ public class Customer : MonoBehaviour
                 }
             }
 
-            KitchenOrder newOrder = new KitchenOrder(this, myOrderedRecipe, null);
+            // --- !! [버그 수정] !! ---
+            // 'foodObject'가 null이 되는 근본 원인입니다.
+            // 주문서(KitchenOrder)를 생성할 때, 음식 프리팹을 여기서 Instantiate(생성)하고 전달해야 합니다.
+
+            // 1. 레시피 데이터에서 음식 프리팹을 가져옵니다.
+            // (만약 'foodPrefab'이 아니라면, 레시피 데이터에 있는 실제 프리팹 변수명으로 변경해야 합니다.)
+            GameObject foodPrefab = myOrderedRecipe.data.foodPrefab;
+
+            if (foodPrefab == null)
+            {
+                Debug.LogError($"[주문 오류!] {myOrderedRecipe.data.recipeName}의 레시피 데이터에 'foodPrefab'이 할당되지 않았습니다! 주문을 생성할 수 없습니다.");
+                currentState = CustomerState.Leaving; // 손님은 그냥 떠납니다.
+                yield break; // 코루틴 중단
+            }
+
+            // 2. 프리팹을 복제하여 'foodObject' 인스턴스를 만듭니다.
+            GameObject instantiatedFood = Instantiate(foodPrefab, Vector3.zero, Quaternion.identity);
+
+            // 3. 요리사가 사용할 때까지 씬에서 보이지 않도록 비활성화합니다.
+            instantiatedFood.SetActive(false);
+            instantiatedFood.name = $"{myOrderedRecipe.data.recipeName} (주문자: {this.name})";
+
+            // 4. 생성된 'instantiatedFood'를 주문서 생성자에 전달합니다. (null 대신)
+            KitchenOrder newOrder = new KitchenOrder(this, myOrderedRecipe, instantiatedFood);
+            // --- !! [버그 수정 완료] !! ---
+
             RestaurantManager.instance.OrderQueue.Add(newOrder);
 
             MenuPlanner.instance.RecordSale(myOrderedRecipe.data.id);
 
             currentState = CustomerState.WaitingForFood;
+
+            // foodWaitStartTime을 주문이 들어간 이 시점으로 초기화
+            foodWaitStartTime = Time.time;
         }
         else
         {
@@ -286,7 +314,7 @@ public class Customer : MonoBehaviour
         else if (totalWaitTime > 45f) satisfactionScore -= 10;
 
         int dishGrade = myOrderedRecipe.GetCurrentGrade();
-        if (dishGrade >= 1) satisfactionScore += 20;
+        if (dishGrade == 1) satisfactionScore += 20; // (수정: 등급 숫자가 낮을수록 좋은 것으로 가정)
         else if (dishGrade == 2) satisfactionScore += 15;
         else if (dishGrade == 3) satisfactionScore += 10;
         else if (dishGrade == 4) satisfactionScore += 5;
