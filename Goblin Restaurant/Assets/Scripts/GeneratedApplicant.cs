@@ -1,32 +1,31 @@
 using System.Collections.Generic;
 
-/// <summary>
-/// EmployeeManager가 생성한 '지원자'의 임시 데이터를 보관하는 클래스입니다.
-/// </summary>
+// 역할: 모든 계산이 끝난 지원자의 최종 정보를 담는 '결과물' 클래스
 public class GeneratedApplicant
 {
+    // 어떤 '종족' 템플릿에서 생성되었는지 저장합니다.
     public EmployeeData BaseSpeciesData { get; private set; }
+
+    // 동적으로 생성된 정보들
     public string GeneratedFirstName { get; private set; }
     public string GeneratedJobTitle { get; private set; }
 
+    // 랜덤으로 생성된 능력치 및 특성
     public int GeneratedCookingStat { get; private set; }
     public int GeneratedServingStat { get; private set; }
-
-    public int GeneratedCharmStat { get; private set; }
-
+    public int GeneratedCleaningStat { get; private set; }
     public List<Trait> GeneratedTraits { get; private set; }
 
-    public GeneratedApplicant(EmployeeData selectedSpecies, string firstName, string jobTitle,
-                               int cook, int serve, int charm, List<Trait> finalTraits)
+    // 생성자: EmployeeManager가 모든 계산을 마친 후 결과값을 전달받습니다.
+    public GeneratedApplicant(EmployeeData speciesData, string firstName, string jobTitle, int cook, int serve, int clean, List<Trait> traits)
     {
-        BaseSpeciesData = selectedSpecies;
+        BaseSpeciesData = speciesData;
         GeneratedFirstName = firstName;
         GeneratedJobTitle = jobTitle;
-
         GeneratedCookingStat = cook;
         GeneratedServingStat = serve;
-        GeneratedCharmStat = charm;
-
-        GeneratedTraits = finalTraits;
+        GeneratedCleaningStat = clean;
+        GeneratedTraits = traits;
     }
 }
+

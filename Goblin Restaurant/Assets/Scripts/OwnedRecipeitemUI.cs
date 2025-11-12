@@ -1,84 +1,38 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections.Generic;
-using System.Linq;
-
-[System.Serializable]
-public struct RarityBorder
-{
-    public Rarity rarity;
-    public Sprite borderSprite;
-}
 
 public class OwnedRecipeItemUI : MonoBehaviour
 {
     public Button selectButton;
-    public Image recipeIconImage;
+    public TextMeshProUGUI recipeNameText;
+    // (추가) public Image recipeIconImage;
 
-    [Header("등급(Rarity) 테두리")]
-    public Image borderImage;
-    public List<RarityBorder> rarityBorders;
+    private PlayerRecipe myRecipe;
+    private MenuPlannerUI_Controller controller; // 컨트롤러의 정보를 저장할 변수
 
-    private MenuPlannerUI_Controller controller;
-
-    private PlayerRecipe myPlayerRecipeInstance;
-
-    public void Setup(RecipeData recipeData, MenuPlannerUI_Controller uiController)
+    // 컨트롤러로부터 정보를 받아 자신을 초기화하는 함수
+    public void Setup(PlayerRecipe recipe, bool canSelect, MenuPlannerUI_Controller uiController)
     {
-        controller = uiController;
-        myPlayerRecipeInstance = null;
-        if (recipeIconImage != null)
-        {
-            recipeIconImage.sprite = recipeData.icon;
-        }
-        Rarity currentRarity = recipeData.rarity;
+        myRecipe = recipe;
+        controller = uiController; // 컨트롤러 정보 저장
 
-        bool isOwned = RecipeManager.instance.playerRecipes.TryGetValue(recipeData.id, out myPlayerRecipeInstance);
+        recipeNameText.text = myRecipe.data.recipeName;
+        // if (recipeIconImage != null) recipeIconImage.sprite = myRecipe.data.icon;
 
-        bool isSelectableVisual;
-        Color targetColor;
+        // 선택 가능한 상태일 때만 버튼을 활성화
+        selectButton.interactable = canSelect;
 
-        if (isOwned)
-        {
-            selectButton.interactable = true;
-
-            bool alreadyAdded = MenuPlanner.instance.dailyMenu.Any(r => r != null && r.data.id == recipeData.id);
-
-            bool canCook = InventoryManager.instance.CanCook(myPlayerRecipeInstance);
-
-            isSelectableVisual = canCook && !alreadyAdded;
-
-            targetColor = isSelectableVisual ? Color.white : Color.gray;
-        }
-        else
-        {
-            selectButton.interactable = false;
-
-            targetColor = new Color(0.2f, 0.2f, 0.2f, 0.5f);
-        }
-
-        if (recipeIconImage != null) recipeIconImage.color = targetColor;
-
-        if (borderImage != null && rarityBorders != null)
-        {
-            Sprite targetSprite = rarityBorders.FirstOrDefault(b => b.rarity == currentRarity).borderSprite;
-            if (targetSprite != null)
-            {
-                borderImage.sprite = targetSprite;
-                borderImage.color = targetColor;
-            }
-        }
-
-        selectButton.onClick.RemoveAllListeners();
+        // 버튼 클릭 시 OnSelectButtonClick 함수를 호출하도록 설정
         selectButton.onClick.AddListener(OnSelectButtonClick);
     }
 
     void OnSelectButtonClick()
     {
-        if (controller != null && myPlayerRecipeInstance != null)
+        // 저장해둔 컨트롤러에게 "내가 눌렸어!" 라고 직접 알림
+        if (controller != null)
         {
-            controller.OpenQuantityPopup(myPlayerRecipeInstance);
+            controller.OnRecipeSelectedFromPopup(myRecipe);
         }
     }
 }

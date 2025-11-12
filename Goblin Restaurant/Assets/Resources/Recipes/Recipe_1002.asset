@@ -19,7 +19,7 @@ MonoBehaviour:
   foodPrefab: {fileID: 8793362396894766806, guid: a443db1de82ddec4a8cdc58936116c90, type: 3}
   basePrice: 10
   baseCookTime: 12
-  RecipeLevel: 1
+  rarity: 0
   requiredIngredients:
   - ingredientID: ING02
     amount: 3

@@ -10,6 +10,15 @@ public class SelectableRecipeItemUI : MonoBehaviour
     private PlayerRecipe myRecipe;
     private MenuPlannerUI_Controller controller;
 
+    public void Setup(PlayerRecipe recipe, MenuPlannerUI_Controller uiController)
+    {
+        myRecipe = recipe;
+        recipeNameText.text = myRecipe.data.recipeName;
+
+        controller = uiController;
+
+        selectButton.onClick.AddListener(OnSelectButtonClick);
+    }
     public void Setup(PlayerRecipe recipe, bool canSelect, MenuPlannerUI_Controller uiController)
     {
         myRecipe = recipe;
@@ -23,7 +32,6 @@ public class SelectableRecipeItemUI : MonoBehaviour
             recipeNameText.color = Color.gray;
         }
 
-        selectButton.onClick.RemoveAllListeners();
         selectButton.onClick.AddListener(OnSelectButtonClick);
     }
 
@@ -31,7 +39,7 @@ public class SelectableRecipeItemUI : MonoBehaviour
     {
         if (controller != null)
         {
-            controller.OpenQuantityPopup(myRecipe);
+            controller.OnRecipeSelectedFromPopup(myRecipe);
         }
     }
 }

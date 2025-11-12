@@ -1,42 +1,27 @@
-ï»¿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Linq;
 using System.Drawing;
-using TMPro;
-using System.Collections.Generic;
-using UnityEngine.UI;
-
-[System.Serializable]
-public class SatisfactionIcon
-{
-    public SatisfactionLevel level; // (SatisfactionManager.csì— ì •ì˜ë¨)
-Â  Â  public Sprite icon;
-}
 
 public class Customer : MonoBehaviour
 {
     public enum CustomerState { MovingToTable, DecidingMenu, WaitingForFood, Eating, Leaving }
     public CustomerState currentState;
-    public GameObject orderIconPrefab;
-    public Transform iconSpawnPoint;Â  Â // ì•„ì´ì½˜ì´ í‘œì‹œë  ë¨¸ë¦¬ ìœ„ ìœ„ì¹˜
-Â  Â  public GameObject RestaurantReviwe; // ë§Œì¡±ë„ í‘œì‹œ í…ìŠ¤íŠ¸
-Â  Â  public List<SatisfactionIcon> satisfactionIcons;
-    public Transform leavingPoint; // í‡´ì¥ ì§€ì 
-Â  Â  private GameObject currentOrderIcon; // í˜„ì¬ ë–  ìˆëŠ” ì•„ì´ì½˜ì„ ì €ì¥í•  ë³€ìˆ˜
+    public GameObject orderIconPrefab; 
+    public Transform iconSpawnPoint;   // ¾ÆÀÌÄÜÀÌ Ç¥½ÃµÉ ¸Ó¸® À§ À§Ä¡
+    private GameObject currentOrderIcon; // ÇöÀç ¶° ÀÖ´Â ¾ÆÀÌÄÜÀ» ÀúÀåÇÒ º¯¼ö
 
-Â  Â  private Transform targetTable;
-Â  Â  [SerializeField]
+    private Transform targetTable;
+    [SerializeField]
     private float speed = 3f;
     private PlayerRecipe myOrderedRecipe;
-    private float foodWaitStartTime; // ìŒì‹ì„ ê¸°ë‹¤ë¦¬ê¸° ì‹œì‘í•œ ì‹œê°„
-Â  Â  private int satisfactionScore;Â  Â // ìµœì¢… ë§Œì¡±ë„ ì ìˆ˜
-Â  Â  private EmployeeInstance serverEmployee;
+    private Transform exitPoint; // ÅğÀå ½Ã ÀÌµ¿ÇÒ ¸ñÇ¥ ÁöÁ¡
 
     public void Initialize(Transform table, Transform exit)
     {
         targetTable = table;
-        leavingPoint = exit;
-Â  Â  Â  Â  currentState = CustomerState.MovingToTable;
+        exitPoint = exit;
+        currentState = CustomerState.MovingToTable;
     }
 
     void Update()
@@ -44,75 +29,36 @@ public class Customer : MonoBehaviour
         switch (currentState)
         {
             case CustomerState.MovingToTable:
-                Table tableComponent = targetTable.GetComponent<Table>();
-                Vector3 targetPosition;
-
-                if (tableComponent != null && tableComponent.seatPosition != null)
-                {
-                    targetPosition = tableComponent.seatPosition.position;
-                }
-                else
-                {
-                    Debug.LogWarning("í…Œì´ë¸”ì— seatPositionì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. í…Œì´ë¸” ì¤‘ì•™ìœ¼ë¡œ ì´ë™í•©ë‹ˆë‹¤.");
-                    targetPosition = targetTable.position;
-                }
-
-                transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
-
-                if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
+                // Å×ÀÌºí·Î ÀÌµ¿
+                transform.position = Vector2.MoveTowards(transform.position, targetTable.position, speed * Time.deltaTime);
+                if (Vector2.Distance(transform.position, targetTable.position) < 0.1f)
                 {
                     currentState = CustomerState.DecidingMenu;
-                    targetTable.GetComponent<Table>().Occupy(gameObject); //
-                    StartCoroutine(DecideMenuCoroutine());
+                    targetTable.GetComponent<Table>().Occupy(gameObject); // Å×ÀÌºí Á¡À¯
+
+                    StartCoroutine(DecideMenuCoroutine()); // ¸Ş´º °áÁ¤ ÄÚ·çÆ¾ ½ÃÀÛ
                 }
                 break;
             case CustomerState.Leaving:
-                if (leavingPoint == null)
-                {
-                    Debug.LogError("leavingPointê°€ Customer ìŠ¤í¬ë¦½íŠ¸ì— í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤! (Initialize í•¨ìˆ˜ í™•ì¸)");
-                    Destroy(gameObject);
-                    break;
-                }
-
-                transform.position = Vector2.MoveTowards(transform.position, leavingPoint.position, speed * Time.deltaTime);
-
-                if (Vector2.Distance(transform.position, leavingPoint.position) < 0.1f)
-                {
-                    Destroy(gameObject);
-                }
-Â  Â  Â  Â  Â  Â  Â  Â  break;
-Â  Â  Â  Â  }
-    }
-Â  Â  public void ReceiveFood(EmployeeInstance server) //
-Â  Â  {
-        this.serverEmployee = server;
-
-        if (currentOrderIcon != null)
-        {
-            Destroy(currentOrderIcon);
+                transform.position = Vector2.MoveTowards(transform.position, new Vector2(0, -5), speed * Time.deltaTime);
+                Destroy(gameObject, 2f);
+                break;
         }
-
-        currentState = CustomerState.Eating;
-        StartCoroutine(EatAndLeave());
     }
 
     IEnumerator DecideMenuCoroutine()
     {
-        Debug.Log("ì†ë‹˜ì´ ë©”ë‰´ë¥¼ ê³ ë¥´ëŠ” ì¤‘...");
-        yield return new WaitForSeconds(Random.Range(2f, 5f));
+        Debug.Log("¼Õ´ÔÀÌ ¸Ş´º¸¦ °í¸£´Â Áß...");
+        yield return new WaitForSeconds(2f);
 
-        var dailyMenu = MenuPlanner.instance.dailyMenu.Where(r => r != null);
+        var availableMenu = MenuPlanner.instance.dailyMenu.Where(r => r != null).ToList();
 
-        var availableMenuWithStock = dailyMenu
-        .Where(r => MenuPlanner.instance.GetRemainingStock(r.data.id) > 0)
-        .ToList();
-
-        if (availableMenuWithStock.Count > 0)
+        if (availableMenu.Count > 0)
         {
-            int randomIndex = Random.Range(0, availableMenuWithStock.Count);
-            myOrderedRecipe = availableMenuWithStock[randomIndex];
+            int randomIndex = Random.Range(0, availableMenu.Count);
+            myOrderedRecipe = availableMenu[randomIndex];
 
-            Debug.Log($"{myOrderedRecipe.data.recipeName} ê²°ì •! ì£¼ë°©ì— ì£¼ë¬¸ì„ ë„£ìŠµë‹ˆë‹¤.");
+            Debug.Log($"{myOrderedRecipe.data.recipeName} °áÁ¤! ÁÖ¹æ¿¡ ÁÖ¹®À» ³Ö½À´Ï´Ù.");
 
             if (orderIconPrefab != null && iconSpawnPoint != null)
             {
@@ -125,22 +71,29 @@ public class Customer : MonoBehaviour
                 }
             }
 
-            KitchenOrder newOrder = new KitchenOrder(this, myOrderedRecipe, null); // foodObjectëŠ” ë‚˜ì¤‘ì— ì¶”ê°€
-Â  Â  Â  Â  Â  Â  RestaurantManager.instance.OrderQueue.Add(newOrder);
-
-            MenuPlanner.instance.RecordSale(myOrderedRecipe.data.id);
+            KitchenOrder newOrder = new KitchenOrder(this, myOrderedRecipe, null); // foodObject´Â ³ªÁß¿¡ Ãß°¡
+            RestaurantManager.instance.OrderQueue.Add(newOrder);
 
             currentState = CustomerState.WaitingForFood;
         }
         else
         {
-            Debug.LogError("ì†ë‹˜ì´ ì£¼ë¬¸í•  ë©”ë‰´ê°€ ì˜¤ëŠ˜ì˜ ë©”ë‰´ì— í•˜ë‚˜ë„ í¸ì„±ë˜ì–´ ìˆì§€ ì•ŠìŠµë‹ˆë‹¤!");
-            currentState = CustomerState.Leaving;
+            Debug.LogError("¼Õ´ÔÀÌ ÁÖ¹®ÇÒ ¸Ş´º°¡ ¿À´ÃÀÇ ¸Ş´º¿¡ ÇÏ³ªµµ Æí¼ºµÇ¾î ÀÖÁö ¾Ê½À´Ï´Ù!");
         }
     }
 
+    public void ReceiveFood()
+    {
+        if (currentOrderIcon != null)
+        {
+            Destroy(currentOrderIcon);
+        }
 
-Â  Â  public void SetTable(Transform table)
+        currentState = CustomerState.Eating;
+        StartCoroutine(EatAndLeave());
+    }
+
+    public void SetTable(Transform table)
     {
         targetTable = table;
         currentState = CustomerState.MovingToTable;
@@ -149,142 +102,23 @@ public class Customer : MonoBehaviour
 
     System.Collections.IEnumerator EatAndLeave()
     {
-        Debug.Log("ì‹ì‚¬ ì‹œì‘");
-        yield return new WaitForSeconds(2f);
-        Debug.Log("ì‹ì‚¬ ì™„ë£Œ");
-
-        CalculateSatisfaction();
-        SatisfactionLevel level = GetSatisfactionLevel();
-        int price = myOrderedRecipe.GetCurrentPrice();
-
-        int tip = 0;
-
-        switch (level)
+        Debug.Log("½Ä»ç ½ÃÀÛ");
+        yield return new WaitForSeconds(2f); // 2ÃÊ°£ ½Ä»ç
+        Debug.Log("½Ä»ç ¿Ï·á");
+        if (myOrderedRecipe != null)
         {
-            case SatisfactionLevel.VerySatisfied:
-                FameManager.instance.AddFame(20f);
-                break;
-            case SatisfactionLevel.Satisfied:
-                FameManager.instance.AddFame(10f);
-                break;
-            case SatisfactionLevel.Normal:
-                FameManager.instance.AddFame(5f);
-                break;
-            case SatisfactionLevel.VeryDissatisfied:
-                FameManager.instance.DecreaseFame(1f);
-                break;
+            int price = myOrderedRecipe.GetCurrentPrice();
+            GameManager.instance.AddGold(price);
+            Debug.Log($"¼Õ´ÔÀÌ {myOrderedRecipe.data.recipeName}À»(¸¦) ¸Ô°í {price}¿øÀ» ÁöºÒÇß½À´Ï´Ù.");
         }
-
-        int charmStat = 0;
-        if (serverEmployee != null)
+        else
         {
-            charmStat = serverEmployee.currentCharmStat;
+            Debug.LogError("ÁÖ¹®ÇÑ ·¹½ÃÇÇ Á¤º¸°¡ ¾ø½À´Ï´Ù!");
         }
-
-        float baseTipChance = 5f;
-        float finalTipChance = baseTipChance + (charmStat * 0.3f);
-        finalTipChance = Mathf.Clamp(finalTipChance, 0f, 100f);
-
-        if (Random.Range(0f, 100f) < finalTipChance)
-        {
-            tip = Mathf.RoundToInt(price * 0.1f);
-            Debug.Log($"[íŒ ë°œìƒ!] ë§¤ë ¥({charmStat}) ë³´ë„ˆìŠ¤ë¡œ {tip}G íŒ íšë“! (í™•ë¥ : {finalTipChance:F1}%)");
-        }
-
-        int totalPayment = price + tip;
-        GameManager.instance.AddGold(totalPayment);
-
-        if (RestaurantReviwe != null && iconSpawnPoint != null)
-        {
-            GameObject textObj = Instantiate(RestaurantReviwe, iconSpawnPoint.position, Quaternion.identity);
-            textObj.transform.SetParent(iconSpawnPoint);
-
-            TextMeshProUGUI textMesh = textObj.GetComponent<TextMeshProUGUI>();
-
-            Image iconImage = textObj.GetComponentInChildren<Image>();
-
-            Sprite spriteToUse = null;
-            if (satisfactionIcons != null)
-            {
-                spriteToUse = satisfactionIcons.FirstOrDefault(s => s.level == level)?.icon;
-            }
-
-            if (iconImage != null && spriteToUse != null)
-            {
-                iconImage.sprite = spriteToUse;
-                iconImage.gameObject.SetActive(true);
-            }
-            else if (iconImage != null)
-            {
-                iconImage.gameObject.SetActive(false);
-            }
-
-            if (textMesh != null)
-            {
-                string tipText = (tip > 0) ? $"\n(íŒ: {tip}G)" : "";
-                textMesh.text = $"ì§€ë¶ˆê¸ˆì•¡: {totalPayment}G{tipText}\në§Œì¡±ë„: {GetSatisfactionString(level)}";
-            }
-        }
-        Debug.Log($"ë§Œì¡±ë„: {satisfactionScore} ({level}) | ìŒì‹ê°’: {price}G + íŒ: {tip}G = ì´ {totalPayment}G ì§€ë¶ˆ");
-
         GameManager.instance.AddCustomerCount();
-        targetTable.GetComponent<Table>().Vacate();
-        targetTable.GetComponent<Table>().isDirty = true;
+        targetTable.GetComponent<Table>().Vacate(); // Å×ÀÌºí ºñ¿ì±â
+        targetTable.GetComponent<Table>().isDirty = true; // Å×ÀÌºí ´õ·¯¿î »óÅÂ·Î º¯°æ
         currentState = CustomerState.Leaving;
         RestaurantManager.instance.customers.Remove(this);
-    }
-    string GetSatisfactionString(SatisfactionLevel level)
-    {
-        switch (level)
-        {
-            case SatisfactionLevel.VerySatisfied: return "<color=cyan>ë§¤ìš° ë§Œì¡±!</color>";
-            case SatisfactionLevel.Satisfied: return "<color=green>ë§Œì¡±</color>";
-            case SatisfactionLevel.Normal: return "ë³´í†µ";
-            case SatisfactionLevel.Dissatisfied: return "<color=orange>ë¶ˆë§Œ</color>";
-            case SatisfactionLevel.VeryDissatisfied: return "<color=red>ë§¤ìš° ë¶ˆë§Œ...</color>";
-            default: return "";
-        }
-    }
-
-    void CalculateSatisfaction()
-    {
-        satisfactionScore = 50; // ê¸°ë³¸ ì ìˆ˜ 50ì Â 
-
-Â  Â  Â  Â  float totalWaitTime = Time.time - foodWaitStartTime;
-        if (totalWaitTime < 15f) satisfactionScore += 20;
-        else if (totalWaitTime < 30f) satisfactionScore += 10;
-        else if (totalWaitTime > 60f) satisfactionScore -= 20;
-        else if (totalWaitTime > 45f) satisfactionScore -= 10;
-
-        int dishGrade = myOrderedRecipe.GetCurrentGrade();
-        if (dishGrade >= 1) satisfactionScore += 20;
-        else if (dishGrade == 2) satisfactionScore += 15;
-        else if (dishGrade == 3) satisfactionScore += 10;
-        else if (dishGrade == 4) satisfactionScore += 5;
-        else if (dishGrade == 5) satisfactionScore += 0;
-
-        if (RestaurantManager.instance.cleanliness >= 90) satisfactionScore += 10;
-        else if (RestaurantManager.instance.cleanliness < 50) satisfactionScore -= 10;
-
-Â  Â  Â  Â  if (SynergyManager.Instance != null)
-        {
-            int serviceBonus = SynergyManager.Instance.GetServiceScoreBonus();
-            satisfactionScore += serviceBonus; // "í™œê¸°ì°¬ ì‹ë‹¹"(+2) ë˜ëŠ” "ê³µí¬ì˜ í™€"(-2)
-Â  Â  Â  Â  Â  Â  if (serviceBonus != 0)
-            {
-                Debug.Log($"[ì‹œë„ˆì§€] ì„œë¹„ìŠ¤ ì ìˆ˜ ë³´ë„ˆìŠ¤ {serviceBonus}ì  ì ìš©!");
-            }
-        }
-
-Â  Â  Â  Â  satisfactionScore = Mathf.Clamp(satisfactionScore, 0, 100); // ìµœì¢… ì ìˆ˜ë¥¼ 0~100 ì‚¬ì´ë¡œ ê³ ì •
-Â  Â  }
-
-    SatisfactionLevel GetSatisfactionLevel()
-    {
-        if (satisfactionScore <= 20) return SatisfactionLevel.VeryDissatisfied;
-        if (satisfactionScore <= 40) return SatisfactionLevel.Dissatisfied;
-        if (satisfactionScore <= 60) return SatisfactionLevel.Normal;
-        if (satisfactionScore <= 80) return SatisfactionLevel.Satisfied;
-        return SatisfactionLevel.VerySatisfied;
     }
 }

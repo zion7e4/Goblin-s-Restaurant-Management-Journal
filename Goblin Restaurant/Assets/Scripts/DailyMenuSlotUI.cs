@@ -4,54 +4,64 @@ using TMPro;
 
 public class DailyMenuSlotUI : MonoBehaviour
 {
-    [Header("데이터 그룹")]
+    public int slotIndex;
     public GameObject dataGroup;
     public GameObject emptyGroup;
-
-    [Header("UI 요소 (이미지 기반)")]
+    public TextMeshProUGUI recipeNameText;
     public Image recipeIcon;
-
-    public TextMeshProUGUI RecipeGradeText;
-    public Image quantityIcon;
+    public Button plusButton;
+    public Button minusButton;
+    public Button removeButton;
     public TextMeshProUGUI quantityText;
-    public TextMeshProUGUI priceText;
 
+    private Button myButton;
     private PlayerRecipe myRecipe;
+    private MenuPlannerUI_Controller controller;
 
     private void Awake()
     {
+        myButton = GetComponent<Button>();
+        myButton.onClick.AddListener(OnSlotClick);
+        plusButton.onClick.AddListener(() => controller.ChangeRecipeQuantity(myRecipe, 1));
+        minusButton.onClick.AddListener(() => controller.ChangeRecipeQuantity(myRecipe, -1));
+        removeButton.onClick.AddListener(() => controller.RemoveRecipeFromDailyMenu(this));
+    }
+
+    public void SetData(PlayerRecipe recipe)
+    {
+        dataGroup.SetActive(true);
+        emptyGroup.SetActive(false);
+        recipeNameText.text = recipe.data.recipeName;
+        recipeIcon.sprite = recipe.data.icon;
     }
 
     public void ClearData()
     {
-        myRecipe = null;
         dataGroup.SetActive(false);
-        if (emptyGroup != null) emptyGroup.SetActive(true);
+        emptyGroup.SetActive(true);
+    }
+
+    public void Initialize(MenuPlannerUI_Controller uiController)
+    {
+        controller = uiController;
+        GetComponent<Button>().onClick.AddListener(OnSlotClick);
     }
 
     public void SetData(PlayerRecipe recipe, int quantity)
     {
         myRecipe = recipe;
         dataGroup.SetActive(true);
-        if (emptyGroup != null) emptyGroup.SetActive(false);
-
+        emptyGroup.SetActive(false);
+        recipeNameText.text = myRecipe.data.recipeName;
         recipeIcon.sprite = myRecipe.data.icon;
+        quantityText.text = quantity.ToString();
+    }
 
-        if (RecipeGradeText != null)
+    void OnSlotClick()
+    {
+        if (controller != null)
         {
-            int grade = myRecipe.GetCurrentGrade();
-            RecipeGradeText.text = $"요리 등급: {grade}";
-        }
-
-        if (quantityIcon != null)
-        {
-            quantityIcon.gameObject.SetActive(true);
-        }
-        quantityText.text = $"X {quantity}";
-
-        if (priceText != null)
-        {
-            priceText.text = recipe.GetCurrentPrice().ToString();
+            controller.OpenRecipeSelectionPanel(this);
         }
     }
 }

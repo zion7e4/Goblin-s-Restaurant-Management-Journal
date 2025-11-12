@@ -11,7 +11,6 @@ public class Table : MonoBehaviour
 
     // 현재 이 테이블에 앉아있는 손님 오브젝트를 저장할 변수
     public GameObject currentCustomer;
-    public Transform seatPosition;
 
     public void Occupy(GameObject customer)
     {

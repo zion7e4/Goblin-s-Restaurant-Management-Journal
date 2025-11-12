@@ -11,8 +11,6 @@ public class Trait : ScriptableObject
     [Tooltip("이 특성에 대한 설명")]
     public string description;
 
-    [Tooltip("이 특성이 긍정적인 효과(버프)이면 True, 부정적인 효과(디버프)이면 False")]
-    public bool isPositive = true; // 기본값은 '긍정'으로 설정
     // TODO: 나중에 여기에 특성의 실제 효과를 정의하는 코드를 추가할 수 있습니다.
     // (예: public float cookingStatBonus;)
 }
