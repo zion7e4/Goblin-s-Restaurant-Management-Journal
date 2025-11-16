@@ -4,13 +4,6 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 
-[System.Serializable]
-public struct RarityBorder
-{
-    public Rarity rarity;
-    public Sprite borderSprite;
-}
-
 public class OwnedRecipeItemUI : MonoBehaviour
 {
     public Button selectButton;

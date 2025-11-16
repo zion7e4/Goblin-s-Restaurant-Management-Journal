@@ -4,11 +4,9 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using System;
 
-// ÀÌ ½ºÅ©¸³Æ®°¡ ¸Ê¿¡ ½ºÆùµÇ´Â Á÷¿ø Ä³¸¯ÅÍ¿¡ ºÙ¾î ÀÏ²Û ¿ªÇÒÀ» ÇÕ´Ï´Ù.
+// ì´ ìŠ¤í¬ë¦½íŠ¸ëŠ” ì§ì› í”„ë¦¬íŒ¹(Prefab)ì— ë¶™ì—¬ì„œ ì‚¬ìš©í•´ì•¼ í•©ë‹ˆë‹¤.
 public class Employee : MonoBehaviour
 {
-    // [Ãß°¡µÈ ÇÊµå]
-    [Tooltip("ÀÌ Á÷¿ø¿¡ ¿¬°áµÈ µ¥ÀÌÅÍ ÀÎ½ºÅÏ½º")]
     private EmployeeInstance employeeData;
 
     public enum EmployeeState
@@ -17,6 +15,7 @@ public class Employee : MonoBehaviour
         MovingToCounterTop,
         Cooking,
         MovingToServe,
+        MovingToPickupFood,
         MovingToIdle,
         CheckingTable,
         MovingToTable,
@@ -25,15 +24,9 @@ public class Employee : MonoBehaviour
 
     public EmployeeState currentState;
 
-    // [¼öÁ¤: private¿¡¼­ publicÀ¸·Î º¯°æ]
     [SerializeField]
     private float movespeed = 3f;
 
-    // ÀÌ º¯¼ö´Â CookFoodCoroutine¿¡¼­ 'finalCookTime'À¸·Î ´ëÃ¼µÇ¾ú½À´Ï´Ù.
-    // public float cookingtime = 5f; 
-
-    /*[SerializeField]
-    private int cookingskill = 1; // ÃßÈÄ ±â´É Ãß°¡ ¿¹Á¤*/
     [SerializeField]
     private Customer targetCustomer;
     [SerializeField]
@@ -41,44 +34,47 @@ public class Employee : MonoBehaviour
     [SerializeField]
     private Table targetTable;
     [SerializeField]
-    private Transform idlePosition; // Á÷¿øÀÌ ÇÒ ÀÏÀÌ ¾øÀ» ¶§ ¼­ ÀÖÀ» À§Ä¡
+    private Transform idlePosition; // ì§ì›ì´ í•  ì¼ì´ ì—†ì„ ë•Œ ê°€ë§Œížˆ ì„œ ìžˆì„ ìœ„ì¹˜
     private KitchenOrder targetOrder;
 
-    // [Ãß°¡µÈ Initialize ÇÔ¼ö] - RestaurantManager¿¡¼­ È£ÃâµÊ
+    // RestaurantManagerì—ì„œ í˜¸ì¶œë¨
     public void Initialize(EmployeeInstance data, Transform defaultIdlePosition)
     {
         this.employeeData = data;
         this.idlePosition = defaultIdlePosition;
 
-        // (³°Àº ¿ä¸® ½Ã°£ °è»ê ·ÎÁ÷ Á¦°Å)
+        if (data.BaseData != null)
+        {
+            this.movespeed = data.BaseData.baseMoveSpeed;
+        }
+        else
+        {
+            Debug.LogWarning($"Initialize: {data.firstName}ì˜ BaseDataê°€ nullìž…ë‹ˆë‹¤. ê¸°ë³¸ ì´ë™ì†ë„(3f)ë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤.");
+        }
 
-        // µð¹ö±×
-        Debug.Log($"{data.firstName} ½ºÆù ¿Ï·á. (¿ä¸® ½Ã°£Àº ·¹½ÃÇÇ¿¡ µû¶ó °áÁ¤µË´Ï´Ù)");
-
+        Debug.Log($"{data.firstName} ì´ˆê¸°í™” ì™„ë£Œ. (ì´ë™ ì†ë„: {this.movespeed})");
         currentState = EmployeeState.Idle;
     }
 
 
     void Start()
     {
-        // ¸¸¾à Initialize°¡ È£ÃâµÇÁö ¾Ê¾Ò´Ù¸é (±âÁ¸¿¡ ¸Ê¿¡ ÀÖ´ø Á÷¿øÀÌ¶ó¸é)
         if (employeeData == null)
         {
-            // ÀÌ Á÷¿øÀº ±âÁ¸ ¸Ê¿¡ ÀÖ´ø ÁÖÀÎ°ø Á÷¿øÀÏ ¼ö ÀÖÀ¸¹Ç·Î, ±âº» »óÅÂ·Î ½ÃÀÛ
             currentState = EmployeeState.Idle;
         }
     }
 
     void Update()
     {
-        // »óÅÂ¿¡ µû¶ó ´Ù¸¥ Çàµ¿À» ½ÇÇà
+        // ìƒíƒœì— ë”°ë¼ ë‹¤ë¥¸ í–‰ë™ì„ ìˆ˜í–‰
         switch (currentState)
         {
             case EmployeeState.Idle:
                 FindTask();
                 break;
             case EmployeeState.MovingToIdle:
-                FindTask();
+                FindTask(); // (ëŒ€ê¸° ìœ„ì¹˜ë¡œ ê°€ë©´ì„œë„ ìƒˆ ìž‘ì—…ì„ ì°¾ì„ ìˆ˜ ìžˆìŒ)
 
                 if (idlePosition != null)
                 {
@@ -93,10 +89,12 @@ public class Employee : MonoBehaviour
                 }
                 break;
             case EmployeeState.MovingToCounterTop:
-                // MoveTo ÇÔ¼ö°¡ µµÂø ½Ã CookFoodCoroutine ½ÃÀÛ
                 MoveTo(targetCountertop.transform.position, () => { StartCoroutine(CookFoodCoroutine()); });
                 break;
             case EmployeeState.Cooking:
+                break;
+            case EmployeeState.MovingToPickupFood:
+                MoveTo(targetCountertop.transform.position, () => { StartCoroutine(PickupFoodCoroutine()); });
                 break;
             case EmployeeState.MovingToServe:
                 MoveTo(targetCustomer.transform.position, ServeFood);
@@ -105,7 +103,6 @@ public class Employee : MonoBehaviour
                 CheckTable();
                 break;
             case EmployeeState.MovingToTable:
-                // MoveTo ÇÔ¼ö°¡ µµÂø ½Ã CleaningTable ½ÃÀÛ
                 MoveTo(targetTable.transform.position, () => { StartCoroutine(CleaningTable()); });
                 break;
             case EmployeeState.Cleaning:
@@ -115,130 +112,220 @@ public class Employee : MonoBehaviour
 
     void FindTask()
     {
-        // 1. ¿ä¸® ÁÖ¹® Ã£±â
-        if (RestaurantManager.instance != null)
+        // (ë°©ì–´ ì½”ë“œ) ì§ì› ë°ì´í„°ê°€ ì—†ìœ¼ë©´ ì•„ë¬´ ìž‘ì—…ë„ ì°¾ì§€ ì•Šì•„ì•¼ í•©ë‹ˆë‹¤.
+        if (employeeData == null)
         {
-            targetOrder = RestaurantManager.instance.OrderQueue.FirstOrDefault(o => o != null && o.status == OrderStatus.Pending);
+            Debug.LogWarning("Employee.cs: employeeDataê°€ nullì´ë¼ FindTaskë¥¼ ì‹¤í–‰í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+            return;
         }
 
-        if (targetOrder != null)
+        // --- 1. 'í™€' ë‹´ë‹¹: ì„œë¹™í•  'ì™„ì„±ëœ ìŒì‹' ì°¾ê¸° ---
+        if (employeeData.assignedRole == EmployeeRole.Hall ||
+            employeeData.assignedRole == EmployeeRole.Unassigned)
         {
-            Debug.Log($"{employeeData?.firstName ?? "Worker"} ¿ä¸®ÇÒ ÁÖ¹® ¹ß°ß");
-            targetCountertop = RestaurantManager.instance.counterTops.FirstOrDefault(s => s != null && !s.isBeingUsed);
-
-            if (targetCountertop != null)
+            if (RestaurantManager.instance != null)
             {
-                // **°æÀï »óÅÂ ¹æÁö ·ÎÁ÷ ÇÊ¿ä:** ÀÛ¾÷ ÇÒ´ç ½Ã Áï½Ã »óÅÂ º¯°æ ÈÄ ¸®½ºÆ® ¾÷µ¥ÀÌÆ®
-                targetOrder.status = OrderStatus.Cooking;
-                targetCountertop.isBeingUsed = true;
-                currentState = EmployeeState.MovingToCounterTop;
+                // (ReadyToServe ìƒíƒœì´ê³ , cookedOnCounterTopì´ í• ë‹¹ëœ ì£¼ë¬¸ ì°¾ê¸°)
+                targetOrder = RestaurantManager.instance.OrderQueue.FirstOrDefault(o =>
+                    o != null &&
+                    o.status == OrderStatus.ReadyToServe &&
+                    o.cookedOnCounterTop != null
+                );
             }
-            // ÀÛ¾÷ ÇÒ´ç¿¡ ¼º°øÇßÀ¸¹Ç·Î Á¾·á
-            return;
+
+            if (targetOrder != null)
+            {
+                Debug.Log($"{employeeData?.firstName ?? "Worker"} (í™€) ì„œë¹™í•  ìŒì‹ ë°œê²¬!");
+
+                // (ì¤‘ìš”) ë‹¤ë¥¸ ì§ì›ì´ ì´ ì£¼ë¬¸ì„ ëª» ì±„ê°€ê²Œ í•˜ê¸° ìœ„í•´ ìƒíƒœ ë³€ê²½
+                targetOrder.status = OrderStatus.Completed; // (ìž„ì‹œë¡œ 'Completed'ë¡œ ë³€ê²½, 'Serving' ìƒíƒœê°€ í•„ìš”í•  ìˆ˜ ìžˆìŒ)
+
+                targetCustomer = targetOrder.customer;
+                targetCountertop = targetOrder.cookedOnCounterTop; // (í”½ì—…í•  ì¹´ìš´í„° ìœ„ì¹˜)
+
+                currentState = EmployeeState.MovingToPickupFood;
+                return;
+            }
         }
 
-        // 2. Ã»¼ÒÇÒ Å×ÀÌºí Ã£±â (´õ·´°í, »ç¿ë ÁßÀÌÁö ¾Ê°í, Ã»¼Ò ÁßÀÌÁö ¾ÊÀº Å×ÀÌºí)
-        if (RestaurantManager.instance != null)
+        // --- 2. 'ì£¼ë°©' ë‹´ë‹¹: 'ìš”ë¦¬í•  ì£¼ë¬¸' ì°¾ê¸° ---
+        if (employeeData.assignedRole == EmployeeRole.Kitchen ||
+            employeeData.assignedRole == EmployeeRole.Unassigned)
         {
-            targetTable = RestaurantManager.instance.tables.FirstOrDefault(t =>
-                t != null && t.isDirty && !t.isBeingUsedForCleaning); // isOccupied´Â Ã»¼Ò¿Í ¹«°ü
+            if (RestaurantManager.instance != null)
+            {
+                targetOrder = RestaurantManager.instance.OrderQueue.FirstOrDefault(o => o != null && o.status == OrderStatus.Pending);
+            }
+
+            if (targetOrder != null)
+            {
+                Debug.Log($"{employeeData?.firstName ?? "Worker"} (ì£¼ë°©) ìš”ë¦¬í•  ì£¼ë¬¸ ë°œê²¬");
+                targetCountertop = RestaurantManager.instance.counterTops.FirstOrDefault(s => s != null && !s.isBeingUsed);
+
+                if (targetCountertop != null)
+                {
+                    targetOrder.status = OrderStatus.Cooking;
+                    targetCountertop.isBeingUsed = true;
+                    currentState = EmployeeState.MovingToCounterTop;
+                    return;
+                }
+            }
         }
 
-        if (targetTable != null)
+
+        // --- 3. 'í™€' ë‹´ë‹¹: 'ì²­ì†Œí•  í…Œì´ë¸”' ì°¾ê¸° ---
+        if (employeeData.assignedRole == EmployeeRole.Hall ||
+            employeeData.assignedRole == EmployeeRole.Unassigned)
         {
-            targetTable.isBeingUsedForCleaning = true;
-            currentState = EmployeeState.MovingToTable;
-            // ÀÛ¾÷ ÇÒ´ç¿¡ ¼º°øÇßÀ¸¹Ç·Î Á¾·á
-            return;
+            if (RestaurantManager.instance != null)
+            {
+                targetTable = RestaurantManager.instance.tables.FirstOrDefault(t =>
+                    t != null && t.isDirty && !t.isBeingUsedForCleaning);
+            }
+
+            if (targetTable != null)
+            {
+                Debug.Log($"{employeeData?.firstName ?? "Worker"} (í™€) ì²­ì†Œí•  í…Œì´ë¸” ë°œê²¬");
+                targetTable.isBeingUsedForCleaning = true;
+                currentState = EmployeeState.MovingToTable;
+                return;
+            }
         }
 
 
-        // 3. ÇÒ ÀÏ ¾øÀ¸¸é ´ë±â À§Ä¡·Î ÀÌµ¿
+        // 4. í•  ì¼ì´ ì—†ìœ¼ë©´ ëŒ€ê¸° ìœ„ì¹˜ë¡œ ì´ë™
         if (idlePosition != null && Vector2.Distance(transform.position, idlePosition.position) > 0.1f)
         {
             currentState = EmployeeState.MovingToIdle;
         }
     }
-    // ¿ä¸® ÄÚ·çÆ¾
+
+    // ìš”ë¦¬ ì½”ë£¨í‹´
     IEnumerator CookFoodCoroutine()
     {
         currentState = EmployeeState.Cooking;
-        Debug.Log($"{employeeData?.firstName ?? "Worker"} {targetOrder.recipe.data.recipeName} ¿ä¸® ½ÃÀÛ");
+        Debug.Log($"{employeeData?.firstName ?? "Worker"} {targetOrder.recipe.data.recipeName} ìš”ë¦¬ ì‹œìž‘");
 
-        if (targetOrder.foodObject != null)
+        // --- !! ë°©ì–´ ì½”ë“œ ìˆ˜ì • 1 !! ---
+        // ìš”ë¦¬í•˜ê¸° *ì „*ì— foodObjectê°€ ìœ íš¨í•œì§€(nullì´ ì•„ë‹Œì§€) í™•ì¸í•©ë‹ˆë‹¤.
+        if (targetOrder.foodObject == null)
         {
-            targetOrder.foodObject.transform.position = targetCountertop.transform.position;
-            targetOrder.foodObject.SetActive(true);
+            Debug.LogError($"[ìš”ë¦¬ ì˜¤ë¥˜] {targetOrder.recipe.data.recipeName}ì˜ foodObjectê°€ nullìž…ë‹ˆë‹¤! ìž‘ì—…ì„ ì¤‘ë‹¨í•©ë‹ˆë‹¤.");
+
+            // ìž‘ì—… ì¤‘ë‹¨ (ì¹´ìš´í„° ì‚¬ìš© ê°€ëŠ¥í•˜ê²Œ í’€ê¸°)
+            if (targetCountertop != null) targetCountertop.isBeingUsed = false;
+
+            // ìƒíƒœ ë° íƒ€ê²Ÿ ì´ˆê¸°í™”
+            currentState = EmployeeState.MovingToIdle;
+            targetCustomer = null;
+            targetCountertop = null;
+            targetOrder = null;
+
+            yield break; // ì½”ë£¨í‹´ ì¦‰ì‹œ ì •ì§€
         }
 
-        // 1. ·¹½ÃÇÇÀÇ '±âº» ¿ä¸® ½Ã°£'À» °¡Á®¿É´Ï´Ù. (RecipeDataÀÇ 'Base Cook Time')
-        float baseRecipeTime = 10f; // (¿À·ù ½Ã ±âº»°ª)
+        // --- ê²€ì¦ í†µê³¼ ì‹œ, ìš”ë¦¬ ì§„í–‰ ---
+        targetOrder.foodObject.transform.position = targetCountertop.transform.position;
+        targetOrder.foodObject.SetActive(true);
+
+        // 1. ë ˆì‹œí”¼ì—ì„œ 'ê¸°ë³¸ ìš”ë¦¬ ì‹œê°„'ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        float baseRecipeTime = 10f; // (ì˜¤ë¥˜ ì‹œ ê¸°ë³¸ê°’)
         if (targetOrder.recipe != null && targetOrder.recipe.data != null)
         {
-            // RecipeData.cs¿¡ 'baseCookTime' º¯¼ö°¡ ÀÖ´Ù°í °¡Á¤ (½ºÅ©¸°¼¦ È®ÀÎ)
             baseRecipeTime = targetOrder.recipe.data.baseCookTime;
         }
         else
         {
-            Debug.LogError("CookFoodCoroutine: targetOrder.recipe.data°¡ nullÀÔ´Ï´Ù!");
+            Debug.LogError("CookFoodCoroutine: targetOrder.recipe.dataê°€ nullìž…ë‹ˆë‹¤!");
         }
 
-        // 2. ÀÌ Á÷¿øÀÇ '¿ä¸®' ½ºÅÈÀ» °¡Á®¿É´Ï´Ù.
-        int cookingStat = employeeData.currentCookingStat;
+        // --- ì‹œë„ˆì§€ ë° íŠ¹ì„± ë³´ë„ˆìŠ¤ ìŠ¤íƒ¯/ì†ë„ í•©ì‚° ---
+        int baseCookingStat = employeeData.currentCookingStat;
+        int bonusCookingStat_Synergy = 0;
+        float speedBonusPercent_Synergy = 0f;
+        float specificStatMultiplier_Trait = 0f; // "ì…°í”„" íŠ¹ì„± ë³´ë„ˆìŠ¤
+        float allStatMultiplier_Trait = 0f;      // "ë§ŒëŠ¥ì¸" íŠ¹ì„± ë³´ë„ˆìŠ¤
+        float workSpeedMultiplier_Trait = 0f;    // "ëŠë¦¼ë³´/ë¹ ë¦„" íŠ¹ì„± ë³´ë„ˆìŠ¤
 
-        // 3. ±âÈ¹¼­ °ø½ÄÀ¸·Î ÃÖÁ¾ ¿ä¸® ½Ã°£À» °è»êÇÕ´Ï´Ù.
-        float finalCookTime = baseRecipeTime / (1 + (cookingStat * 0.008f));
-
-        finalCookTime = Mathf.Max(0.5f, finalCookTime); // (ÃÖ¼Ò 0.5ÃÊ º¸Àå)
-
-        Debug.Log($"[{employeeData.firstName}] ¿ä¸® ½Ã°£ °è»ê (±âÈ¹¼­ °ø½Ä). " +
-                    $"±âº»½Ã°£: {baseRecipeTime:F1}s, ½ºÅÈ: {cookingStat}, ÃÖÁ¾½Ã°£: {finalCookTime:F1}s");
-
-        // °è»êµÈ ÃÖÁ¾ ¿ä¸® ½Ã°£¸¸Å­ ´ë±â
-        yield return new WaitForSeconds(finalCookTime);
-
-        Debug.Log($"{employeeData?.firstName ?? "Worker"} ¿ä¸® ¿Ï¼º");
-
-        // --- ½ÄÀç·á Àý¾à È®·ü Àû¿ë ---
-        float totalSaveChance = 0f;
-
-        // 1. "¿Ïº®ÁÖÀÇ ÁÖ¹æ" °°Àº ½Ã³ÊÁö º¸³Ê½º È¹µæ [cite: 110-112]
         if (SynergyManager.Instance != null)
         {
-            totalSaveChance += SynergyManager.Instance.GetIngredientSaveChance(); // (¿¹: 0.05)
+            // 2. ì‹œë„ˆì§€ ë§¤ë‹ˆì €ì—ì„œ 'ìŠ¤íƒ¯'ê³¼ 'ì†ë„' ë³´ë„ˆìŠ¤ë¥¼ ë°›ì•„ì˜µë‹ˆë‹¤.
+            var (cookBonus, serveBonus, charmBonus) = SynergyManager.Instance.GetStatBonuses(employeeData);
+            bonusCookingStat_Synergy = cookBonus;
+            speedBonusPercent_Synergy = SynergyManager.Instance.GetCookingSpeedBonus(employeeData);
         }
 
-        // 2. (TODO) Á÷¿øÀÇ "¼ÕÀçÁÖ" Æ¯¼º º¸³Ê½º È¹µæ 
-        // (EmployeeInstance.cs¿¡ HasTrait("¼ÕÀçÁÖ") °°Àº ÇÔ¼ö°¡ ÇÊ¿äÇÕ´Ï´Ù)
-        // if (employeeData.HasTrait("¼ÕÀçÁÖ")) { totalSaveChance += 0.15f; } // 15%
+        // 3. ì§ì› ë°ì´í„°ì—ì„œ 'íŠ¹ì„±' ë³´ë„ˆìŠ¤ë¥¼ ë°›ì•„ì˜µë‹ˆë‹¤.
+        if (employeeData != null)
+        {
+            specificStatMultiplier_Trait = employeeData.GetTraitCookingStatMultiplier(); // "ì…°í”„"
+            allStatMultiplier_Trait = employeeData.GetTraitAllStatMultiplier();      // "ë§ŒëŠ¥ì¸"
+            workSpeedMultiplier_Trait = employeeData.GetTraitWorkSpeedMultiplier();    // "ëŠë¦¼ë³´/ë¹ ë¦„"
+        }
 
-        // 3. È®·ü ½ÇÇà
+        // 4. ìµœì¢… ìŠ¤íƒ¯ = (ê¸°ë³¸ + ì‹œë„ˆì§€) * (1 + ì…°í”„ + ë§ŒëŠ¥ì¸)
+        float totalMultiplier = 1.0f + specificStatMultiplier_Trait + allStatMultiplier_Trait;
+        int finalCookingStat = (int)((baseCookingStat + bonusCookingStat_Synergy) * totalMultiplier);
+
+        // 5. ì™„ì„±ëœ ìŠ¤íƒ¯ìœ¼ë¡œ 'ìš”ë¦¬'ì— ë”°ë¥¸ ì‹œê°„ ê³„ì‚°
+        float finalCookTime = baseRecipeTime / (1 + (finalCookingStat * 0.008f));
+
+        // 6. 'ì†ë„' ë³´ë„ˆìŠ¤(ì‹œë„ˆì§€)ì™€ 'ìž‘ì—… ì†ë„' ë³´ë„ˆìŠ¤(íŠ¹ì„±)ë¥¼ ì¶”ê°€ë¡œ ì ìš©
+        finalCookTime = finalCookTime * (1.0f - speedBonusPercent_Synergy); // ì‹œë„ˆì§€
+        finalCookTime = finalCookTime * (1.0f - workSpeedMultiplier_Trait); // íŠ¹ì„±
+
+        finalCookTime = Mathf.Max(0.5f, finalCookTime); // (ìµœì†Œ 0.5ì´ˆ ë³´ìž¥)
+
+        Debug.Log($"[{employeeData.firstName}] ìš”ë¦¬ ì‹œê°„ ê³„ì‚°. " +
+                    $"ê¸°ë³¸ì‹œê°„: {baseRecipeTime:F1}s, ìŠ¤íƒ¯: {finalCookingStat} (ê¸°ë³¸ {baseCookingStat} + ì‹œë„ˆì§€ {bonusCookingStat_Synergy}) * íŠ¹ì„±(x{totalMultiplier}), " +
+                    $"ì†ë„(ì‹œë„ˆì§€): {speedBonusPercent_Synergy * 100}%, ìž‘ì—…ì†ë„(íŠ¹ì„±): {workSpeedMultiplier_Trait * 100}%, " +
+                    $"ìµœì¢…ì‹œê°„: {finalCookTime:F1}s");
+
+        yield return new WaitForSeconds(finalCookTime);
+
+        Debug.Log($"{employeeData?.firstName ?? "Worker"} ìš”ë¦¬ ì™„ì„±");
+
+        // --- ìž¬ë£Œ ì ˆì•½ í™•ë¥  ê³„ì‚° ---
+        float totalSaveChance = 0f;
+        if (SynergyManager.Instance != null) { totalSaveChance += SynergyManager.Instance.GetIngredientSaveChance(); }
+        if (employeeData != null) { totalSaveChance += employeeData.GetTraitSaveChance(); }
         if (totalSaveChance > 0 && UnityEngine.Random.Range(0f, 1f) < totalSaveChance)
         {
-            Debug.Log($"[½ÄÀç·á Àý¾à!] {employeeData.firstName}ÀÌ(°¡) ¿ä¸® Àç·á¸¦ Àý¾àÇß½À´Ï´Ù! (È®·ü: {totalSaveChance * 100:F0}%)");
-            // (TODO: GameManager.instance.RefundIngredients(targetOrder.recipe) °°Àº Àç·á ¹ÝÈ¯ ÇÔ¼ö È£Ãâ)
+            Debug.Log($"[ìž¬ë£Œ ì ˆì•½!] {employeeData.firstName}ì´(ê°€) ìš”ë¦¬ ìž¬ë£Œë¥¼ ì ˆì•½í–ˆìŠµë‹ˆë‹¤! (í™•ë¥ : {totalSaveChance * 100:F0}%)");
+            if (GameManager.instance != null && targetOrder.recipe != null)
+            {
+                GameManager.instance.RefundIngredients(targetOrder.recipe.data);
+            }
         }
-        // --- Àû¿ë ¿Ï·á ---
 
+        // --- 'ì£¼ë°©' ë‹´ë‹¹: ìš”ë¦¬ ì™„ë£Œ í›„ 'ëŒ€ê¸°' ìƒíƒœë¡œ ---
+
+        // 1. ì£¼ë¬¸ ìƒíƒœë¥¼ 'ì„œë¹™ ì¤€ë¹„ ì™„ë£Œ'ë¡œ ë³€ê²½
         targetOrder.status = OrderStatus.ReadyToServe;
-        targetCustomer = targetOrder.customer;
-        currentState = EmployeeState.MovingToServe;
 
-        if (targetOrder.foodObject != null)
-        {
-            targetOrder.foodObject.transform.SetParent(this.transform);
-            targetOrder.foodObject.transform.localPosition = new Vector3(0, 1.2f, 0);
-        }
+        // 2. 'í™€' ì§ì›ì´ í”½ì—…í•  ìˆ˜ ìžˆë„ë¡, ìš”ë¦¬ê°€ ì™„ë£Œëœ ì¹´ìš´í„° ìœ„ì¹˜ë¥¼ ì£¼ë¬¸ì„œì— ì €ìž¥
+        targetOrder.cookedOnCounterTop = this.targetCountertop;
 
-        // ¼­ºù ·ÎÁ÷À¸·Î ÀÌµ¿
+        // 3. ìš”ë¦¬ì‚¬ëŠ” ìŒì‹ì„ ë†”ë‘ê³  'ëŒ€ê¸°' ìƒíƒœë¡œ ëŒì•„ê°
+        currentState = EmployeeState.MovingToIdle;
+
+        // 4. ìŒì‹(foodObject)ì€ ì¹´ìš´í„° ìœ„ì— ë‘¡ë‹ˆë‹¤.
+
+        // 5. ìž‘ì—…ì´ ëë‚¬ìœ¼ë¯€ë¡œ íƒ€ê²Ÿì„ ì´ˆê¸°í™”í•©ë‹ˆë‹¤.
+        if (targetCountertop != null) targetCountertop.isBeingUsed = false;
+
+        targetCustomer = null;
+        targetCountertop = null;
+        targetOrder = null;
     }
-    // À½½Ä ¼­ºù
+
+    // ìŒì‹ ì„œë¹™ (í™€ ì§ì›ì´ í”½ì—… í›„ í˜¸ì¶œ)
     void ServeFood()
     {
-        Debug.Log($"{employeeData?.firstName ?? "Worker"} ¼­ºù ¿Ï·á");
+        Debug.Log($"{employeeData?.firstName ?? "Worker"} ì„œë¹™ ì™„ë£Œ");
         if (targetCustomer != null)
         {
-            // [¼öÁ¤] Customer.ReceiveFood ÇÔ¼ö¿¡ ³» Á÷¿ø µ¥ÀÌÅÍ(employeeData)¸¦ Àü´ÞÇÕ´Ï´Ù.
+            // Customer.ReceiveFood í•¨ìˆ˜ì— ì´ ì§ì› ë°ì´í„°(employeeData)ë¥¼ ì „ë‹¬í•©ë‹ˆë‹¤.
             targetCustomer.ReceiveFood(this.employeeData);
         }
 
@@ -252,8 +339,8 @@ public class Employee : MonoBehaviour
             RestaurantManager.instance.OrderQueue.Remove(targetOrder);
         }
 
-        // »ç¿ëÇß´ø ÀÚ¿øµéÀ» ÃÊ±âÈ­
-        if (targetCountertop != null) targetCountertop.isBeingUsed = false;
+        // ì‚¬ìš©í–ˆë˜ ìžì›ë“¤ ì´ˆê¸°í™”
+        if (targetCountertop != null) targetCountertop.isBeingUsed = false; // (í”½ì—… ì‹œ ì‚¬ìš©í•œ ì¹´ìš´í„°)
         targetCustomer = null;
         targetCountertop = null;
         targetOrder = null;
@@ -263,7 +350,6 @@ public class Employee : MonoBehaviour
 
     void CheckTable()
     {
-        // FindTask ·ÎÁ÷¿¡¼­ Ã»¼ÒÇÒ Å×ÀÌºíÀ» Ã£¾Ò´Ù°í °¡Á¤
         if (targetTable != null && targetTable.isDirty)
         {
             currentState = EmployeeState.MovingToTable;
@@ -274,34 +360,56 @@ public class Employee : MonoBehaviour
         }
     }
 
-    // Å×ÀÌºí Ã»¼Ò
-    // Å×ÀÌºí Ã»¼Ò
+    // í…Œì´ë¸” ì²­ì†Œ
     IEnumerator CleaningTable()
     {
         currentState = EmployeeState.Cleaning;
-        Debug.Log($"{employeeData?.firstName ?? "Worker"} Å×ÀÌºí Ã»¼Ò ½ÃÀÛ");
+        Debug.Log($"{employeeData?.firstName ?? "Worker"} í…Œì´ë¸” ì²­ì†Œ ì‹œìž‘");
 
-        // ¡å¡å¡å [¼öÁ¤] '¼­ºù' ½ºÅÈÀ¸·Î 'Ã»¼Ò ½Ã°£' °è»ê (±âÈ¹¼­ °ø½Ä) ¡å¡å¡å
+        // --- ì‹œë„ˆì§€ ë° íŠ¹ì„± ë³´ë„ˆìŠ¤ ìŠ¤íƒ¯/ì†ë„ í•©ì‚° ---
 
-        // 1. '±âº» Ã»¼Ò ½Ã°£'À» ¼³Á¤ÇÕ´Ï´Ù. (ÀÓ½Ã·Î 2ÃÊ ¼³Á¤)
-        float baseCleaningTime = 2f;
+        // 1. 'ê¸°ë³¸ ì²­ì†Œ ì‹œê°„'ì„ ì„¤ì •í•©ë‹ˆë‹¤. (ìž„ì‹œë¡œ 3ì´ˆ ì„¤ì •)
+        float baseCleaningTime = 3f;
 
-        // 2. ÀÌ Á÷¿øÀÇ '¼­ºù' ½ºÅÈÀ» °¡Á®¿É´Ï´Ù.
-        int servingStat = employeeData.currentServingStat;
+        // 2. ì´ ì§ì›ì˜ 'ê¸°ë³¸ ì„œë¹™' ìŠ¤íƒ¯ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        int baseServingStat = employeeData.currentServingStat;
+        int bonusServingStat = 0;
+        float allStatMultiplier_Trait = 0f;      // "ë§ŒëŠ¥ì¸" íŠ¹ì„± ë³´ë„ˆìŠ¤
+        float workSpeedMultiplier_Trait = 0f;    // "ëŠë¦¼ë³´/ë¹ ë¦„" íŠ¹ì„± ë³´ë„ˆìŠ¤
 
-        // 3. ±âÈ¹¼­ °ø½ÄÀ¸·Î ÃÖÁ¾ Ã»¼Ò ½Ã°£À» °è»êÇÕ´Ï´Ù.
-        float finalCleaningTime = baseCleaningTime / (1 + (servingStat * 0.008f));
-        finalCleaningTime = Mathf.Max(0.5f, finalCleaningTime); // (ÃÖ¼Ò 0.5ÃÊ º¸Àå)
+        // 3. ì‹œë„ˆì§€ ë§¤ë‹ˆì €ì—ì„œ 'ì„œë¹™ ë³´ë„ˆìŠ¤'ë¥¼ ë°›ì•„ì˜µë‹ˆë‹¤.
+        if (SynergyManager.Instance != null)
+        {
+            var (cookBonus, serveBonus, charmBonus) = SynergyManager.Instance.GetStatBonuses(employeeData);
+            bonusServingStat = serveBonus;
+        }
 
-        Debug.Log($"[{employeeData.firstName}] Ã»¼Ò ½Ã°£ °è»ê. " +
-                  $"±âº»½Ã°£: {baseCleaningTime:F1}s, ¼­ºù½ºÅÈ: {servingStat}, ÃÖÁ¾½Ã°£: {finalCleaningTime:F1}s");
+        // 4. ì§ì› ë°ì´í„°ì—ì„œ 'íŠ¹ì„±' ë³´ë„ˆìŠ¤ë¥¼ ë°›ì•„ì˜µë‹ˆë‹¤.
+        if (employeeData != null)
+        {
+            allStatMultiplier_Trait = employeeData.GetTraitAllStatMultiplier(); // "ë§ŒëŠ¥ì¸"
+            workSpeedMultiplier_Trait = employeeData.GetTraitWorkSpeedMultiplier(); // "ëŠë¦¼ë³´/ë¹ ë¦„"
+        }
 
-        // yield return new WaitForSeconds(1f); // <-- ÀÌ ÁÙ ´ë½Å
-        yield return new WaitForSeconds(finalCleaningTime); // <-- ÀÌ ÁÙÀ» »ç¿ë
+        // 5. ìµœì¢… ìŠ¤íƒ¯ = (ê¸°ë³¸ ì„œë¹™ + ì‹œë„ˆì§€ ë³´ë„ˆìŠ¤) * (1 + ë§ŒëŠ¥ì¸)
+        float totalMultiplier = 1.0f + allStatMultiplier_Trait;
+        int finalServingStat = (int)((baseServingStat + bonusServingStat) * totalMultiplier);
 
-        // ¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã
+        // 6. ì™„ì„±ëœ ìŠ¤íƒ¯ìœ¼ë¡œ 'ì²­ì†Œ'ì— ë”°ë¥¸ ì‹œê°„ ê³„ì‚°
+        float finalCleaningTime = baseCleaningTime / (1 + (finalServingStat * 0.008f));
 
-        Debug.Log($"{employeeData?.firstName ?? "Worker"} Å×ÀÌºí Ã»¼Ò ¿Ï·á");
+        // 7. 'ìž‘ì—… ì†ë„' ë³´ë„ˆìŠ¤(íŠ¹ì„±)ë¥¼ ì¶”ê°€ë¡œ ì ìš©
+        finalCleaningTime = finalCleaningTime * (1.0f - workSpeedMultiplier_Trait);
+
+        finalCleaningTime = Mathf.Max(0.5f, finalCleaningTime); // (ìµœì†Œ 0.5ì´ˆ ë³´ìž¥)
+
+        Debug.Log($"[{employeeData.firstName}] ì²­ì†Œ ì‹œê°„ ê³„ì‚°. " +
+                    $"ê¸°ë³¸ì‹œê°„: {baseCleaningTime:F1}s, ì„œë¹™ìŠ¤íƒ¯: {finalServingStat} (ê¸°ë³¸ {baseServingStat} + ë³´ë„ˆìŠ¤ {bonusServingStat}) * íŠ¹ì„±(x{totalMultiplier}), " +
+                    $"ìž‘ì—…ì†ë„(íŠ¹ì„±): {workSpeedMultiplier_Trait * 100}%, ìµœì¢…ì‹œê°„: {finalCleaningTime:F1}s");
+
+        yield return new WaitForSeconds(finalCleaningTime);
+
+        Debug.Log($"{employeeData?.firstName ?? "Worker"} í…Œì´ë¸” ì²­ì†Œ ì™„ë£Œ");
         if (targetTable != null)
         {
             targetTable.isDirty = false;
@@ -311,27 +419,84 @@ public class Employee : MonoBehaviour
         currentState = EmployeeState.MovingToIdle;
     }
 
-    // ¸ñÇ¥ ÁöÁ¡±îÁö ÀÌµ¿ÇÏ°í, µµÂøÇÏ¸é ÁöÁ¤µÈ Çàµ¿(Action)À» ½ÇÇàÇÏ´Â ÇÔ¼ö
+    // ëª©í‘œ ì§€ì ê¹Œì§€ ì´ë™í•˜ê³ , ë„ì°©í•˜ë©´ ì§€ì •ëœ í–‰ë™(Action)ì„ ì‹¤í–‰í•˜ëŠ” í•¨ìˆ˜
     void MoveTo(Vector3 destination, Action onArrived)
     {
-        // 1. ½Ã³ÊÁö ¸Å´ÏÀú¿¡¼­ ÇöÀç 'ÀÌµ¿ ¼Óµµ' º¸³Ê½º ÃÑÇÕÀ» °¡Á®¿É´Ï´Ù.
-        // (¿¹: "¿ì¿ïÇÑ ÀÛ¾÷Àå"ÀÌ ¹ßµ¿ ÁßÀÌ¸é -0.05f ¹ÝÈ¯)
         float synergySpeedBonus = 0f;
+        float traitSpeedBonus = 0f;
+
+        // 1. ì‹œë„ˆì§€ ë§¤ë‹ˆì €ì—ì„œ ë³´ë„ˆìŠ¤ íšë“
         if (SynergyManager.Instance != null)
         {
             synergySpeedBonus = SynergyManager.Instance.GetMoveSpeedMultiplier();
         }
 
-        // 2. (1.0f + º¸³Ê½º)¸¦ °öÇÏ¿© ÃÖÁ¾ ¼Óµµ °è»ê
-        // (¿¹: 1.0 + (-0.05) = 0.95 (Áï 95% ¼Óµµ))
-        float finalMoveSpeed = movespeed * (1.0f + synergySpeedBonus);
+        // 2. íŠ¹ì„±(Trait)ì—ì„œ ë³´ë„ˆìŠ¤ íšë“
+        if (employeeData != null)
+        {
+            traitSpeedBonus = employeeData.GetTraitMoveSpeedMultiplier();
+        }
 
-        // 3. ÃÖÁ¾ ¼Óµµ¸¦ Àû¿ëÇÏ¿© ÀÌµ¿
+        // 3. (1.0f + ì‹œë„ˆì§€ + íŠ¹ì„±)ì„ ê³±í•˜ì—¬ ìµœì¢… ì†ë„ ê³„ì‚°
+        float finalMoveSpeed = movespeed * (1.0f + synergySpeedBonus + traitSpeedBonus);
+        finalMoveSpeed = Mathf.Max(0.1f, finalMoveSpeed); // ì†ë„ê°€ 0ì´ ë˜ì§€ ì•Šê²Œ ìµœì†Œ 0.1 ë³´ìž¥
+
+        // 4. ìµœì¢… ì†ë„ë¥¼ ì ìš©í•˜ì—¬ ì´ë™
         transform.position = Vector2.MoveTowards(transform.position, destination, finalMoveSpeed * Time.deltaTime);
 
         if (Vector2.Distance(transform.position, destination) < 0.1f)
         {
             onArrived?.Invoke();
+        }
+    }
+
+    // (í™€ ì§ì›ì´) ì¹´ìš´í„°ì—ì„œ ìŒì‹ í”½ì—…
+    IEnumerator PickupFoodCoroutine()
+    {
+        // --- !! ë°©ì–´ ì½”ë“œ ìˆ˜ì • 2 !! ---
+        // í”½ì—…í•˜ê¸° *ì „*ì— foodObjectê°€ ìœ íš¨í•œì§€(nullì´ ì•„ë‹Œì§€) í™•ì¸í•©ë‹ˆë‹¤.
+        if (targetOrder.foodObject != null)
+        {
+            // --- í”½ì—… ì„±ê³µ ---
+            Debug.Log($"{employeeData?.firstName ?? "Worker"}ì´(ê°€) {targetOrder.recipe.data.recipeName} í”½ì—… ì™„ë£Œ.");
+
+            // 1. ì¹´ìš´í„°ì— ìžˆë˜ ìŒì‹(foodObject)ì„ ì´ ì§ì›(this.transform)ì˜ ìžì‹ìœ¼ë¡œ ë¶™ìž…ë‹ˆë‹¤.
+            targetOrder.foodObject.transform.SetParent(this.transform);
+            targetOrder.foodObject.transform.localPosition = new Vector3(0, 1.2f, 0);
+
+            // 2. í”½ì—…í–ˆìœ¼ë¯€ë¡œ ì¹´ìš´í„° ì‚¬ìš© ì™„ë£Œ
+            if (targetCountertop != null)
+            {
+                targetCountertop.isBeingUsed = false;
+            }
+
+            // 3. ì£¼ë¬¸ì„œì—ì„œ 'ìš”ë¦¬ ì™„ë£Œëœ ì¹´ìš´í„°' ì •ë³´ ì œê±° (ì´ì œ ë‚´ê°€ ë“¤ê³  ìžˆìœ¼ë¯€ë¡œ)
+            targetOrder.cookedOnCounterTop = null;
+
+            // 4. ì´ì œ 'ì„œë¹™' ìƒíƒœë¡œ ë³€ê²½í•˜ê³  ì†ë‹˜ì—ê²Œ ì´ë™
+            currentState = EmployeeState.MovingToServe;
+
+            yield return null;
+        }
+        else
+        {
+            // --- í”½ì—… ì‹¤íŒ¨ (ì´ ë¶€ë¶„ì´ ì›ëž˜ ì—ëŸ¬ê°€ ë‚˜ë˜ ê³³ìž…ë‹ˆë‹¤) ---
+            Debug.LogError($"[í”½ì—… ì˜¤ë¥˜] {targetOrder.recipe.data.recipeName}ì˜ foodObjectê°€ nullìž…ë‹ˆë‹¤! ìž‘ì—…ì„ ì¤‘ë‹¨í•©ë‹ˆë‹¤.");
+
+            // ìž‘ì—… ì¤‘ë‹¨ (ì¹´ìš´í„° ì‚¬ìš© ê°€ëŠ¥í•˜ê²Œ í’€ê¸°)
+            if (targetCountertop != null)
+            {
+                targetCountertop.isBeingUsed = false;
+            }
+            targetOrder.cookedOnCounterTop = null;
+
+            // ìƒíƒœ ë° íƒ€ê²Ÿ ì´ˆê¸°í™”
+            currentState = EmployeeState.MovingToIdle;
+            targetCustomer = null;
+            targetCountertop = null;
+            targetOrder = null;
+
+            yield break; // ì½”ë£¨í‹´ ì¦‰ì‹œ ì •ì§€
         }
     }
 }

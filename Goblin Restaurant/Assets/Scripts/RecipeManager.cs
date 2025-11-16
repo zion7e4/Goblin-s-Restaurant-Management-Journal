@@ -24,7 +24,6 @@ public class RecipeManager : MonoBehaviour
     {
         // (테스트용)
         UnlockRecipe(1001);
-        UnlockRecipe(1002);
     }
 
     /// <summary>

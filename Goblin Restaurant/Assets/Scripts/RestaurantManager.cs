@@ -12,6 +12,10 @@ public class RestaurantManager : MonoBehaviour
     public GameObject employeePrefab; // 기본 프리팹
     [Tooltip("직원들이 처음 나타날 위치")]
     public Transform spawnPoint;
+    [Tooltip("'주방' 역할 직원이 대기할 위치")]
+    public Transform kitchenIdlePoint;
+    [Tooltip("'홀' 역할 직원이 대기할 위치")]
+    public Transform hallIdlePoint;
 
     // 기존 필드
     public List<Customer> customers;
@@ -33,20 +37,17 @@ public class RestaurantManager : MonoBehaviour
     }
 
     /// <summary>
-    /// GameManager의 Start()에서 호출되어, 기본 프리팹을 사용하여 고용된 직원들을 맵에 생성합니다.
-    /// (이전 버전 호환성 유지를 위해 남겨두었으나, 새 함수가 호출될 것입니다.)
+    /// (비활성) GameManager의 Start()에서 호출되어, 기본 프리팹을 사용하여 고용된 직원들을 맵에 생성합니다.
     /// </summary>
     public void SpawnHiredEmployees(List<EmployeeInstance> hiredEmployees)
     {
         // 이 함수는 GameManager에서 SpawnWorkersWithPrefabs가 대체합니다.
-
         if (employeePrefab == null || spawnPoint == null)
         {
             Debug.LogError("RestaurantManager ERROR: Employee Prefab or Spawn Point is not set in Inspector!");
             return;
         }
 
-        // 단일 프리팹으로 스폰하는 로직 (기본 동작)
         List<(EmployeeInstance, GameObject)> workersToSpawn = hiredEmployees
             .Select(data => (data, employeePrefab))
             .ToList();
@@ -55,7 +56,7 @@ public class RestaurantManager : MonoBehaviour
     }
 
     /// <summary>
-    /// GameManager에서 전달된, 데이터와 종족별 프리팹 쌍을 사용하여 직원들을 스폰합니다.
+    /// (게임 시작 시) GameManager에서 전달된, 데이터와 프리팹 쌍을 사용하여 직원들을 스폰합니다.
     /// </summary>
     public void SpawnWorkersWithPrefabs(List<(EmployeeInstance data, GameObject prefab)> workersToSpawn)
     {
@@ -73,17 +74,18 @@ public class RestaurantManager : MonoBehaviour
                 continue;
             }
 
-            // Worker 오브젝트 생성
-            // transform을 Parent로 설정하여 Hierarchy에서 RestaurantManager의 자식으로 보이게 합니다.
+            // 1. 직원의 역할(Role)에 따라 대기 위치(Idle Point) 결정
+            Transform targetIdlePoint = GetIdlePointForRole(employeeData.assignedRole);
+
+            // 2. Worker 오브젝트 생성 (스폰은 spawnPoint에서)
             GameObject workerObject = Instantiate(employeePrefab, spawnPoint.position, Quaternion.identity, this.transform);
 
-            // Employee.cs 스크립트 가져오기
+            // 3. Employee.cs 스크립트 가져오기
             Employee workerComponent = workerObject.GetComponent<Employee>();
-
             if (workerComponent != null)
             {
-                // 생성된 직원 오브젝트에 EmployeeInstance 데이터를 할당하고 초기화합니다.
-                workerComponent.Initialize(employeeData, spawnPoint);
+                // 4. '대기 위치'를 Initialize로 전달
+                workerComponent.Initialize(employeeData, targetIdlePoint);
                 workerObject.name = $"Worker - {employeeData.firstName} ({employeeData.BaseData.speciesName})";
             }
             else
@@ -93,11 +95,10 @@ public class RestaurantManager : MonoBehaviour
             }
         }
     }
+
     /// <summary>
-    /// 단일 직원을 맵에 스폰합니다. (게임 중 고용 시 사용)
+    /// (게임 중 고용 시) 단일 직원을 맵에 스폰합니다.
     /// </summary>
-    /// <param name="employeeData">스폰할 직원의 인스턴스 데이터</param>
-    /// <param name="employeePrefab">해당 직원의 외형 프리팹</param>
     public void SpawnSingleWorker(EmployeeInstance employeeData, GameObject employeePrefab)
     {
         // --- 스폰 지점 확인 ---
@@ -113,21 +114,45 @@ public class RestaurantManager : MonoBehaviour
             return;
         }
 
-        // --- Worker 오브젝트 생성 ---
-        // (this.transform을 부모로 설정)
+        // 1. 직원의 역할(Role)에 따라 대기 위치(Idle Point) 결정
+        Transform targetIdlePoint = GetIdlePointForRole(employeeData.assignedRole);
+
+        // 2. Worker 오브젝트 생성 (스폰은 spawnPoint에서)
         GameObject workerObject = Instantiate(employeePrefab, spawnPoint.position, Quaternion.identity, this.transform);
 
-        // --- Employee.cs 스크립트 가져오기 및 초기화 ---
+        // 3. Employee.cs 스크립트 가져오기 및 초기화 ('대기 위치' 전달)
         Employee workerComponent = workerObject.GetComponent<Employee>();
         if (workerComponent != null)
         {
-            workerComponent.Initialize(employeeData, spawnPoint);
+            workerComponent.Initialize(employeeData, targetIdlePoint);
             workerObject.name = $"Worker - {employeeData.firstName} ({employeeData.BaseData.speciesName})";
         }
         else
         {
             Debug.LogError($"Employee Prefab에 Employee.cs 스크립트가 없습니다: {workerObject.name}");
             Destroy(workerObject);
+        }
+    }
+
+    /// <summary>
+    /// 직원의 역할(Role)에 맞는 대기 위치(Transform)를 반환합니다.
+    /// </summary>
+    private Transform GetIdlePointForRole(EmployeeRole role)
+    {
+        switch (role)
+        {
+            case EmployeeRole.Kitchen:
+                // 주방 대기 위치가 설정되어 있으면 반환, 없으면 공용 스폰 위치 반환
+                return (kitchenIdlePoint != null) ? kitchenIdlePoint : spawnPoint;
+
+            case EmployeeRole.Hall:
+                // 홀 대기 위치가 설정되어 있으면 반환, 없으면 공용 스폰 위치 반환
+                return (hallIdlePoint != null) ? hallIdlePoint : spawnPoint;
+
+            case EmployeeRole.Unassigned:
+            default:
+                // 미지정 역할은 공용 스폰 위치를 대기 위치로 사용
+                return spawnPoint;
         }
     }
 }

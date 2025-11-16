@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2125600ba7b3ac4bab39ed15cff98b9, type: 3}
+  m_Script: {fileID: 11500000, guid: f7d606e2f1896dd4d9b8a23ae32566bb, type: 3}
   m_Name: "\uACE0\uAE09 \uC2A4\uD14C\uC774\uD06C"
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
-  id: 0
-  recipeName: 
-  description: 
+  recipeName: "\uACE0\uAE09 \uC2A4\uD14C\uC774\uD06C"
   icon: {fileID: 0}
-  foodPrefab: {fileID: 0}
-  basePrice: 0
-  baseCookTime: 0
-  Level: 0
-  rarity: 0
-  requiredIngredients: []
+  description: "\uC721\uC999\uC774 \uD48D\uBD80\uD55C \uACE0\uAE09 \uACE0\uAE30 \uC2A4\uD14C\uC774\uD06C"
+  basePrice: 60
+  baseCookTime: 18
+  requirements:
+  - ingredient: {fileID: 11400000, guid: b09a9f2fa0de4a744a355091bbaab573, type: 2}
+    amount: 2
+  - ingredient: {fileID: 11400000, guid: a8e7a2af922809f4887ad08689990e36, type: 2}
+    amount: 2

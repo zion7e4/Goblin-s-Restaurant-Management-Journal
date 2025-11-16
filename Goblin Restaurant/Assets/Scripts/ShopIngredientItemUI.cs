@@ -29,7 +29,7 @@ public class ShopIngredientItemUI : MonoBehaviour
 
         ingredientIcon.sprite = ingredientData.icon;
         ingredientNameText.text = ingredientData.ingredientName;
-        priceText.text = ingredientData.buyPrice.ToString() + " G";
+        priceText.text = ingredientData.buyPrice.ToString();
 
         buyButton.onClick.AddListener(OnInstantBuyClick);
 

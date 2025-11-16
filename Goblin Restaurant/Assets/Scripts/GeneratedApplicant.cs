@@ -15,9 +15,11 @@ public class GeneratedApplicant
     public int GeneratedCharmStat { get; private set; }
 
     public List<Trait> GeneratedTraits { get; private set; }
+    public EmployeeGrade grade { get; private set; }
 
     public GeneratedApplicant(EmployeeData selectedSpecies, string firstName, string jobTitle,
-                               int cook, int serve, int charm, List<Trait> finalTraits)
+                               int cook, int serve, int charm, List<Trait> finalTraits,
+                               EmployeeGrade newGrade)
     {
         BaseSpeciesData = selectedSpecies;
         GeneratedFirstName = firstName;
@@ -28,5 +30,7 @@ public class GeneratedApplicant
         GeneratedCharmStat = charm;
 
         GeneratedTraits = finalTraits;
+
+        this.grade = newGrade;
     }
 }

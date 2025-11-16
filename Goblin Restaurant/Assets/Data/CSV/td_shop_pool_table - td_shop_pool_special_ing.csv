@@ -1,0 +1,7 @@
+ingredient_id,min_stock,max_stock,price_variance,appearance_probability
+ING10,20,30,30%,25%
+ING11,20,30,30%,25%
+ING12,20,30,30%,25%
+ING20,10,20,30%,10%
+ING21,10,20,30%,10%
+ING30,1,10,30%,5%

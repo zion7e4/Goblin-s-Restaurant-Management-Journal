@@ -16,13 +16,14 @@ MonoBehaviour:
   possibleFirstNames: []
   portrait: {fileID: 0}
   requiredFameTier: 1
-  baseCookingStat: 1
+  baseCookingStat: 4
   baseServingStat: 1
-  baseCleaningStat: 1
-  cookingGrowthFactor: 0.1
+  baseCharmStat: 0
+  baseMoveSpeed: 1
+  cookingGrowthFactor: 0.4
   servingGrowthFactor: 0.1
-  cleaningGrowthFactor: 0.1
-  salary: 100
+  charmGrowthFactor: 0.05
+  salary: 30
   possibleTraits:
   - {fileID: 11400000, guid: 227c5c30e84e5a7429440bf48acb5ce1, type: 2}
   speciesPrefab: {fileID: 4620295542457393389, guid: 698be4298d2482943b98d9a304da3dd7, type: 3}

@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Goblin
   currentState: 0
-  movespeed: 3
+  movespeed: 5
   targetCustomer: {fileID: 0}
   targetCountertop: {fileID: 0}
   targetTable: {fileID: 0}

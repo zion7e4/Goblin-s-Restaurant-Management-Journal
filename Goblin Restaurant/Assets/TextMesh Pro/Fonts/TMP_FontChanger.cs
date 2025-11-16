@@ -34,12 +34,19 @@ public class TMP_FontChangerEditor : Editor
         {
             TMP_FontAsset fontAsset = ((TMP_FontChanger)target).FontAsset;
 
-            foreach(TextMeshPro textMeshPro3D in GameObject.FindObjectsOfType<TextMeshPro>(true)) 
-            { 
+            // [수정됨]
+            // 사용 중인 유니티 버전(2020.1 추정)에서는 FindObjectsByType이
+            // 비활성 객체를 찾는 기능을 지원하지 않습니다.
+            // 경고(warning)가 발생하더라도 예전 방식인 FindObjectsOfType(true)를 사용해야 합니다.
+            // 또한 'GameObject.' 없이 호출합니다.
+            foreach (TextMeshPro textMeshPro3D in FindObjectsOfType<TextMeshPro>(true))
+            {
                 textMeshPro3D.font = fontAsset;
             }
-            foreach(TextMeshProUGUI textMeshProUi in GameObject.FindObjectsOfType<TextMeshProUGUI>(true)) 
-            { 
+
+            // [수정됨] 동일하게 변경
+            foreach (TextMeshProUGUI textMeshProUi in FindObjectsOfType<TextMeshProUGUI>(true))
+            {
                 textMeshProUi.font = fontAsset;
             }
         }

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 687600a00a815f042b63ee8c167d1efd, type: 3}
+  m_Name: RecipePool
+  m_EditorClassIdentifier: Assembly-CSharp::RecipePoolSO
+  items:
+  - rcp_id: 1002
+    required_lv: 1
+  - rcp_id: 1003
+    required_lv: 1
+  - rcp_id: 1004
+    required_lv: 1
+  - rcp_id: 1005
+    required_lv: 2
+  - rcp_id: 1006
+    required_lv: 2
+  - rcp_id: 1007
+    required_lv: 3
+  - rcp_id: 1008
+    required_lv: 3
+  - rcp_id: 1009
+    required_lv: 4
+  - rcp_id: 1010
+    required_lv: 5

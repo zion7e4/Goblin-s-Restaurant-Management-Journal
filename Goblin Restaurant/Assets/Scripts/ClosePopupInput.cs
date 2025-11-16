@@ -63,7 +63,7 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
             PanelBlocker.SetActive(false);
             return;
         }
-        
+
         if (RecipeBookPanel != null && RecipeBookPanel.activeSelf)
         {
             RecipeBookPanel.SetActive(false);

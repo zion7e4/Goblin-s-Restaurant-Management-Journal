@@ -1,7 +1,7 @@
-ï»¿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Linq;
-using System.Drawing;
+// using System.Drawing; // (Âü°í: UnityEngine.Color¿Í Ãæµ¹ÇÒ ¼ö ÀÖÀ¸´Ï, ÇÊ¿ä ¾ø´Ù¸é Áö¿ì´Â °ÍÀÌ ÁÁ½À´Ï´Ù)
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -9,8 +9,8 @@ using UnityEngine.UI;
 [System.Serializable]
 public class SatisfactionIcon
 {
-    public SatisfactionLevel level; // (SatisfactionManager.csì— ì •ì˜ë¨)
-Â  Â  public Sprite icon;
+    public SatisfactionLevel level; // (SatisfactionManager.cs¿¡ Á¤ÀÇµÊ)
+    public Sprite icon;
 }
 
 public class Customer : MonoBehaviour
@@ -18,25 +18,25 @@ public class Customer : MonoBehaviour
     public enum CustomerState { MovingToTable, DecidingMenu, WaitingForFood, Eating, Leaving }
     public CustomerState currentState;
     public GameObject orderIconPrefab;
-    public Transform iconSpawnPoint;Â  Â // ì•„ì´ì½˜ì´ í‘œì‹œë  ë¨¸ë¦¬ ìœ„ ìœ„ì¹˜
-Â  Â  public GameObject RestaurantReviwe; // ë§Œì¡±ë„ í‘œì‹œ í…ìŠ¤íŠ¸
-Â  Â  public List<SatisfactionIcon> satisfactionIcons;
-    public Transform leavingPoint; // í‡´ì¥ ì§€ì 
-Â  Â  private GameObject currentOrderIcon; // í˜„ì¬ ë–  ìˆëŠ” ì•„ì´ì½˜ì„ ì €ì¥í•  ë³€ìˆ˜
+    public Transform iconSpawnPoint;    // ¾ÆÀÌÄÜÀÌ Ç¥½ÃµÉ ¸Ó¸® À§ À§Ä¡
+    public GameObject RestaurantReviwe; // ¸¸Á·µµ Ç¥½Ã ÅØ½ºÆ®
+    public List<SatisfactionIcon> satisfactionIcons; //
+    public Transform leavingPoint; // ÅğÀå ÁöÁ¡
+    private GameObject currentOrderIcon; // ÇöÀç ¶° ÀÖ´Â ¾ÆÀÌÄÜÀ» ÀúÀåÇÒ º¯¼ö
 
-Â  Â  private Transform targetTable;
-Â  Â  [SerializeField]
+    private Transform targetTable;
+    [SerializeField]
     private float speed = 3f;
     private PlayerRecipe myOrderedRecipe;
-    private float foodWaitStartTime; // ìŒì‹ì„ ê¸°ë‹¤ë¦¬ê¸° ì‹œì‘í•œ ì‹œê°„
-Â  Â  private int satisfactionScore;Â  Â // ìµœì¢… ë§Œì¡±ë„ ì ìˆ˜
-Â  Â  private EmployeeInstance serverEmployee;
+    private float foodWaitStartTime; // À½½ÄÀ» ±â´Ù¸®±â ½ÃÀÛÇÑ ½Ã°£
+    private int satisfactionScore;  // ÃÖÁ¾ ¸¸Á·µµ Á¡¼ö
+    private EmployeeInstance serverEmployee;
 
     public void Initialize(Transform table, Transform exit)
     {
         targetTable = table;
         leavingPoint = exit;
-Â  Â  Â  Â  currentState = CustomerState.MovingToTable;
+        currentState = CustomerState.MovingToTable;
     }
 
     void Update()
@@ -44,6 +44,7 @@ public class Customer : MonoBehaviour
         switch (currentState)
         {
             case CustomerState.MovingToTable:
+                // ¡å¡å¡å [±â´É 1] ÀÇÀÚ À§Ä¡·Î ÀÌµ¿ (Script 1) ¡å¡å¡å
                 Table tableComponent = targetTable.GetComponent<Table>();
                 Vector3 targetPosition;
 
@@ -53,7 +54,7 @@ public class Customer : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning("í…Œì´ë¸”ì— seatPositionì´ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. í…Œì´ë¸” ì¤‘ì•™ìœ¼ë¡œ ì´ë™í•©ë‹ˆë‹¤.");
+                    Debug.LogWarning("Å×ÀÌºí¿¡ seatPositionÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù. Å×ÀÌºí Áß¾ÓÀ¸·Î ÀÌµ¿ÇÕ´Ï´Ù.");
                     targetPosition = targetTable.position;
                 }
 
@@ -62,14 +63,17 @@ public class Customer : MonoBehaviour
                 if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
                 {
                     currentState = CustomerState.DecidingMenu;
-                    targetTable.GetComponent<Table>().Occupy(gameObject); //
+                    targetTable.GetComponent<Table>().Occupy(gameObject);
                     StartCoroutine(DecideMenuCoroutine());
                 }
                 break;
+            // ¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã
+
             case CustomerState.Leaving:
+                // ¡å¡å¡å [±â´É 2] ÅğÀå ÁöÁ¡¿¡¼­ ÆÄ±« (Script 1) ¡å¡å¡å
                 if (leavingPoint == null)
                 {
-                    Debug.LogError("leavingPointê°€ Customer ìŠ¤í¬ë¦½íŠ¸ì— í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤! (Initialize í•¨ìˆ˜ í™•ì¸)");
+                    Debug.LogError("leavingPoint°¡ Customer ½ºÅ©¸³Æ®¿¡ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù! (Initialize ÇÔ¼ö È®ÀÎ)");
                     Destroy(gameObject);
                     break;
                 }
@@ -80,11 +84,15 @@ public class Customer : MonoBehaviour
                 {
                     Destroy(gameObject);
                 }
-Â  Â  Â  Â  Â  Â  Â  Â  break;
-Â  Â  Â  Â  }
+                break;
+                // ¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã
+        }
     }
-Â  Â  public void ReceiveFood(EmployeeInstance server) //
-Â  Â  {
+    /// <summary>
+    /// Employee°¡ ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÏ¿© À½½ÄÀ» Àü´ŞÇÕ´Ï´Ù.
+    /// </summary>
+    public void ReceiveFood(EmployeeInstance server)
+    {
         this.serverEmployee = server;
 
         if (currentOrderIcon != null)
@@ -98,8 +106,9 @@ public class Customer : MonoBehaviour
 
     IEnumerator DecideMenuCoroutine()
     {
-        Debug.Log("ì†ë‹˜ì´ ë©”ë‰´ë¥¼ ê³ ë¥´ëŠ” ì¤‘...");
-        yield return new WaitForSeconds(Random.Range(2f, 5f));
+        Debug.Log("¼Õ´ÔÀÌ ¸Ş´º¸¦ °í¸£´Â Áß...");
+        // ¡å¡å¡å [±â´É 3] ¸ğÈ£¼º ÇØ°á (Script 2) ¡å¡å¡å
+        yield return new WaitForSeconds(UnityEngine.Random.Range(2f, 5f));
 
         var dailyMenu = MenuPlanner.instance.dailyMenu.Where(r => r != null);
 
@@ -109,10 +118,11 @@ public class Customer : MonoBehaviour
 
         if (availableMenuWithStock.Count > 0)
         {
-            int randomIndex = Random.Range(0, availableMenuWithStock.Count);
+            // ¡å¡å¡å [±â´É 3] ¸ğÈ£¼º ÇØ°á (Script 2) ¡å¡å¡å
+            int randomIndex = UnityEngine.Random.Range(0, availableMenuWithStock.Count);
             myOrderedRecipe = availableMenuWithStock[randomIndex];
 
-            Debug.Log($"{myOrderedRecipe.data.recipeName} ê²°ì •! ì£¼ë°©ì— ì£¼ë¬¸ì„ ë„£ìŠµë‹ˆë‹¤.");
+            Debug.Log($"{myOrderedRecipe.data.recipeName} °áÁ¤! ÁÖ¹æ¿¡ ÁÖ¹®À» ³Ö½À´Ï´Ù.");
 
             if (orderIconPrefab != null && iconSpawnPoint != null)
             {
@@ -125,22 +135,50 @@ public class Customer : MonoBehaviour
                 }
             }
 
-            KitchenOrder newOrder = new KitchenOrder(this, myOrderedRecipe, null); // foodObjectëŠ” ë‚˜ì¤‘ì— ì¶”ê°€
-Â  Â  Â  Â  Â  Â  RestaurantManager.instance.OrderQueue.Add(newOrder);
+            // --- !! [¹ö±× ¼öÁ¤] !! ---
+            // 'foodObject'°¡ nullÀÌ µÇ´Â ±Ùº» ¿øÀÎÀÔ´Ï´Ù.
+            // ÁÖ¹®¼­(KitchenOrder)¸¦ »ı¼ºÇÒ ¶§, À½½Ä ÇÁ¸®ÆÕÀ» ¿©±â¼­ Instantiate(»ı¼º)ÇÏ°í Àü´ŞÇØ¾ß ÇÕ´Ï´Ù.
+
+            // 1. ·¹½ÃÇÇ µ¥ÀÌÅÍ¿¡¼­ À½½Ä ÇÁ¸®ÆÕÀ» °¡Á®¿É´Ï´Ù.
+            // (¸¸¾à 'foodPrefab'ÀÌ ¾Æ´Ï¶ó¸é, ·¹½ÃÇÇ µ¥ÀÌÅÍ¿¡ ÀÖ´Â ½ÇÁ¦ ÇÁ¸®ÆÕ º¯¼ö¸íÀ¸·Î º¯°æÇØ¾ß ÇÕ´Ï´Ù.)
+            GameObject foodPrefab = myOrderedRecipe.data.foodPrefab;
+
+            if (foodPrefab == null)
+            {
+                Debug.LogError($"[ÁÖ¹® ¿À·ù!] {myOrderedRecipe.data.recipeName}ÀÇ ·¹½ÃÇÇ µ¥ÀÌÅÍ¿¡ 'foodPrefab'ÀÌ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù! ÁÖ¹®À» »ı¼ºÇÒ ¼ö ¾ø½À´Ï´Ù.");
+                currentState = CustomerState.Leaving; // ¼Õ´ÔÀº ±×³É ¶°³³´Ï´Ù.
+                yield break; // ÄÚ·çÆ¾ Áß´Ü
+            }
+
+            // 2. ÇÁ¸®ÆÕÀ» º¹Á¦ÇÏ¿© 'foodObject' ÀÎ½ºÅÏ½º¸¦ ¸¸µì´Ï´Ù.
+            GameObject instantiatedFood = Instantiate(foodPrefab, Vector3.zero, Quaternion.identity);
+
+            // 3. ¿ä¸®»ç°¡ »ç¿ëÇÒ ¶§±îÁö ¾À¿¡¼­ º¸ÀÌÁö ¾Êµµ·Ï ºñÈ°¼ºÈ­ÇÕ´Ï´Ù.
+            instantiatedFood.SetActive(false);
+            instantiatedFood.name = $"{myOrderedRecipe.data.recipeName} (ÁÖ¹®ÀÚ: {this.name})";
+
+            // 4. »ı¼ºµÈ 'instantiatedFood'¸¦ ÁÖ¹®¼­ »ı¼ºÀÚ¿¡ Àü´ŞÇÕ´Ï´Ù. (null ´ë½Å)
+            KitchenOrder newOrder = new KitchenOrder(this, myOrderedRecipe, instantiatedFood);
+            // --- !! [¹ö±× ¼öÁ¤ ¿Ï·á] !! ---
+
+            RestaurantManager.instance.OrderQueue.Add(newOrder);
 
             MenuPlanner.instance.RecordSale(myOrderedRecipe.data.id);
 
             currentState = CustomerState.WaitingForFood;
+
+            // foodWaitStartTimeÀ» ÁÖ¹®ÀÌ µé¾î°£ ÀÌ ½ÃÁ¡À¸·Î ÃÊ±âÈ­
+            foodWaitStartTime = Time.time;
         }
         else
         {
-            Debug.LogError("ì†ë‹˜ì´ ì£¼ë¬¸í•  ë©”ë‰´ê°€ ì˜¤ëŠ˜ì˜ ë©”ë‰´ì— í•˜ë‚˜ë„ í¸ì„±ë˜ì–´ ìˆì§€ ì•ŠìŠµë‹ˆë‹¤!");
+            Debug.LogError("¼Õ´ÔÀÌ ÁÖ¹®ÇÒ ¸Ş´º°¡ ¿À´ÃÀÇ ¸Ş´º¿¡ ÇÏ³ªµµ Æí¼ºµÇ¾î ÀÖÁö ¾Ê½À´Ï´Ù!");
             currentState = CustomerState.Leaving;
         }
     }
 
 
-Â  Â  public void SetTable(Transform table)
+    public void SetTable(Transform table)
     {
         targetTable = table;
         currentState = CustomerState.MovingToTable;
@@ -149,9 +187,9 @@ public class Customer : MonoBehaviour
 
     System.Collections.IEnumerator EatAndLeave()
     {
-        Debug.Log("ì‹ì‚¬ ì‹œì‘");
+        Debug.Log("½Ä»ç ½ÃÀÛ");
         yield return new WaitForSeconds(2f);
-        Debug.Log("ì‹ì‚¬ ì™„ë£Œ");
+        Debug.Log("½Ä»ç ¿Ï·á");
 
         CalculateSatisfaction();
         SatisfactionLevel level = GetSatisfactionLevel();
@@ -159,6 +197,7 @@ public class Customer : MonoBehaviour
 
         int tip = 0;
 
+        // ¸¸Á·µµ¿¡ µû¸¥ '¸í¼º' º¯È­ (°øÅë)
         switch (level)
         {
             case SatisfactionLevel.VerySatisfied:
@@ -175,21 +214,37 @@ public class Customer : MonoBehaviour
                 break;
         }
 
-        int charmStat = 0;
+        // ¡å¡å¡å [±â´É 4] »ó¼¼ÇÑ ÆÁ °è»ê (Script 2) ¡å¡å¡å
+        // (Âü°í: ÀÌ ·ÎÁ÷ÀÌ ÀÛµ¿ÇÏ·Á¸é EmployeeInstance.cs¿¡ GetTrait... ÇÔ¼öµéÀÌ ÇÊ¿äÇÕ´Ï´Ù)
+        int baseCharmStat = 0;
+        int bonusCharmStat_Synergy = 0;
+        float traitTipBonus = 0f; // "¸ÅÈ¤" Æ¯¼º º¸³Ê½º
+        float allStatMultiplier_Trait = 0f; // "ÁÖÀÎ°ø" Æ¯¼º º¸³Ê½º
+
         if (serverEmployee != null)
         {
-            charmStat = serverEmployee.currentCharmStat;
+            baseCharmStat = serverEmployee.currentCharmStat;
+            traitTipBonus = serverEmployee.GetTraitTipChanceBonus(); // "¸ÅÈ¤"
+            allStatMultiplier_Trait = serverEmployee.GetTraitAllStatMultiplier(); // "ÁÖÀÎ°ø"
         }
 
+        if (SynergyManager.Instance != null && serverEmployee != null)
+        {
+            var (cook, serve, charm) = SynergyManager.Instance.GetStatBonuses(serverEmployee);
+            bonusCharmStat_Synergy = charm;
+        }
+
+        int finalCharmStat = (int)((baseCharmStat + bonusCharmStat_Synergy) * (1.0f + allStatMultiplier_Trait));
         float baseTipChance = 5f;
-        float finalTipChance = baseTipChance + (charmStat * 0.3f);
+        float finalTipChance = baseTipChance + (finalCharmStat * 0.3f) + traitTipBonus;
         finalTipChance = Mathf.Clamp(finalTipChance, 0f, 100f);
 
-        if (Random.Range(0f, 100f) < finalTipChance)
+        if (UnityEngine.Random.Range(0f, 100f) < finalTipChance)
         {
             tip = Mathf.RoundToInt(price * 0.1f);
-            Debug.Log($"[íŒ ë°œìƒ!] ë§¤ë ¥({charmStat}) ë³´ë„ˆìŠ¤ë¡œ {tip}G íŒ íšë“! (í™•ë¥ : {finalTipChance:F1}%)");
+            Debug.Log($"[ÆÁ ¹ß»ı!] (ÃÖÁ¾½ºÅÈ: {finalCharmStat}, Æ¯¼º: {traitTipBonus}%) º¸³Ê½º·Î {tip}G ÆÁ È¹µæ! (È®·ü: {finalTipChance:F1}%)");
         }
+        // ¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã
 
         int totalPayment = price + tip;
         GameManager.instance.AddGold(totalPayment);
@@ -201,6 +256,7 @@ public class Customer : MonoBehaviour
 
             TextMeshProUGUI textMesh = textObj.GetComponent<TextMeshProUGUI>();
 
+            // ¡å¡å¡å [±â´É 5] ¸¸Á·µµ ¾ÆÀÌÄÜ Ç¥½Ã (Script 1) ¡å¡å¡å
             Image iconImage = textObj.GetComponentInChildren<Image>();
 
             Sprite spriteToUse = null;
@@ -218,14 +274,15 @@ public class Customer : MonoBehaviour
             {
                 iconImage.gameObject.SetActive(false);
             }
+            // ¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã¡ã
 
             if (textMesh != null)
             {
-                string tipText = (tip > 0) ? $"\n(íŒ: {tip}G)" : "";
-                textMesh.text = $"ì§€ë¶ˆê¸ˆì•¡: {totalPayment}G{tipText}\në§Œì¡±ë„: {GetSatisfactionString(level)}";
+                string tipText = (tip > 0) ? $"\n(ÆÁ: {tip}G)" : "";
+                textMesh.text = $"ÁöºÒ±İ¾×: {totalPayment}G{tipText}\n¸¸Á·µµ: {GetSatisfactionString(level)}";
             }
         }
-        Debug.Log($"ë§Œì¡±ë„: {satisfactionScore} ({level}) | ìŒì‹ê°’: {price}G + íŒ: {tip}G = ì´ {totalPayment}G ì§€ë¶ˆ");
+        Debug.Log($"¸¸Á·µµ: {satisfactionScore} ({level}) | À½½Ä°ª: {price}G + ÆÁ: {tip}G = ÃÑ {totalPayment}G ÁöºÒ");
 
         GameManager.instance.AddCustomerCount();
         targetTable.GetComponent<Table>().Vacate();
@@ -237,27 +294,27 @@ public class Customer : MonoBehaviour
     {
         switch (level)
         {
-            case SatisfactionLevel.VerySatisfied: return "<color=cyan>ë§¤ìš° ë§Œì¡±!</color>";
-            case SatisfactionLevel.Satisfied: return "<color=green>ë§Œì¡±</color>";
-            case SatisfactionLevel.Normal: return "ë³´í†µ";
-            case SatisfactionLevel.Dissatisfied: return "<color=orange>ë¶ˆë§Œ</color>";
-            case SatisfactionLevel.VeryDissatisfied: return "<color=red>ë§¤ìš° ë¶ˆë§Œ...</color>";
+            case SatisfactionLevel.VerySatisfied: return "<color=#00FFFF>¸Å¿ì ¸¸Á·!</color>";
+            case SatisfactionLevel.Satisfied: return "<color=green>¸¸Á·</color>";
+            case SatisfactionLevel.Normal: return "º¸Åë";
+            case SatisfactionLevel.Dissatisfied: return "<color=orange>ºÒ¸¸</color>";
+            case SatisfactionLevel.VeryDissatisfied: return "<color=red>¸Å¿ì ºÒ¸¸...</color>";
             default: return "";
         }
     }
 
     void CalculateSatisfaction()
     {
-        satisfactionScore = 50; // ê¸°ë³¸ ì ìˆ˜ 50ì Â 
+        satisfactionScore = 50; // ±âº» Á¡¼ö 50Á¡ 
 
-Â  Â  Â  Â  float totalWaitTime = Time.time - foodWaitStartTime;
+        float totalWaitTime = Time.time - foodWaitStartTime;
         if (totalWaitTime < 15f) satisfactionScore += 20;
         else if (totalWaitTime < 30f) satisfactionScore += 10;
         else if (totalWaitTime > 60f) satisfactionScore -= 20;
         else if (totalWaitTime > 45f) satisfactionScore -= 10;
 
         int dishGrade = myOrderedRecipe.GetCurrentGrade();
-        if (dishGrade >= 1) satisfactionScore += 20;
+        if (dishGrade == 1) satisfactionScore += 20; // (¼öÁ¤: µî±Ş ¼ıÀÚ°¡ ³·À»¼ö·Ï ÁÁÀº °ÍÀ¸·Î °¡Á¤)
         else if (dishGrade == 2) satisfactionScore += 15;
         else if (dishGrade == 3) satisfactionScore += 10;
         else if (dishGrade == 4) satisfactionScore += 5;
@@ -266,18 +323,28 @@ public class Customer : MonoBehaviour
         if (RestaurantManager.instance.cleanliness >= 90) satisfactionScore += 10;
         else if (RestaurantManager.instance.cleanliness < 50) satisfactionScore -= 10;
 
-Â  Â  Â  Â  if (SynergyManager.Instance != null)
+        if (SynergyManager.Instance != null)
         {
             int serviceBonus = SynergyManager.Instance.GetServiceScoreBonus();
-            satisfactionScore += serviceBonus; // "í™œê¸°ì°¬ ì‹ë‹¹"(+2) ë˜ëŠ” "ê³µí¬ì˜ í™€"(-2)
-Â  Â  Â  Â  Â  Â  if (serviceBonus != 0)
+            satisfactionScore += serviceBonus;
+            if (serviceBonus != 0)
             {
-                Debug.Log($"[ì‹œë„ˆì§€] ì„œë¹„ìŠ¤ ì ìˆ˜ ë³´ë„ˆìŠ¤ {serviceBonus}ì  ì ìš©!");
+                Debug.Log($"[½Ã³ÊÁö] ¼­ºñ½º Á¡¼ö º¸³Ê½º {serviceBonus}Á¡ Àû¿ë!");
             }
         }
 
-Â  Â  Â  Â  satisfactionScore = Mathf.Clamp(satisfactionScore, 0, 100); // ìµœì¢… ì ìˆ˜ë¥¼ 0~100 ì‚¬ì´ë¡œ ê³ ì •
-Â  Â  }
+        if (serverEmployee != null)
+        {
+            int traitBonus = serverEmployee.GetTraitServiceScoreBonus();
+            satisfactionScore += traitBonus;
+            if (traitBonus != 0)
+            {
+                Debug.Log($"[Æ¯¼º] {serverEmployee.firstName}ÀÇ Æ¯¼ºÀ¸·Î ¼­ºñ½º Á¡¼ö {traitBonus}Á¡ Àû¿ë!");
+            }
+        }
+
+        satisfactionScore = Mathf.Clamp(satisfactionScore, 0, 100);
+    }
 
     SatisfactionLevel GetSatisfactionLevel()
     {

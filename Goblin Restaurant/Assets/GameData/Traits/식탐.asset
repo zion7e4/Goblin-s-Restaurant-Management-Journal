@@ -18,3 +18,8 @@ MonoBehaviour:
     \u2018\uC2DD\uC7AC\uB8CC\u2019\uC758 \uC218\uB7C9\uC774 (\uC784\uC2DC: -1\uAC1C)
     \uAC10\uC18C\uD569\uB2C8\uB2E4."
   isPositive: 0
+  ingredientSaveChance: 0
+  ingredientStealChance: 0.15
+  cookingStatMultiplier: 0
+  moveSpeedMultiplier: 0
+  workSpeedMultiplier: 0
