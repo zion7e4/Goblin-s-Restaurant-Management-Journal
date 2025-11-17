@@ -10,7 +10,7 @@ using System.Linq;
 // 역할: 게임의 시간, 명성, 돈, 게임 상태 등 전반적인 상태를 관리합니다.
 public class GameManager : MonoBehaviour
 {
-    // [공통] 싱글톤 인스턴스
+    // [공통] 싱글톤 인턴스
     public static GameManager instance;
 
     // [V1] RestaurantManager 참조
@@ -148,12 +148,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        /* Employee[] existingWorkers = FindObjectsByType<Employee>(FindObjectsSortMode.None);
-         foreach (Employee worker in existingWorkers)
-         {
-             Destroy(worker.gameObject);
-         }
- */
         // [공통] 초기화
         currentState = GameState.Preparing; // <-- 이 시점에 UpdateButtonUI()가 호출됨
         timeScale = (9 * 60 * 60) / dayDurationInSeconds;
@@ -187,7 +181,6 @@ public class GameManager : MonoBehaviour
 
         if (ShopManager.Instance != null)
         {
-            // (참고: currentFame은 GameManager의 인스펙터 값입니다.)
             ShopManager.Instance.GenerateTodayItems(FameManager.instance.CurrentFamePoints);
             Debug.Log("[GameManager] 테스트를 위해 '오늘의 상품'을 즉시 생성합니다.");
         }
@@ -251,12 +244,10 @@ public class GameManager : MonoBehaviour
                 foreach (EmployeeInstance emp in EmployeeManager.Instance.hiredEmployees)
                 {
                     // (TODO: EmployeeInstance.cs에 GetTraitStealChance() 함수 구현 필요)
-                    // float stealChance = emp.GetTraitStealChance();
                     float stealChance = 0f; // 임시 0
                     if (stealChance > 0 && UnityEngine.Random.Range(0f, 1f) < stealChance)
                     {
                         // (TODO: InventoryManager.cs에 StealRandomIngredient() 함수 구현 필요)
-                        // InventoryManager.instance.StealRandomIngredient(emp.firstName);
                     }
                 }
             }
@@ -295,6 +286,14 @@ public class GameManager : MonoBehaviour
                 EmployeeManager.Instance.GenerateApplicants((int)currentFamePoints);
 
                 Debug.Log($"[GameManager] {DayCount}일차 아침, 새로운 지원자들을 생성합니다. (현재 명성: {(int)currentFamePoints})");
+
+                // ****** [수정된 부분] ******
+                // 생성된 지원자 카드를 보여주기 위해 EmployeeUI_Controller의 메인 패널을 호출합니다.
+                if (EmployeeUI_Controller.Instance != null)
+                {
+                    EmployeeUI_Controller.Instance.OpenPanel();
+                }
+                // ****** [여기까지 수정] ******
             }
         }
     }
@@ -391,9 +390,7 @@ public class GameManager : MonoBehaviour
     }
 
     // ▼▼▼ [기능 3] 재료 반환 함수 (Script 2) ▼▼▼
-    /// <summary>
-    /// (Employee.cs가 호출) 식재료 절약 성공 시 재료 1개를 반환합니다.
-    /// </summary>
+    // (Employee.cs가 호출) 식재료 절약 성공 시 재료 1개를 반환합니다.
     public void RefundIngredients(RecipeData recipe)
     {
         if (recipe == null || recipe.requiredIngredients == null || !recipe.requiredIngredients.Any())

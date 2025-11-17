@@ -170,7 +170,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &7598919938514714338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,6 +187,8 @@ MonoBehaviour:
   orderIconPrefab: {fileID: 2058904831228565475, guid: 42a5a75c17de6a248b085350e21f3cde, type: 3}
   iconSpawnPoint: {fileID: 6138806475234682332}
   RestaurantReviwe: {fileID: 5381422328315369704, guid: f3b5d14a7ec66de45af6b56aa3e1753d, type: 3}
+  satisfactionIcons: []
+  leavingPoint: {fileID: 0}
   speed: 3
 --- !u!1 &8866038012476259947
 GameObject:

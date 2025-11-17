@@ -9,6 +9,11 @@ public class Employee : MonoBehaviour
 {
     private EmployeeInstance employeeData;
 
+    // (수정) 문제 2번(음식 위치) 해결을 위해 '손' 위치를 지정할 변수 추가
+    [Header("직원 설정")]
+    [Tooltip("음식 오브젝트가 붙을 손 위치")]
+    public Transform handPosition;
+
     public enum EmployeeState
     {
         Idle,
@@ -37,6 +42,9 @@ public class Employee : MonoBehaviour
     private Transform idlePosition; // 직원이 할 일이 없을 때 가만히 서 있을 위치
     private KitchenOrder targetOrder;
 
+    // (수정) 문제 3번(관통) 해결을 위해 Rigidbody 2D 참조 변수 추가
+    private Rigidbody2D rb;
+
     // RestaurantManager에서 호출됨
     public void Initialize(EmployeeInstance data, Transform defaultIdlePosition)
     {
@@ -59,6 +67,21 @@ public class Employee : MonoBehaviour
 
     void Start()
     {
+        // (수정) 문제 3번(관통) 해결을 위해 Rigidbody 2D 컴포넌트를 가져옵니다.
+        // 직원을 움직일 때 transform.position 대신 rb.MovePosition을 사용할 것입니다.
+        rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            Debug.LogError("Employee 프리팹에 Rigidbody 2D가 없습니다! 테이블을 관통합니다.");
+        }
+
+        // (수정) handPosition이 할당되지 않았을 경우, 기본값으로 자기 자신을 사용
+        if (handPosition == null)
+        {
+            Debug.LogWarning($"{name}: handPosition이 할당되지 않았습니다. 직원 발밑에 음식이 붙습니다.");
+            handPosition = this.transform;
+        }
+
         if (employeeData == null)
         {
             currentState = EmployeeState.Idle;
@@ -244,8 +267,8 @@ public class Employee : MonoBehaviour
         int bonusCookingStat_Synergy = 0;
         float speedBonusPercent_Synergy = 0f;
         float specificStatMultiplier_Trait = 0f; // "셰프" 특성 보너스
-        float allStatMultiplier_Trait = 0f;      // "만능인" 특성 보너스
-        float workSpeedMultiplier_Trait = 0f;    // "느림보/빠름" 특성 보너스
+        float allStatMultiplier_Trait = 0f; // "만능인" 특성 보너스
+        float workSpeedMultiplier_Trait = 0f; // "느림보/빠름" 특성 보너스
 
         if (SynergyManager.Instance != null)
         {
@@ -259,8 +282,8 @@ public class Employee : MonoBehaviour
         if (employeeData != null)
         {
             specificStatMultiplier_Trait = employeeData.GetTraitCookingStatMultiplier(); // "셰프"
-            allStatMultiplier_Trait = employeeData.GetTraitAllStatMultiplier();      // "만능인"
-            workSpeedMultiplier_Trait = employeeData.GetTraitWorkSpeedMultiplier();    // "느림보/빠름"
+            allStatMultiplier_Trait = employeeData.GetTraitAllStatMultiplier(); // "만능인"
+            workSpeedMultiplier_Trait = employeeData.GetTraitWorkSpeedMultiplier(); // "느림보/빠름"
         }
 
         // 4. 최종 스탯 = (기본 + 시너지) * (1 + 셰프 + 만능인)
@@ -374,8 +397,8 @@ public class Employee : MonoBehaviour
         // 2. 이 직원의 '기본 서빙' 스탯을 가져옵니다.
         int baseServingStat = employeeData.currentServingStat;
         int bonusServingStat = 0;
-        float allStatMultiplier_Trait = 0f;      // "만능인" 특성 보너스
-        float workSpeedMultiplier_Trait = 0f;    // "느림보/빠름" 특성 보너스
+        float allStatMultiplier_Trait = 0f; // "만능인" 특성 보너스
+        float workSpeedMultiplier_Trait = 0f; // "느림보/빠름" 특성 보너스
 
         // 3. 시너지 매니저에서 '서빙 보너스'를 받아옵니다.
         if (SynergyManager.Instance != null)
@@ -419,9 +442,65 @@ public class Employee : MonoBehaviour
         currentState = EmployeeState.MovingToIdle;
     }
 
-    // 목표 지점까지 이동하고, 도착하면 지정된 행동(Action)을 실행하는 함수
+    // (수정) 목표 지점까지 이동하는 함수
+    // Rigidbody 2D의 MovePosition을 사용하도록 변경 (관통 문제 해결)
+    // Update가 아닌 FixedUpdate에서 물리 이동을 처리하도록 변경
     void MoveTo(Vector3 destination, Action onArrived)
     {
+        // 실제 이동 처리는 FixedUpdate에서 하도록 하고, 여기서는 상태만 체크
+        if (Vector2.Distance(transform.position, destination) < 0.1f)
+        {
+            onArrived?.Invoke();
+        }
+    }
+
+    // (수정) 물리 업데이트는 FixedUpdate에서 처리
+    void FixedUpdate()
+    {
+        // 이동 관련 상태가 아니면 FixedUpdate에서 아무것도 하지 않음
+        if (currentState == EmployeeState.Idle ||
+            currentState == EmployeeState.Cooking ||
+            currentState == EmployeeState.Cleaning)
+        {
+            // 이동 중이 아닐 때는 속도를 0으로 만들어 미끄러지지 않게 함
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
+            return;
+        }
+
+        // 목표 지점 설정 (각 상태에 맞는 목적지를 가져옴)
+        Vector3 destination;
+        switch (currentState)
+        {
+            case EmployeeState.MovingToIdle:
+                if (idlePosition == null) return; // 대기 위치 없으면 이동 안 함
+                destination = idlePosition.position;
+                break;
+            case EmployeeState.MovingToCounterTop:
+                if (targetCountertop == null) return; // 카운터 없으면 이동 안 함
+                destination = targetCountertop.transform.position;
+                break;
+            case EmployeeState.MovingToPickupFood:
+                if (targetCountertop == null) return; // 카운터 없으면 이동 안 함
+                destination = targetCountertop.transform.position;
+                break;
+            case EmployeeState.MovingToServe:
+                if (targetCustomer == null) return; // 손님 없으면 이동 안 함
+                destination = targetCustomer.transform.position;
+                break;
+            case EmployeeState.MovingToTable:
+                if (targetTable == null) return; // 테이블 없으면 이동 안 함
+                destination = targetTable.transform.position;
+                break;
+            default:
+                // 이동 상태가 아니면 종료
+                return;
+        }
+
+        // (기존 MoveTo 함수의 로직을 여기로 가져옴)
+
         float synergySpeedBonus = 0f;
         float traitSpeedBonus = 0f;
 
@@ -441,14 +520,36 @@ public class Employee : MonoBehaviour
         float finalMoveSpeed = movespeed * (1.0f + synergySpeedBonus + traitSpeedBonus);
         finalMoveSpeed = Mathf.Max(0.1f, finalMoveSpeed); // 속도가 0이 되지 않게 최소 0.1 보장
 
-        // 4. 최종 속도를 적용하여 이동
-        transform.position = Vector2.MoveTowards(transform.position, destination, finalMoveSpeed * Time.deltaTime);
-
-        if (Vector2.Distance(transform.position, destination) < 0.1f)
+        // 4. (수정) Rigidbody 2D를 사용하여 이동 (관통 방지)
+        if (rb != null)
         {
-            onArrived?.Invoke();
+            // (방어 코드 추가) 목적지가 유효하지 않으면 멈춤
+            if (destination == null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                return;
+            }
+
+            // 방향 계산
+            Vector2 direction = (destination - transform.position).normalized;
+            // 물리 엔진으로 이동 (목표 속도 설정)
+            rb.linearVelocity = direction * finalMoveSpeed;
+
+            // (추가) 목표 지점에 아주 가까워지면 속도를 0으로 하여 멈춤
+            if (Vector2.Distance(transform.position, destination) < 0.1f)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
         }
+        else
+        {
+            // (대체) Rigidbody가 없을 경우 기존 방식으로 이동 (관통 발생)
+            transform.position = Vector2.MoveTowards(transform.position, destination, finalMoveSpeed * Time.deltaTime);
+        }
+
+        // 도착 체크는 Update의 MoveTo에서 하므로 여기서는 이동만 담당
     }
+
 
     // (홀 직원이) 카운터에서 음식 픽업
     IEnumerator PickupFoodCoroutine()
@@ -460,20 +561,22 @@ public class Employee : MonoBehaviour
             // --- 픽업 성공 ---
             Debug.Log($"{employeeData?.firstName ?? "Worker"}이(가) {targetOrder.recipe.data.recipeName} 픽업 완료.");
 
-            // 1. 카운터에 있던 음식(foodObject)을 이 직원(this.transform)의 자식으로 붙입니다.
-            targetOrder.foodObject.transform.SetParent(this.transform);
-            targetOrder.foodObject.transform.localPosition = new Vector3(0, 1.2f, 0);
+            // (수정) 문제 2번(음식 위치) 해결
+            // 1. (변경) 부모를 this.transform이 아닌 'handPosition'으로 설정
+            targetOrder.foodObject.transform.SetParent(handPosition);
+            // 2. (변경) localPosition을 Vector3.zero로 설정 (handPosition의 정확한 위치에 붙도록)
+            targetOrder.foodObject.transform.localPosition = Vector3.zero;
 
-            // 2. 픽업했으므로 카운터 사용 완료
+            // 3. 픽업했으므로 카운터 사용 완료
             if (targetCountertop != null)
             {
                 targetCountertop.isBeingUsed = false;
             }
 
-            // 3. 주문서에서 '요리 완료된 카운터' 정보 제거 (이제 내가 들고 있으므로)
+            // 4. 주문서에서 '요리 완료된 카운터' 정보 제거 (이제 내가 들고 있으므로)
             targetOrder.cookedOnCounterTop = null;
 
-            // 4. 이제 '서빙' 상태로 변경하고 손님에게 이동
+            // 5. 이제 '서빙' 상태로 변경하고 손님에게 이동
             currentState = EmployeeState.MovingToServe;
 
             yield return null;
