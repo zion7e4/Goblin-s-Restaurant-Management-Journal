@@ -8707,10 +8707,6 @@ MonoBehaviour:
   totalGoldAmount: 9999
   DayCount: 7
   mainCharacterTemplate: {fileID: 11400000, guid: 73599de3c8e5a6a41a97a5583acee7e8, type: 2}
-  testSpeciesTemplate: {fileID: 0}
-  greenPrefab: {fileID: 3110601555778287819, guid: f6c2409b587d5154cb8e83f9ffdcad1b, type: 3}
-  redPrefab: {fileID: 0}
-  bluePrefab: {fileID: 0}
   upgradeTableButtons:
   - {fileID: 1616242648}
   - {fileID: 1960288134}

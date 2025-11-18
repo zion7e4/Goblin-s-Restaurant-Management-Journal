@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
@@ -6,23 +6,23 @@ public class RestaurantManager : MonoBehaviour
 {
     public static RestaurantManager instance;
 
-    // [Á÷¿ø ½ºÆùÀ» À§ÇÑ Ãß°¡ ÇÊµå]
-    [Header("Employee Spawning")]
-    [Tooltip("¸Ê¿¡ ½ºÆù½ÃÅ³ Á÷¿ø Ä³¸¯ÅÍ ±âº» ÇÁ¸®ÆÕ (Employee.cs°¡ ºÙ¾îÀÖ¾î¾ß ÇÔ)")]
-    public GameObject employeePrefab; // ±âº» ÇÁ¸®ÆÕ
-    [Tooltip("Á÷¿øµéÀÌ Ã³À½ ³ªÅ¸³¯ À§Ä¡")]
+Â  Â  // [ì§ì› ìŠ¤í°ì„ ìœ„í•œ ì¶”ê°€ í•„ë“œ]
+Â  Â  [Header("Employee Spawning")]
+    [Tooltip("ë§µì— ìŠ¤í°ì‹œí‚¬ ì§ì› ìºë¦­í„° ê¸°ë³¸ í”„ë¦¬íŒ¹ (Employee.csê°€ ë¶™ì–´ìˆì–´ì•¼ í•¨)")]
+    public GameObject employeePrefab; // ê¸°ë³¸ í”„ë¦¬íŒ¹
+Â  Â  [Tooltip("ì§ì›ë“¤ì´ ì²˜ìŒ ë‚˜íƒ€ë‚  ìœ„ì¹˜")]
     public Transform spawnPoint;
-    [Tooltip("'ÁÖ¹æ' ¿ªÇÒ Á÷¿øÀÌ ´ë±âÇÒ À§Ä¡")]
+    [Tooltip("'ì£¼ë°©' ì—­í•  ì§ì›ì´ ëŒ€ê¸°í•  ìœ„ì¹˜")]
     public Transform kitchenIdlePoint;
-    [Tooltip("'È¦' ¿ªÇÒ Á÷¿øÀÌ ´ë±âÇÒ À§Ä¡")]
+    [Tooltip("'í™€' ì—­í•  ì§ì›ì´ ëŒ€ê¸°í•  ìœ„ì¹˜")]
     public Transform hallIdlePoint;
 
-    // ±âÁ¸ ÇÊµå
-    public List<Customer> customers;
+Â  Â  // ê¸°ì¡´ í•„ë“œ
+Â  Â  public List<Customer> customers;
     public List<Table> tables;
     public List<CounterTop> counterTops;
-    public int cleanliness = 100; // ½Ä´ç Ã»°áµµ (0 ~ 100)
-    [SerializeField]
+    public int cleanliness = 100; // ì‹ë‹¹ ì²­ê²°ë„ (0 ~ 100)
+Â  Â  [SerializeField]
     private List<KitchenOrder> orderQueue;
 
     public List<KitchenOrder> OrderQueue => orderQueue;
@@ -36,29 +36,29 @@ public class RestaurantManager : MonoBehaviour
         orderQueue = new List<KitchenOrder>();
     }
 
-    /// <summary>
-    /// (ºñÈ°¼º) GameManagerÀÇ Start()¿¡¼­ È£ÃâµÇ¾î, ±âº» ÇÁ¸®ÆÕÀ» »ç¿ëÇÏ¿© °í¿ëµÈ Á÷¿øµéÀ» ¸Ê¿¡ »ı¼ºÇÕ´Ï´Ù.
-    /// </summary>
-    public void SpawnHiredEmployees(List<EmployeeInstance> hiredEmployees)
+Â  Â  /// <summary>
+Â  Â  /// (ë¹„í™œì„±) GameManagerì˜ Start()ì—ì„œ í˜¸ì¶œë˜ì–´, ê¸°ë³¸ í”„ë¦¬íŒ¹ì„ ì‚¬ìš©í•˜ì—¬ ê³ ìš©ëœ ì§ì›ë“¤ì„ ë§µì— ìƒì„±í•©ë‹ˆë‹¤.
+Â  Â  /// </summary>
+Â  Â  public void SpawnHiredEmployees(List<EmployeeInstance> hiredEmployees)
     {
-        // ÀÌ ÇÔ¼ö´Â GameManager¿¡¼­ SpawnWorkersWithPrefabs°¡ ´ëÃ¼ÇÕ´Ï´Ù.
-        if (employeePrefab == null || spawnPoint == null)
+Â  Â  Â  Â  // ì´ í•¨ìˆ˜ëŠ” GameManagerì—ì„œ SpawnWorkersWithPrefabsê°€ ëŒ€ì²´í•©ë‹ˆë‹¤.
+Â  Â  Â  Â  if (employeePrefab == null || spawnPoint == null)
         {
             Debug.LogError("RestaurantManager ERROR: Employee Prefab or Spawn Point is not set in Inspector!");
             return;
         }
 
         List<(EmployeeInstance, GameObject)> workersToSpawn = hiredEmployees
-            .Select(data => (data, employeePrefab))
-            .ToList();
+          .Select(data => (data, employeePrefab))
+          .ToList();
 
         SpawnWorkersWithPrefabs(workersToSpawn);
     }
 
-    /// <summary>
-    /// (°ÔÀÓ ½ÃÀÛ ½Ã) GameManager¿¡¼­ Àü´ŞµÈ, µ¥ÀÌÅÍ¿Í ÇÁ¸®ÆÕ ½ÖÀ» »ç¿ëÇÏ¿© Á÷¿øµéÀ» ½ºÆùÇÕ´Ï´Ù.
-    /// </summary>
-    public void SpawnWorkersWithPrefabs(List<(EmployeeInstance data, GameObject prefab)> workersToSpawn)
+Â  Â  /// <summary>
+Â  Â  /// (ê²Œì„ ì‹œì‘ ì‹œ) GameManagerì—ì„œ ì „ë‹¬ëœ, ë°ì´í„°ì™€ í”„ë¦¬íŒ¹ ìŒì„ ì‚¬ìš©í•˜ì—¬ ì§ì›ë“¤ì„ ìŠ¤í°í•©ë‹ˆë‹¤.
+Â  Â  /// </summary>
+Â  Â  public void SpawnWorkersWithPrefabs(List<(EmployeeInstance data, GameObject prefab)> workersToSpawn)
     {
         if (spawnPoint == null)
         {
@@ -74,54 +74,54 @@ public class RestaurantManager : MonoBehaviour
                 continue;
             }
 
-            // 1. Á÷¿øÀÇ ¿ªÇÒ(Role)¿¡ µû¶ó ´ë±â À§Ä¡(Idle Point) °áÁ¤
-            Transform targetIdlePoint = GetIdlePointForRole(employeeData.assignedRole);
+Â  Â  Â  Â  Â  Â  // 1. ì§ì›ì˜ ì—­í• (Role)ì— ë”°ë¼ ëŒ€ê¸° ìœ„ì¹˜(Idle Point) ê²°ì •
+Â  Â  Â  Â  Â  Â  Transform targetIdlePoint = GetIdlePointForRole(employeeData.assignedRole);
 
-            // 2. Worker ¿ÀºêÁ§Æ® »ı¼º (½ºÆùÀº spawnPoint¿¡¼­)
-            GameObject workerObject = Instantiate(employeePrefab, spawnPoint.position, Quaternion.identity, this.transform);
+Â  Â  Â  Â  Â  Â  // 2. Worker ì˜¤ë¸Œì íŠ¸ ìƒì„± (ìŠ¤í°ì€ spawnPointì—ì„œ)
+Â  Â  Â  Â  Â  Â  GameObject workerObject = Instantiate(employeePrefab, spawnPoint.position, Quaternion.identity, this.transform);
 
-            // 3. Employee.cs ½ºÅ©¸³Æ® °¡Á®¿À±â
-            Employee workerComponent = workerObject.GetComponent<Employee>();
+Â  Â  Â  Â  Â  Â  // 3. Employee.cs ìŠ¤í¬ë¦½íŠ¸ ê°€ì ¸ì˜¤ê¸°
+Â  Â  Â  Â  Â  Â  Employee workerComponent = workerObject.GetComponent<Employee>();
             if (workerComponent != null)
             {
-                // 4. '´ë±â À§Ä¡'¸¦ Initialize·Î Àü´Ş
-                workerComponent.Initialize(employeeData, targetIdlePoint);
+Â  Â  Â  Â  Â  Â  Â  Â  // 4. 'ëŒ€ê¸° ìœ„ì¹˜'ë¥¼ Initializeë¡œ ì „ë‹¬
+Â  Â  Â  Â  Â  Â  Â  Â  workerComponent.Initialize(employeeData, targetIdlePoint);
                 workerObject.name = $"Worker - {employeeData.firstName} ({employeeData.BaseData.speciesName})";
             }
             else
             {
-                Debug.LogError($"Employee Prefab¿¡ Employee.cs ½ºÅ©¸³Æ®°¡ ¾ø½À´Ï´Ù: {workerObject.name}");
+                Debug.LogError($"Employee Prefabì— Employee.cs ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤: {workerObject.name}");
                 Destroy(workerObject);
             }
         }
     }
 
-    /// <summary>
-    /// (°ÔÀÓ Áß °í¿ë ½Ã) ´ÜÀÏ Á÷¿øÀ» ¸Ê¿¡ ½ºÆùÇÕ´Ï´Ù.
-    /// </summary>
-    public void SpawnSingleWorker(EmployeeInstance employeeData, GameObject employeePrefab)
+Â  Â  /// <summary>
+Â  Â  /// (ê²Œì„ ì¤‘ ê³ ìš© ì‹œ) ë‹¨ì¼ ì§ì›ì„ ë§µì— ìŠ¤í°í•©ë‹ˆë‹¤.
+Â  Â  /// </summary>
+Â  Â  public void SpawnSingleWorker(EmployeeInstance employeeData, GameObject employeePrefab)
     {
-        // --- ½ºÆù ÁöÁ¡ È®ÀÎ ---
-        if (spawnPoint == null)
+Â  Â  Â  Â  // --- ìŠ¤í° ì§€ì  í™•ì¸ ---
+Â  Â  Â  Â  if (spawnPoint == null)
         {
             Debug.LogError("RestaurantManager ERROR: Spawn Point is not set! Cannot spawn worker.");
             return;
         }
-        // --- ÇÁ¸®ÆÕ È®ÀÎ ---
-        if (employeePrefab == null)
+Â  Â  Â  Â  // --- í”„ë¦¬íŒ¹ í™•ì¸ ---
+Â  Â  Â  Â  if (employeePrefab == null)
         {
             Debug.LogWarning($"Skipping spawn for {employeeData.firstName}: Prefab is missing!");
             return;
         }
 
-        // 1. Á÷¿øÀÇ ¿ªÇÒ(Role)¿¡ µû¶ó ´ë±â À§Ä¡(Idle Point) °áÁ¤
-        Transform targetIdlePoint = GetIdlePointForRole(employeeData.assignedRole);
+Â  Â  Â  Â  // 1. ì§ì›ì˜ ì—­í• (Role)ì— ë”°ë¼ ëŒ€ê¸° ìœ„ì¹˜(Idle Point) ê²°ì •
+Â  Â  Â  Â  Transform targetIdlePoint = GetIdlePointForRole(employeeData.assignedRole);
 
-        // 2. Worker ¿ÀºêÁ§Æ® »ı¼º (½ºÆùÀº spawnPoint¿¡¼­)
-        GameObject workerObject = Instantiate(employeePrefab, spawnPoint.position, Quaternion.identity, this.transform);
+Â  Â  Â  Â  // 2. Worker ì˜¤ë¸Œì íŠ¸ ìƒì„± (ìŠ¤í°ì€ spawnPointì—ì„œ)
+Â  Â  Â  Â  GameObject workerObject = Instantiate(employeePrefab, spawnPoint.position, Quaternion.identity, this.transform);
 
-        // 3. Employee.cs ½ºÅ©¸³Æ® °¡Á®¿À±â ¹× ÃÊ±âÈ­ ('´ë±â À§Ä¡' Àü´Ş)
-        Employee workerComponent = workerObject.GetComponent<Employee>();
+Â  Â  Â  Â  // 3. Employee.cs ìŠ¤í¬ë¦½íŠ¸ ê°€ì ¸ì˜¤ê¸° ë° ì´ˆê¸°í™” ('ëŒ€ê¸° ìœ„ì¹˜' ì „ë‹¬)
+Â  Â  Â  Â  Employee workerComponent = workerObject.GetComponent<Employee>();
         if (workerComponent != null)
         {
             workerComponent.Initialize(employeeData, targetIdlePoint);
@@ -129,30 +129,30 @@ public class RestaurantManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Employee Prefab¿¡ Employee.cs ½ºÅ©¸³Æ®°¡ ¾ø½À´Ï´Ù: {workerObject.name}");
+            Debug.LogError($"Employee Prefabì— Employee.cs ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤: {workerObject.name}");
             Destroy(workerObject);
         }
     }
 
-    /// <summary>
-    /// Á÷¿øÀÇ ¿ªÇÒ(Role)¿¡ ¸Â´Â ´ë±â À§Ä¡(Transform)¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
-    /// </summary>
-    private Transform GetIdlePointForRole(EmployeeRole role)
+Â  Â  /// <summary>
+Â  Â  /// ì§ì›ì˜ ì—­í• (Role)ì— ë§ëŠ” ëŒ€ê¸° ìœ„ì¹˜(Transform)ë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
+Â  Â  /// </summary>
+Â  Â  private Transform GetIdlePointForRole(EmployeeRole role)
     {
         switch (role)
         {
             case EmployeeRole.Kitchen:
-                // ÁÖ¹æ ´ë±â À§Ä¡°¡ ¼³Á¤µÇ¾î ÀÖÀ¸¸é ¹İÈ¯, ¾øÀ¸¸é °ø¿ë ½ºÆù À§Ä¡ ¹İÈ¯
-                return (kitchenIdlePoint != null) ? kitchenIdlePoint : spawnPoint;
+Â  Â  Â  Â  Â  Â  Â  Â  // ì£¼ë°© ëŒ€ê¸° ìœ„ì¹˜ê°€ ì„¤ì •ë˜ì–´ ìˆìœ¼ë©´ ë°˜í™˜, ì—†ìœ¼ë©´ ê³µìš© ìŠ¤í° ìœ„ì¹˜ ë°˜í™˜
+Â  Â  Â  Â  Â  Â  Â  Â  return (kitchenIdlePoint != null) ? kitchenIdlePoint : spawnPoint;
 
             case EmployeeRole.Hall:
-                // È¦ ´ë±â À§Ä¡°¡ ¼³Á¤µÇ¾î ÀÖÀ¸¸é ¹İÈ¯, ¾øÀ¸¸é °ø¿ë ½ºÆù À§Ä¡ ¹İÈ¯
-                return (hallIdlePoint != null) ? hallIdlePoint : spawnPoint;
+Â  Â  Â  Â  Â  Â  Â  Â  // í™€ ëŒ€ê¸° ìœ„ì¹˜ê°€ ì„¤ì •ë˜ì–´ ìˆìœ¼ë©´ ë°˜í™˜, ì—†ìœ¼ë©´ ê³µìš© ìŠ¤í° ìœ„ì¹˜ ë°˜í™˜
+Â  Â  Â  Â  Â  Â  Â  Â  return (hallIdlePoint != null) ? hallIdlePoint : spawnPoint;
 
             case EmployeeRole.Unassigned:
             default:
-                // ¹ÌÁöÁ¤ ¿ªÇÒÀº °ø¿ë ½ºÆù À§Ä¡¸¦ ´ë±â À§Ä¡·Î »ç¿ë
-                return spawnPoint;
+Â  Â  Â  Â  Â  Â  Â  Â  // ë¯¸ì§€ì • ì—­í• ì€ ê³µìš© ìŠ¤í° ìœ„ì¹˜ë¥¼ ëŒ€ê¸° ìœ„ì¹˜ë¡œ ì‚¬ìš©
+Â  Â  Â  Â  Â  Â  Â  Â  return spawnPoint;
         }
     }
 }

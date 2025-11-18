@@ -34,4 +34,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6e39f296822c1274c8d6a1afafc6b5c4, type: 2}
   - {fileID: 11400000, guid: 8456396fbc9c3ed448a06fabeeb9644b, type: 2}
   - {fileID: 11400000, guid: 213de414dccd35d408e3a495cf22dad3, type: 2}
-  speciesPrefab: {fileID: 3110601555778287819, guid: 9f991aececbbb66408958062e27c6103, type: 3}
+  speciesPrefab: {fileID: 3110601555778287819, guid: 0f2a2e3e9895a6d4d99b06cc473f052f, type: 3}

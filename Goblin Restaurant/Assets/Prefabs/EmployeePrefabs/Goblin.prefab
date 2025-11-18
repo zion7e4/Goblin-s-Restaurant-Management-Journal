@@ -167,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Goblin
   handPosition: {fileID: 3077689810955573103}
   currentState: 0
-  movespeed: 5
+  movespeed: 20
   targetCustomer: {fileID: 0}
   targetCountertop: {fileID: 0}
   targetTable: {fileID: 0}
