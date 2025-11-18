@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3000128322343484128}
   - component: {fileID: 8229438837636776140}
-  - component: {fileID: 5187499435060992357}
   - component: {fileID: 4576193733220852328}
+  - component: {fileID: 5187499435060992357}
   m_Layer: 0
   m_Name: countertop
   m_TagString: CounterTop
@@ -92,6 +92,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4576193733220852328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4562995198452326686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 469af8612e0ba1346a6e59220bc71576, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CounterTop
+  isBeingUsed: 0
 --- !u!60 &5187499435060992357
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -142,16 +155,3 @@ PolygonCollider2D:
       - {x: -0.5, y: -0.28866667}
       - {x: 0.5, y: -0.28866667}
   m_UseDelaunayMesh: 0
---- !u!114 &4576193733220852328
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4562995198452326686}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 469af8612e0ba1346a6e59220bc71576, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CounterTop
-  isBeingUsed: 0
