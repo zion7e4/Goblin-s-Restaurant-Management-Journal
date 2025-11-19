@@ -71,6 +71,13 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
             return;
         }
 
+        if (RecipeBookPanel != null && RecipeBookPanel.activeSelf)
+        {
+            RecipeBookPanel.SetActive(false);
+            PanelBlocker.SetActive(false);
+            return;
+        }
+
         if (centralUpgradePanel != null && centralUpgradePanel.activeSelf)
         {
             // 컨트롤러의 OnCancel 함수를 호출하여 패널과 블로커를 모두 닫음
