@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c8a1300be832a14aa299555dd8b7393, type: 3}
-  m_Name: ING04
+  m_Name: "\uAE4A\uC740 \uC232 \uBC84\uC12F"
   m_EditorClassIdentifier: Assembly-CSharp::IngredientData
-  id: ING04
-  ingredientName: "\uB531\uB531\uD55C \uBE75"
-  icon: {fileID: -785256343821824310, guid: e6867befec1afe24ca4e014890161134, type: 3}
-  description: "\uC624\uB79C \uC2DC\uAC04 \uBCF4\uAD00\uD560 \uC218 \uC788\uB3C4\uB85D
-    \uBC14\uC2F9 \uAD6C\uC6B4 \uBE75. \uADF8\uB0E5 \uBA39\uAE30\uBCF4\uB2E8 \uC218\uD504\uC5D0
-    \uCC0D\uC5B4 \uBA39\uB294 \uAC8C \uB0AB\uB2E4."
+  id: ING11
+  ingredientName: "\uAE4A\uC740 \uC232 \uBC84\uC12F"
+  icon: {fileID: 0}
+  description: "\uC624\uC5FC\uB418\uC9C0 \uC54A\uC740 \uAE4A\uC740 \uC232\uC18D\uC5D0\uC11C\uB9CC
+    \uC790\uB77C\uB294 \uD76C\uADC0\uD55C \uBC84\uC12F. \uB3C5\uD2B9\uD55C \uD5A5\uC774
+    \uC77C\uD488\uC774\uB2E4."
   rarity: 0
-  buyPrice: 8
+  buyPrice: 15
