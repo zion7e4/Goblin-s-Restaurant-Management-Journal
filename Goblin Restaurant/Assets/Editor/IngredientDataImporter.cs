@@ -38,7 +38,7 @@ public class IngredientDataImporter
         switch (rarityString)
         {
             case "일반":
-                return Rarity.Common;
+                return Rarity.common;
             case "고급":
                 return Rarity.Uncommon;
             case "희귀":
@@ -47,7 +47,7 @@ public class IngredientDataImporter
                 return Rarity.Legendary;
             default:
                 Debug.LogWarning($"알 수 없는 희귀도 값입니다: '{rarityString}'. 기본값(Common)으로 설정됩니다.");
-                return Rarity.Common;
+                return Rarity.common;
         }
     }
 }
