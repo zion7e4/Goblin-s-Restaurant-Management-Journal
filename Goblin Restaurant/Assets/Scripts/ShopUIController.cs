@@ -115,7 +115,7 @@ public class ShopUIController : MonoBehaviour
         spawnedBasicItems.Clear();
 
         var allIngredients = GameDataManager.instance.GetAllIngredientData();
-        var basicIngredients = allIngredients.Where(ing => ing.rarity == Rarity.Common);
+        var basicIngredients = allIngredients.Where(ing => ing.rarity == Rarity.common);
 
         foreach (var ingredientData in basicIngredients)
         {
