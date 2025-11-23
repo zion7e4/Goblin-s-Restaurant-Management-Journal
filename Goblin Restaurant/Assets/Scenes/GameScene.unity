@@ -2133,7 +2133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f02e325b337c884a813b6e9e8c5f259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClosePopupInput
-  RecipeBookPanel: {fileID: 0}
+  RecipeBookPanel: {fileID: 1783817225}
   ShopPanel: {fileID: 576219769}
   InventoryPanel: {fileID: 217937854}
   RecipeSelection: {fileID: 214194043}
