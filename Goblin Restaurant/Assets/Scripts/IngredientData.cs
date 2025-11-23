@@ -14,4 +14,7 @@ public class IngredientData : ScriptableObject
     [Header("재료 등급 및 가격")]
     public Rarity rarity; // 재료의 희귀도 (일반, 고급, 희귀, 전설)
     public int buyPrice; // 상점에서 구매할 때의 가격
+
+    [TextArea(3, 5)] // 인스펙터에서 여러 줄로 보기 위해 TextArea 속성 사용
+    public string description;
 }

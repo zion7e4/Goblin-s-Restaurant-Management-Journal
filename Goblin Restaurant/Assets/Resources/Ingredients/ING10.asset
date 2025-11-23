@@ -17,3 +17,6 @@ MonoBehaviour:
   icon: {fileID: -3827493899622189541, guid: fac706d9cbc68c54986e8d1cdf476d57, type: 3}
   rarity: 1
   buyPrice: 20
+  description: "\uC724\uAE30\uAC00 \uD750\uB974\uB294 \uC2E0\uC120\uD55C \uACE0\uAE30.
+    \uAC04\uB2E8\uD558\uAC8C \uAD7D\uAE30\uB9CC \uD574\uB3C4 \uD6CC\uB96D\uD55C \uC694\uB9AC\uAC00
+    \uB41C\uB2E4."

@@ -92,7 +92,6 @@ public class ShopUIController : MonoBehaviour
         PopulateIngredientTab();
     }
 
-    // ▼▼▼ [추가] "오늘의 상품" 탭 기능 ▼▼▼
     public void SwitchToTodayShopTab()
     {
         recipeShopPanel.SetActive(false);
@@ -104,11 +103,6 @@ public class ShopUIController : MonoBehaviour
 
         PopulateTodayShopTab();
     }
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-    /// <summary>
-    /// "재료" 탭을 채웁니다 (기본 재료만)
-    /// </summary>
     void PopulateIngredientTab()
     {
         foreach (Transform child in basicIngredientContentParent) Destroy(child.gameObject);
@@ -127,79 +121,57 @@ public class ShopUIController : MonoBehaviour
         UpdateBulkTotalCost();
     }
 
-    /// <summary>
-    /// "레시피" 탭을 채웁니다 (오늘의 레시피)
-    /// </summary>
     void PopulateRecipeTab()
     {
         if (permanentRecipeContentParent == null || basicRecipeItemPrefab == null) return;
         foreach (Transform child in permanentRecipeContentParent) Destroy(child.gameObject);
 
-        // 1. "오늘의 레시피" 로직 삭제
         if (todayRecipeContentParent != null)
         {
             foreach (Transform child in todayRecipeContentParent) Destroy(child.gameObject);
         }
 
-        // 2. ShopManager의 'RecipePoolSO'를 가져옵니다.
         if (ShopManager.Instance == null || ShopManager.Instance.recipePool == null)
         {
             Debug.LogError("ShopManager 또는 RecipePoolSO가 연결되지 않았습니다.");
             return;
         }
 
-        // 3. CSV에 등록된 모든 레시피를 순회
         foreach (var poolEntry in ShopManager.Instance.recipePool.items)
         {
-            // 4. 'basicRecipeItemPrefab' (ShopRecipeItemUI.cs)으로 생성
             GameObject itemGO = Instantiate(basicRecipeItemPrefab, permanentRecipeContentParent);
-            // 5. Setup 함수에 (RecipeData가 아닌) poolEntry를 전달
             itemGO.GetComponent<ShopRecipeItemUI>().Setup(poolEntry, this);
         }
     }
 
-    // ▼▼▼ [추가] "오늘의 상품" 탭을 채우는 함수 (특수 재료) ▼▼▼
-    /// <summary>
-    /// "오늘의 상품" 탭을 채웁니다 (특수 재료만)
-    /// </summary>
     void PopulateTodayShopTab()
     {
         if (todayShopContentParent == null || todayShopItemPrefab == null) return;
         foreach (Transform child in todayShopContentParent) Destroy(child.gameObject);
         if (ShopManager.Instance == null) return;
 
-        // "TodaySpecialIngredients" (특수 재료) 리스트만 순회
-        foreach (var item in ShopManager.Instance.TodaySpecialIngredients) //
+        foreach (var item in ShopManager.Instance.TodaySpecialIngredients) 
         {
             GameObject itemGO = Instantiate(todayShopItemPrefab, todayShopContentParent);
             itemGO.GetComponent<TodayShopItemUI>().Setup(item, this);
         }
     }
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-    /// <summary>
-    /// (TodayShopItemUI가 구매 후 호출) 현재 탭을 새로고침
-    /// </summary>
     public void RefreshTodayShopTabs()
     {
         if (ingredientShopPanel.activeSelf)
         {
-            // 재료 탭은 기본 재료만 있으므로 새로고침 불필요
-            // PopulateIngredientTab(); 
         }
         else if (recipeShopPanel.activeSelf)
         {
-            // 레시피 탭 새로고침
             PopulateRecipeTab();
         }
         else if (todayShopPanel.activeSelf)
         {
-            // 오늘의 상품 탭 새로고침
             PopulateTodayShopTab();
         }
     }
 
-    // --- (이하 '기본 식재료' 일괄구매 로직 - 변경 없음) ---
     public void OnBulkPurchaseClick()
     {
         int totalCost = 0;
@@ -221,11 +193,18 @@ public class ShopUIController : MonoBehaviour
         if (GameManager.instance.totalGoldAmount >= totalCost)
         {
             GameManager.instance.SpendGold(totalCost);
+            StringBuilder sb = new StringBuilder("일괄 구매 완료:\n");
+
             foreach (var item in itemsToBuy)
             {
                 InventoryManager.instance.AddIngredient(item.Key.id, item.Value);
+                sb.AppendLine($"- {item.Key.ingredientName} {item.Value}개");
             }
-            PopulateIngredientTab(); // 기본 재료 UI 새로고침
+
+            sb.Append($"\n총 지출: -{totalCost} G");
+            NotificationController.instance.ShowNotification(sb.ToString());
+            
+            PopulateIngredientTab();
         }
         else
         {
@@ -273,7 +252,6 @@ public class ShopUIController : MonoBehaviour
             RecipeManager.instance.UnlockRecipe(recipeData.id);
             Debug.Log($"'{recipeData.recipeName}' 레시피 구매 성공!");
 
-            // 구매 후 레시피 탭 새로고침
             PopulateRecipeTab();
 
             NotificationController.instance.ShowNotification($"-{price} G\n (레시피 구매)");

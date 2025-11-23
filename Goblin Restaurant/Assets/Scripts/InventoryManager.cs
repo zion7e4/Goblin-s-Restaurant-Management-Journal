@@ -8,6 +8,8 @@ public class InventoryManager : MonoBehaviour
 
     public Dictionary<string, int> playerIngredients = new Dictionary<string, int>();
 
+    public HashSet<string> discoveredIngredients = new HashSet<string>();
+
     void Awake()
     {
         if (instance == null)
@@ -31,7 +33,18 @@ public class InventoryManager : MonoBehaviour
         {
             playerIngredients[ingredientID] = amount;
         }
+
+        if (!discoveredIngredients.Contains(ingredientID))
+        {
+            discoveredIngredients.Add(ingredientID);
+        }
+
         Debug.Log($"재료 {ingredientID} {amount}개 추가. 현재 수량: {playerIngredients[ingredientID]}");
+    }
+
+    public bool IsDiscovered(string ingredientID)
+    {
+        return discoveredIngredients.Contains(ingredientID);
     }
 
     /// <summary>
