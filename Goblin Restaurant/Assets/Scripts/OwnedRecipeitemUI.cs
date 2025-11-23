@@ -24,6 +24,7 @@ public class OwnedRecipeItemUI : MonoBehaviour
         if (recipeIconImage != null)
         {
             recipeIconImage.sprite = recipeData.icon;
+            recipeIconImage.preserveAspect = true;
         }
         Rarity currentRarity = recipeData.rarity;
 

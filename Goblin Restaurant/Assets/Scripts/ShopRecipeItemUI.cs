@@ -10,13 +10,9 @@ public class ShopRecipeItemUI : MonoBehaviour
     public TextMeshProUGUI priceText;
     public Button buyButton;
 
-    private RecipeData myRecipeData; // (유지) 구매 시 필요
+    private RecipeData myRecipeData;
     private ShopUIController controller;
 
-    // ▼▼▼ [수정] Setup 함수 시그니처 변경 ▼▼▼
-    /// <summary>
-    /// RecipePool의 항목을 기반으로 UI를 설정합니다. (명성도 레벨 체크)
-    /// </summary>
     public void Setup(RecipePoolEntry poolEntry, ShopUIController shopController)
     {
         controller = shopController;
@@ -30,12 +26,11 @@ public class ShopRecipeItemUI : MonoBehaviour
         }
 
         recipeIcon.sprite = myRecipeData.icon;
+        recipeIcon.preserveAspect = true;
         recipeNameText.text = myRecipeData.recipeName;
 
-        // 1. 이미 보유했는지 확인
         bool isPurchased = RecipeManager.instance.playerRecipes.ContainsKey(myRecipeData.id);
 
-        // 2. 명성도 레벨 확인
         int currentFameLevel = FameManager.instance.CurrentFameLevel;
         int requiredLevel = poolEntry.required_lv;
         bool fameMet = currentFameLevel >= requiredLevel;
@@ -50,12 +45,11 @@ public class ShopRecipeItemUI : MonoBehaviour
         {
             priceText.text = $"명성도 레벨 {requiredLevel} 필요";
             buyButton.interactable = false;
-            // (선택) 회색 처리
             recipeIcon.color = Color.gray;
             recipeNameText.color = Color.gray;
             coinIcon.gameObject.SetActive(false);
         }
-        else // 구매 가능
+        else
         {
             int price = (int)(myRecipeData.basePrice * 1.5f);
             coinIcon.gameObject.SetActive(true);
@@ -64,7 +58,6 @@ public class ShopRecipeItemUI : MonoBehaviour
             buyButton.onClick.AddListener(OnBuyButtonClick);
         }
 
-        // 툴팁 로직은 기존대로 유지
         string tooltip = "필요 재료:\n";
         foreach (var req in myRecipeData.requiredIngredients)
         {
@@ -73,7 +66,6 @@ public class ShopRecipeItemUI : MonoBehaviour
         }
         GetComponentInChildren<TooltipTrigger>().SetTooltipText(tooltip);
     }
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
     void OnBuyButtonClick()
     {

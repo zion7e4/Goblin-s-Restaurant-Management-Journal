@@ -36,6 +36,7 @@ public class DailyMenuSlotUI : MonoBehaviour
         if (emptyGroup != null) emptyGroup.SetActive(false);
 
         recipeIcon.sprite = myRecipe.data.icon;
+        recipeIcon.preserveAspect = true;
 
         if (RecipeGradeText != null)
         {

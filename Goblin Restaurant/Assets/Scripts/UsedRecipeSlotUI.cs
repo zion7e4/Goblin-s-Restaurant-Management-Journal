@@ -16,6 +16,7 @@ public class UsedRecipeSlotUI : MonoBehaviour
             recipeIcon.sprite = recipe.icon;
             // 레시피 미보유 시 어둡게 처리
             recipeIcon.color = isUnlocked ? unlockedColor : lockedColor;
+            recipeIcon.preserveAspect = true;
         }
 
         // 툴팁 설정 (커서 올리면 메뉴명 표시)

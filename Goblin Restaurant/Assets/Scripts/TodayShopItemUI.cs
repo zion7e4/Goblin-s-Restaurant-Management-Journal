@@ -75,6 +75,8 @@ public class TodayShopItemUI : MonoBehaviour
             if (buyButtonText) buyButtonText.text = "±¸¸Å";
         }
 
+        if(itemIcon != null) itemIcon.preserveAspect = true;
+
         priceText.text = $"{item.CurrentPrice}";
 
         buyButton.onClick.RemoveAllListeners();

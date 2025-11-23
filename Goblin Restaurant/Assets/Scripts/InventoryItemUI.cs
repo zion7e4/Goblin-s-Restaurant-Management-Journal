@@ -32,6 +32,7 @@ public class InventoryItemUI : MonoBehaviour
         {
             iconImage.sprite = data.icon;
             iconImage.color = isUnlocked ? unlockedColor : lockedColor;
+            iconImage.preserveAspect = true;
         }
 
         if (nameText != null)

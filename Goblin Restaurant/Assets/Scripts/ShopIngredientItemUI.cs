@@ -28,6 +28,7 @@ public class ShopIngredientItemUI : MonoBehaviour
         controller = shopController;
 
         ingredientIcon.sprite = ingredientData.icon;
+        ingredientIcon.preserveAspect = true;
         ingredientNameText.text = ingredientData.ingredientName;
         priceText.text = ingredientData.buyPrice.ToString();
 

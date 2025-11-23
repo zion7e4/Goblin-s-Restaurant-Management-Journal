@@ -168,6 +168,7 @@ public class RecipeBook_UI : MonoBehaviour
         if (detailPanel != null)
         {
             detailRecipeImage.sprite = data.icon;
+            detailRecipeImage.preserveAspect = true;
             detailRecipeNameText.text = data.recipeName;
             detailRecipeDescriptionText.text = data.description;
             detailRecipeLevelText.text = $"현재 레벨: {currentLevel}";

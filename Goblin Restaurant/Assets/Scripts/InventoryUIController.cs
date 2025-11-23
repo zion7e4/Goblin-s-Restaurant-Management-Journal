@@ -79,6 +79,8 @@ public class InventoryUIController : MonoBehaviour
         {
             detailIcon.sprite = data.icon;
             detailIcon.color = isUnlocked ? Color.white : new Color(0.1f, 0.1f, 0.1f, 1f);
+
+            detailIcon.preserveAspect = true;
         }
 
         if (detailNameText != null) detailNameText.text = isUnlocked ? data.ingredientName : "?????";
