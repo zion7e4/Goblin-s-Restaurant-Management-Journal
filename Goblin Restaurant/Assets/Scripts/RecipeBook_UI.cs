@@ -27,7 +27,13 @@ public class RecipeBook_UI : MonoBehaviour
     [SerializeField] private Transform r_NeedIngredientGrid;
     [SerializeField] private GameObject simpleIconPrefab;
     [SerializeField] private Button enhanceButton;
-    [SerializeField] private TextMeshProUGUI nextUpgradeInfoText;
+
+    // [수정됨] 툴팁 관련 변수
+    [Header("강화 툴팁 설정")]
+    [SerializeField] private GameObject upgradeInfoPanel; // 툴팁 배경 패널 (새로 만드신 UpgradeInfo)
+    [SerializeField] private TextMeshProUGUI nextUpgradeInfoText; // 툴팁 안의 텍스트 (기존 변수 유지)
+
+    private string currentTooltipMessage; // 툴팁에 띄울 메시지 저장용
 
     private int currentRecipeID;
 
@@ -36,14 +42,15 @@ public class RecipeBook_UI : MonoBehaviour
         if (enhanceButton != null)
             enhanceButton.onClick.AddListener(OnEnhanceButtonClick);
 
-        // 레시피 획득 또는 강화 시 목록 갱신 이벤트 연결
         if (RecipeManager.instance != null)
         {
             RecipeManager.instance.onRecipeUpdated += RefreshBook;
         }
 
-        // 시작할 때는 상세창을 끄고 목록만 갱신
+        // 시작 시 상세창과 툴팁은 꺼둠
         if (detailPanel != null) detailPanel.SetActive(false);
+        if (upgradeInfoPanel != null) upgradeInfoPanel.SetActive(false);
+
         RefreshBook();
     }
 
@@ -65,11 +72,12 @@ public class RecipeBook_UI : MonoBehaviour
     {
         gameObject.SetActive(true);
 
-        // 도감을 열 때 상세창은 일단 숨김
         if (detailPanel != null)
         {
             detailPanel.SetActive(false);
         }
+        // 열 때 툴팁도 확실히 끄기
+        if (upgradeInfoPanel != null) upgradeInfoPanel.SetActive(false);
 
         RefreshBook();
     }
@@ -117,28 +125,35 @@ public class RecipeBook_UI : MonoBehaviour
 
         RecipeData data = playerRecipe.data;
 
-        // 버튼을 눌렀을 때만 상세창 활성화
         if (detailPanel != null) detailPanel.SetActive(true);
 
         r_DetailImage.sprite = data.fullImage != null ? data.fullImage : data.icon;
         r_Name.text = data.recipeName;
         r_Desc.text = data.description;
 
-        // 정보 텍스트 줄바꿈 적용
-        r_Info.text = $"음식 레벨 : LV.{playerRecipe.currentLevel}\n" +
-                      $"판매 가격 : {data.basePrice} 골드\n" +
+        // 현재 레벨 정보 표시
+        int currentLevel = playerRecipe.currentLevel;
+        int currentPrice = data.basePrice;
+        int ingredientMultiplier = 1;
+
+        RecipeLevelEntry levelData = GameDataManager.instance.GetRecipeLevelData(currentLevel);
+        if (levelData != null)
+        {
+            currentPrice = (int)(data.basePrice * (1.0f + levelData.Price_Growth_Rate));
+            ingredientMultiplier = levelData.Required_Item_Count;
+        }
+
+        r_Info.text = $"음식 레벨 : LV.{currentLevel}\n" +
+                      $"판매 가격 : {currentPrice} 골드\n" +
                       $"요리 시간 : {data.baseCookTime} 초";
 
-        // 레벨에 따른 별점 계산 (1~9: 1개, 10~19: 2개, 40이상: 5개)
-        int level = playerRecipe.currentLevel;
+        // 별점 표시
         int starCount = 1;
+        if (currentLevel >= 40) starCount = 5;
+        else if (currentLevel >= 30) starCount = 4;
+        else if (currentLevel >= 20) starCount = 3;
+        else if (currentLevel >= 10) starCount = 2;
 
-        if (level >= 40) starCount = 5;
-        else if (level >= 30) starCount = 4;
-        else if (level >= 20) starCount = 3;
-        else if (level >= 10) starCount = 2;
-
-        // 별 스프라이트 교체
         for (int i = 0; i < r_StarImages.Length; i++)
         {
             if (i < starCount)
@@ -147,7 +162,7 @@ public class RecipeBook_UI : MonoBehaviour
                 r_StarImages[i].sprite = starEmptySprite;
         }
 
-        // 필요 재료 아이콘 표시
+        // 재료 아이콘 표시
         foreach (Transform child in r_NeedIngredientGrid) Destroy(child.gameObject);
 
         foreach (var req in data.requiredIngredients)
@@ -157,11 +172,32 @@ public class RecipeBook_UI : MonoBehaviour
             if (ingData != null)
             {
                 iconObj.GetComponent<Image>().sprite = ingData.icon;
-                iconObj.GetComponentInChildren<TextMeshProUGUI>().text = $"x{req.amount}";
+                int finalAmount = req.amount * ingredientMultiplier;
+                iconObj.GetComponentInChildren<TextMeshProUGUI>().text = $"x{finalAmount}";
             }
         }
 
-        UpdateNextUpgradeInfo(playerRecipe);
+        // 툴팁 내용 미리 계산
+        CalculateNextUpgradeInfo(playerRecipe);
+    }
+
+    // [툴팁 기능] 외부 UIEventHandler에서 호출
+    public void ShowTooltip(bool isShow)
+    {
+        Debug.Log($"[신호 수신] 툴팁 켜기: {isShow}");
+        if (upgradeInfoPanel != null)
+        {
+            upgradeInfoPanel.SetActive(isShow);
+
+            if (isShow && nextUpgradeInfoText != null)
+            {
+                nextUpgradeInfoText.text = currentTooltipMessage;
+            }
+        }
+        else
+        {
+            Debug.LogError("오류: upgradeInfoPanel이 비어있습니다!");
+        }
     }
 
     void OnEnhanceButtonClick()
@@ -170,22 +206,33 @@ public class RecipeBook_UI : MonoBehaviour
         {
             ShowRecipeDetails(currentRecipeID);
             RefreshBook();
+
+            // 강화 성공 후 마우스가 위에 있다면 툴팁 내용 즉시 갱신
+            if (upgradeInfoPanel.activeSelf && nextUpgradeInfoText != null)
+            {
+                nextUpgradeInfoText.text = currentTooltipMessage;
+            }
         }
     }
 
-    void UpdateNextUpgradeInfo(PlayerRecipe recipe)
+    // 툴팁에 들어갈 텍스트 계산
+    void CalculateNextUpgradeInfo(PlayerRecipe recipe)
     {
-        int nextLv = recipe.currentLevel + 1;
+        int currentLv = recipe.currentLevel;
+        int nextLv = currentLv + 1;
         RecipeLevelEntry entry = GameDataManager.instance.GetRecipeLevelData(nextLv);
 
         if (entry == null)
         {
-            nextUpgradeInfoText.text = "최대 레벨 (Max)";
+            currentTooltipMessage = "최대 레벨 (Max)";
             enhanceButton.interactable = false;
         }
         else
         {
-            nextUpgradeInfoText.text = $"[다음 강화 비용]\n골드: {entry.Required_Gold}G\n재료 배수: x{entry.Required_Item_Count}";
+            // 요청하신 형식: 레벨 변화 및 요구 골드
+            currentTooltipMessage = $"요리 레벨 {currentLv} -> {nextLv}\n" +
+                                    $"요구 골드 : {entry.Required_Gold} G";
+
             enhanceButton.interactable = true;
         }
     }
