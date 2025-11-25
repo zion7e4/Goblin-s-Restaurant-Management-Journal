@@ -13,19 +13,203 @@ MonoBehaviour:
   m_Name: RecipeLevelTable
   m_EditorClassIdentifier: Assembly-CSharp::RecipeLevelTable
   levelEntries:
+  - Level: 1
+    Required_Gold: 30
+    Required_Item_Count: 1
+    Price_Growth_Rate: 0.1
+    SuccessRate: 98
   - Level: 2
-    Required_Gold: 50
+    Required_Gold: 60
     Required_Item_Count: 1
-    Price_Growth_Rate: 0.1
+    Price_Growth_Rate: 0.2
+    SuccessRate: 96
   - Level: 3
-    Required_Gold: 100
+    Required_Gold: 90
     Required_Item_Count: 1
-    Price_Growth_Rate: 0.1
+    Price_Growth_Rate: 0.3
+    SuccessRate: 94
   - Level: 4
-    Required_Gold: 200
-    Required_Item_Count: 2
-    Price_Growth_Rate: 0.1
+    Required_Gold: 120
+    Required_Item_Count: 1
+    Price_Growth_Rate: 0.4
+    SuccessRate: 92
   - Level: 5
+    Required_Gold: 150
+    Required_Item_Count: 2
+    Price_Growth_Rate: 0.5
+    SuccessRate: 90
+  - Level: 6
+    Required_Gold: 180
+    Required_Item_Count: 2
+    Price_Growth_Rate: 0.6
+    SuccessRate: 88
+  - Level: 7
+    Required_Gold: 210
+    Required_Item_Count: 2
+    Price_Growth_Rate: 0.7
+    SuccessRate: 86
+  - Level: 8
+    Required_Gold: 240
+    Required_Item_Count: 2
+    Price_Growth_Rate: 0.8
+    SuccessRate: 84
+  - Level: 9
+    Required_Gold: 270
+    Required_Item_Count: 2
+    Price_Growth_Rate: 0.90000004
+    SuccessRate: 82
+  - Level: 10
     Required_Gold: 300
     Required_Item_Count: 3
-    Price_Growth_Rate: 0.1
+    Price_Growth_Rate: 1
+    SuccessRate: 80
+  - Level: 11
+    Required_Gold: 330
+    Required_Item_Count: 3
+    Price_Growth_Rate: 1.1
+    SuccessRate: 78
+  - Level: 12
+    Required_Gold: 360
+    Required_Item_Count: 3
+    Price_Growth_Rate: 1.2
+    SuccessRate: 76
+  - Level: 13
+    Required_Gold: 390
+    Required_Item_Count: 3
+    Price_Growth_Rate: 1.3000001
+    SuccessRate: 74
+  - Level: 14
+    Required_Gold: 420
+    Required_Item_Count: 3
+    Price_Growth_Rate: 1.4
+    SuccessRate: 72
+  - Level: 15
+    Required_Gold: 450
+    Required_Item_Count: 4
+    Price_Growth_Rate: 1.5
+    SuccessRate: 70
+  - Level: 16
+    Required_Gold: 480
+    Required_Item_Count: 4
+    Price_Growth_Rate: 1.6
+    SuccessRate: 68
+  - Level: 17
+    Required_Gold: 510
+    Required_Item_Count: 4
+    Price_Growth_Rate: 1.7
+    SuccessRate: 66
+  - Level: 18
+    Required_Gold: 540
+    Required_Item_Count: 4
+    Price_Growth_Rate: 1.8000001
+    SuccessRate: 64
+  - Level: 19
+    Required_Gold: 570
+    Required_Item_Count: 4
+    Price_Growth_Rate: 1.9
+    SuccessRate: 62
+  - Level: 20
+    Required_Gold: 600
+    Required_Item_Count: 5
+    Price_Growth_Rate: 2
+    SuccessRate: 60
+  - Level: 21
+    Required_Gold: 630
+    Required_Item_Count: 5
+    Price_Growth_Rate: 2.1000001
+    SuccessRate: 58
+  - Level: 22
+    Required_Gold: 660
+    Required_Item_Count: 5
+    Price_Growth_Rate: 2.2
+    SuccessRate: 56
+  - Level: 23
+    Required_Gold: 690
+    Required_Item_Count: 5
+    Price_Growth_Rate: 2.3
+    SuccessRate: 54
+  - Level: 24
+    Required_Gold: 720
+    Required_Item_Count: 5
+    Price_Growth_Rate: 2.4
+    SuccessRate: 52
+  - Level: 25
+    Required_Gold: 750
+    Required_Item_Count: 6
+    Price_Growth_Rate: 2.5
+    SuccessRate: 50
+  - Level: 26
+    Required_Gold: 780
+    Required_Item_Count: 6
+    Price_Growth_Rate: 2.6000001
+    SuccessRate: 48
+  - Level: 27
+    Required_Gold: 810
+    Required_Item_Count: 6
+    Price_Growth_Rate: 2.7
+    SuccessRate: 46
+  - Level: 28
+    Required_Gold: 840
+    Required_Item_Count: 6
+    Price_Growth_Rate: 2.8
+    SuccessRate: 44
+  - Level: 29
+    Required_Gold: 870
+    Required_Item_Count: 6
+    Price_Growth_Rate: 2.9
+    SuccessRate: 42
+  - Level: 30
+    Required_Gold: 900
+    Required_Item_Count: 7
+    Price_Growth_Rate: 3
+    SuccessRate: 40
+  - Level: 31
+    Required_Gold: 930
+    Required_Item_Count: 7
+    Price_Growth_Rate: 3.1000001
+    SuccessRate: 38
+  - Level: 32
+    Required_Gold: 960
+    Required_Item_Count: 7
+    Price_Growth_Rate: 3.2
+    SuccessRate: 36
+  - Level: 33
+    Required_Gold: 990
+    Required_Item_Count: 7
+    Price_Growth_Rate: 3.3
+    SuccessRate: 34
+  - Level: 34
+    Required_Gold: 1020
+    Required_Item_Count: 7
+    Price_Growth_Rate: 3.4
+    SuccessRate: 32
+  - Level: 35
+    Required_Gold: 1050
+    Required_Item_Count: 8
+    Price_Growth_Rate: 3.5
+    SuccessRate: 30
+  - Level: 36
+    Required_Gold: 1080
+    Required_Item_Count: 8
+    Price_Growth_Rate: 3.6000001
+    SuccessRate: 30
+  - Level: 37
+    Required_Gold: 1110
+    Required_Item_Count: 8
+    Price_Growth_Rate: 3.7
+    SuccessRate: 30
+  - Level: 38
+    Required_Gold: 1140
+    Required_Item_Count: 8
+    Price_Growth_Rate: 3.8
+    SuccessRate: 30
+  - Level: 39
+    Required_Gold: 1170
+    Required_Item_Count: 8
+    Price_Growth_Rate: 3.9
+    SuccessRate: 30
+  - Level: 40
+    Required_Gold: 1200
+    Required_Item_Count: 9
+    Price_Growth_Rate: 4
+    SuccessRate: 30

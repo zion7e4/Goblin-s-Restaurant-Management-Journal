@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Linq;
-// using System.Drawing; // (참고: UnityEngine.Color와 충돌할 수 있으니, 필요 없다면 지우는 것이 좋습니다)
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -9,7 +8,7 @@ using UnityEngine.UI;
 [System.Serializable]
 public class SatisfactionIcon
 {
-    public SatisfactionLevel level; // (SatisfactionManager.cs에 정의됨)
+    public SatisfactionLevel level;
     public Sprite icon;
 }
 
@@ -17,19 +16,22 @@ public class Customer : MonoBehaviour
 {
     public enum CustomerState { MovingToTable, DecidingMenu, WaitingForFood, Eating, Leaving }
     public CustomerState currentState;
-    public GameObject orderIconPrefab;
-    public Transform iconSpawnPoint;    // 아이콘이 표시될 머리 위 위치
-    public GameObject RestaurantReviwe; // 만족도 표시 텍스트
-    public List<SatisfactionIcon> satisfactionIcons; //
-    public Transform leavingPoint; // 퇴장 지점
-    private GameObject currentOrderIcon; // 현재 떠 있는 아이콘을 저장할 변수
 
+    public GameObject orderIconPrefab;
+    public Transform iconSpawnPoint;
+    public GameObject RestaurantReviwe;
+    public List<SatisfactionIcon> satisfactionIcons;
+    public Transform leavingPoint;
+
+    private GameObject currentOrderIcon;
     private Transform targetTable;
+
     [SerializeField]
     private float speed = 3f;
+
     private PlayerRecipe myOrderedRecipe;
-    private float foodWaitStartTime; // 음식을 기다리기 시작한 시간
-    private int satisfactionScore;  // 최종 만족도 점수
+    private float foodWaitStartTime;
+    private int satisfactionScore;
     private EmployeeInstance serverEmployee;
 
     public void Initialize(Transform table, Transform exit)
@@ -44,7 +46,6 @@ public class Customer : MonoBehaviour
         switch (currentState)
         {
             case CustomerState.MovingToTable:
-                // ▼▼▼ [기능 1] 의자 위치로 이동 (Script 1) ▼▼▼
                 Table tableComponent = targetTable.GetComponent<Table>();
                 Vector3 targetPosition;
 
@@ -67,10 +68,8 @@ public class Customer : MonoBehaviour
                     StartCoroutine(DecideMenuCoroutine());
                 }
                 break;
-            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
             case CustomerState.Leaving:
-                // ▼▼▼ [기능 2] 퇴장 지점에서 파괴 (Script 1) ▼▼▼
                 if (leavingPoint == null)
                 {
                     Debug.LogError("leavingPoint가 Customer 스크립트에 할당되지 않았습니다! (Initialize 함수 확인)");
@@ -85,12 +84,10 @@ public class Customer : MonoBehaviour
                     Destroy(gameObject);
                 }
                 break;
-                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
         }
     }
-    /// <summary>
-    /// Employee가 이 함수를 호출하여 음식을 전달합니다.
-    /// </summary>
+
+    // 직원이 음식을 서빙했을 때 호출
     public void ReceiveFood(EmployeeInstance server)
     {
         this.serverEmployee = server;
@@ -107,7 +104,8 @@ public class Customer : MonoBehaviour
     IEnumerator DecideMenuCoroutine()
     {
         Debug.Log("손님이 메뉴를 고르는 중...");
-        // ▼▼▼ [기능 3] 모호성 해결 (Script 2) ▼▼▼
+
+        // 모호성 해결을 위한 대기 시간
         yield return new WaitForSeconds(UnityEngine.Random.Range(2f, 5f));
 
         var dailyMenu = MenuPlanner.instance.dailyMenu.Where(r => r != null);
@@ -118,7 +116,6 @@ public class Customer : MonoBehaviour
 
         if (availableMenuWithStock.Count > 0)
         {
-            // ▼▼▼ [기능 3] 모호성 해결 (Script 2) ▼▼▼
             int randomIndex = UnityEngine.Random.Range(0, availableMenuWithStock.Count);
             myOrderedRecipe = availableMenuWithStock[randomIndex];
 
@@ -135,39 +132,26 @@ public class Customer : MonoBehaviour
                 }
             }
 
-            // --- !! [버그 수정] !! ---
-            // 'foodObject'가 null이 되는 근본 원인입니다.
-            // 주문서(KitchenOrder)를 생성할 때, 음식 프리팹을 여기서 Instantiate(생성)하고 전달해야 합니다.
-
-            // 1. 레시피 데이터에서 음식 프리팹을 가져옵니다.
-            // (만약 'foodPrefab'이 아니라면, 레시피 데이터에 있는 실제 프리팹 변수명으로 변경해야 합니다.)
+            // 음식 프리팹 생성 및 주문서 작성
             GameObject foodPrefab = myOrderedRecipe.data.foodPrefab;
 
             if (foodPrefab == null)
             {
                 Debug.LogError($"[주문 오류!] {myOrderedRecipe.data.recipeName}의 레시피 데이터에 'foodPrefab'이 할당되지 않았습니다! 주문을 생성할 수 없습니다.");
-                currentState = CustomerState.Leaving; // 손님은 그냥 떠납니다.
-                yield break; // 코루틴 중단
+                currentState = CustomerState.Leaving;
+                yield break;
             }
 
-            // 2. 프리팹을 복제하여 'foodObject' 인스턴스를 만듭니다.
             GameObject instantiatedFood = Instantiate(foodPrefab, Vector3.zero, Quaternion.identity);
-
-            // 3. 요리사가 사용할 때까지 씬에서 보이지 않도록 비활성화합니다.
             instantiatedFood.SetActive(false);
             instantiatedFood.name = $"{myOrderedRecipe.data.recipeName} (주문자: {this.name})";
 
-            // 4. 생성된 'instantiatedFood'를 주문서 생성자에 전달합니다. (null 대신)
             KitchenOrder newOrder = new KitchenOrder(this, myOrderedRecipe, instantiatedFood);
-            // --- !! [버그 수정 완료] !! ---
-
             RestaurantManager.instance.OrderQueue.Add(newOrder);
 
             MenuPlanner.instance.RecordSale(myOrderedRecipe.data.id);
 
             currentState = CustomerState.WaitingForFood;
-
-            // foodWaitStartTime을 주문이 들어간 이 시점으로 초기화
             foodWaitStartTime = Time.time;
         }
         else
@@ -177,15 +161,13 @@ public class Customer : MonoBehaviour
         }
     }
 
-
     public void SetTable(Transform table)
     {
         targetTable = table;
         currentState = CustomerState.MovingToTable;
     }
 
-
-    System.Collections.IEnumerator EatAndLeave()
+    IEnumerator EatAndLeave()
     {
         Debug.Log("식사 시작");
         yield return new WaitForSeconds(2f);
@@ -193,11 +175,13 @@ public class Customer : MonoBehaviour
 
         CalculateSatisfaction();
         SatisfactionLevel level = GetSatisfactionLevel();
-        int price = myOrderedRecipe.GetCurrentPrice();
+
+        // [수정됨] 레시피 매니저를 통해 현재 레벨에 맞는 가격을 가져옴
+        int price = RecipeManager.instance.GetRecipeSellingPrice(myOrderedRecipe.data.id);
 
         int tip = 0;
 
-        // 만족도에 따른 '명성' 변화 (공통)
+        // 만족도에 따른 명성 변화
         switch (level)
         {
             case SatisfactionLevel.VerySatisfied:
@@ -214,18 +198,17 @@ public class Customer : MonoBehaviour
                 break;
         }
 
-        // ▼▼▼ [기능 4] 상세한 팁 계산 (Script 2) ▼▼▼
-        // (참고: 이 로직이 작동하려면 EmployeeInstance.cs에 GetTrait... 함수들이 필요합니다)
+        // 팁 계산 로직
         int baseCharmStat = 0;
         int bonusCharmStat_Synergy = 0;
-        float traitTipBonus = 0f; // "매혹" 특성 보너스
-        float allStatMultiplier_Trait = 0f; // "주인공" 특성 보너스
+        float traitTipBonus = 0f;
+        float allStatMultiplier_Trait = 0f;
 
         if (serverEmployee != null)
         {
             baseCharmStat = serverEmployee.currentCharmStat;
-            traitTipBonus = serverEmployee.GetTraitTipChanceBonus(); // "매혹"
-            allStatMultiplier_Trait = serverEmployee.GetTraitAllStatMultiplier(); // "주인공"
+            traitTipBonus = serverEmployee.GetTraitTipChanceBonus();
+            allStatMultiplier_Trait = serverEmployee.GetTraitAllStatMultiplier();
         }
 
         if (SynergyManager.Instance != null && serverEmployee != null)
@@ -244,19 +227,17 @@ public class Customer : MonoBehaviour
             tip = Mathf.RoundToInt(price * 0.1f);
             Debug.Log($"[팁 발생!] (최종스탯: {finalCharmStat}, 특성: {traitTipBonus}%) 보너스로 {tip}G 팁 획득! (확률: {finalTipChance:F1}%)");
         }
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         int totalPayment = price + tip;
         GameManager.instance.AddGold(totalPayment);
 
+        // 리뷰(말풍선) 표시
         if (RestaurantReviwe != null && iconSpawnPoint != null)
         {
             GameObject textObj = Instantiate(RestaurantReviwe, iconSpawnPoint.position, Quaternion.identity);
             textObj.transform.SetParent(iconSpawnPoint);
 
             TextMeshProUGUI textMesh = textObj.GetComponent<TextMeshProUGUI>();
-
-            // ▼▼▼ [기능 5] 만족도 아이콘 표시 (Script 1) ▼▼▼
             Image iconImage = textObj.GetComponentInChildren<Image>();
 
             Sprite spriteToUse = null;
@@ -274,7 +255,6 @@ public class Customer : MonoBehaviour
             {
                 iconImage.gameObject.SetActive(false);
             }
-            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
             if (textMesh != null)
             {
@@ -290,6 +270,7 @@ public class Customer : MonoBehaviour
         currentState = CustomerState.Leaving;
         RestaurantManager.instance.customers.Remove(this);
     }
+
     string GetSatisfactionString(SatisfactionLevel level)
     {
         switch (level)
@@ -305,7 +286,7 @@ public class Customer : MonoBehaviour
 
     void CalculateSatisfaction()
     {
-        satisfactionScore = 50; // 기본 점수 50점 
+        satisfactionScore = 50; // 기본 점수
 
         float totalWaitTime = Time.time - foodWaitStartTime;
         if (totalWaitTime < 15f) satisfactionScore += 20;
@@ -314,7 +295,8 @@ public class Customer : MonoBehaviour
         else if (totalWaitTime > 45f) satisfactionScore -= 10;
 
         int dishGrade = myOrderedRecipe.GetCurrentGrade();
-        if (dishGrade == 1) satisfactionScore += 20; // (수정: 등급 숫자가 낮을수록 좋은 것으로 가정)
+        // 1등급이 가장 좋은 등급(대가)이므로 점수를 많이 줌
+        if (dishGrade == 1) satisfactionScore += 20;
         else if (dishGrade == 2) satisfactionScore += 15;
         else if (dishGrade == 3) satisfactionScore += 10;
         else if (dishGrade == 4) satisfactionScore += 5;

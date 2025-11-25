@@ -774,6 +774,7 @@ GameObject:
   - component: {fileID: 53567161}
   - component: {fileID: 53567160}
   - component: {fileID: 53567159}
+  - component: {fileID: 53567162}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -842,6 +843,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &53567162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53567158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cd13043296d9914b9cfac370193bc19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhoIsBlocking
 --- !u!1 &54454918
 GameObject:
   m_ObjectHideFlags: 0
@@ -1301,7 +1314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7606401253011076915, guid: 875e0b9091f2b71409bfa3236e50b451, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2133,7 +2146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f02e325b337c884a813b6e9e8c5f259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClosePopupInput
-  RecipeBookPanel: {fileID: 0}
+  RecipeBookPanel: {fileID: 1783817225}
   ShopPanel: {fileID: 576219769}
   InventoryPanel: {fileID: 217937854}
   RecipeSelection: {fileID: 214194043}
@@ -2977,6 +2990,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 301263759}
   m_CullTransparentMesh: 1
+--- !u!114 &314215230 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6149657094589530694, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+  m_PrefabInstance: {fileID: 1226716565}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &319140537
 GameObject:
   m_ObjectHideFlags: 0
@@ -4224,6 +4248,17 @@ MonoBehaviour:
   todayMenuItemPrefab: {fileID: 2097655974541271128, guid: 5fa8cc9fc13daf04fa2f51a40f755bb5, type: 3}
   recipeListContentParent: {fileID: 2064394408}
   recipeListItemPrefab: {fileID: 3962138291722192188, guid: 60ff35aeeaa2b3443ad98d4d78126acc, type: 3}
+--- !u!114 &425421840 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3001224935958415261, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+  m_PrefabInstance: {fileID: 1226716565}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &459368485
 GameObject:
   m_ObjectHideFlags: 0
@@ -5898,6 +5933,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &619881519 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5339085377018955036, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+  m_PrefabInstance: {fileID: 1226716565}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &619926103 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3487840227234541932, guid: 875e0b9091f2b71409bfa3236e50b451, type: 3}
@@ -6036,6 +6082,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 627233891}
   m_CullTransparentMesh: 1
+--- !u!114 &630408988 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7919028887139989560, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+  m_PrefabInstance: {fileID: 1226716565}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &632249792
 GameObject:
   m_ObjectHideFlags: 0
@@ -8039,7 +8096,7 @@ MonoBehaviour:
     currentCharmStat: 0
     currentTraits: []
     assignedRole: 0
-    grade: 0
+    grade: 3
 --- !u!114 &809728584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8052,7 +8109,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6599db8c05372f04295ab0fd154c6cea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SynergyManager
-  allSynergies: []
+  allSynergies:
+  - {fileID: 11400000, guid: 738b2bccce0e645419e6feb6e56de9f2, type: 2}
+  - {fileID: 11400000, guid: fc6f4f0c258b03a4095afaa3ff70d9fe, type: 2}
+  - {fileID: 11400000, guid: ffae11db22dac2b4b8a8842cc815785b, type: 2}
+  - {fileID: 11400000, guid: fba8559635d2eea47ab327bcf3725619, type: 2}
+  - {fileID: 11400000, guid: d38bf58f3d6dce24fa2c916688c7e06e, type: 2}
+  - {fileID: 11400000, guid: 42ea8eabd91dd1e4cba41b1a19e00db3, type: 2}
+  - {fileID: 11400000, guid: 2ce577be5a982d24b89e54ddeee38e85, type: 2}
   activeSynergies: []
 --- !u!114 &809728585
 MonoBehaviour:
@@ -8070,6 +8134,11 @@ MonoBehaviour:
   recipePool: {fileID: 11400000, guid: f05347075ea91cc40bca7c69ac097572, type: 2}
   ingredientSlotCount: 3
   refreshCost: 100
+--- !u!1 &822383574 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1484570994327631189, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+  m_PrefabInstance: {fileID: 1226716565}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &870929233
 GameObject:
   m_ObjectHideFlags: 0
@@ -8741,7 +8810,7 @@ MonoBehaviour:
   restaurantManager: {fileID: 125082561}
   _currentState: 0
   dayDurationInSeconds: 45
-  totalGoldAmount: 9999
+  totalGoldAmount: 99999
   DayCount: 7
   mainCharacterTemplate: {fileID: 11400000, guid: 73599de3c8e5a6a41a97a5583acee7e8, type: 2}
   upgradeTableButtons:
@@ -11072,7 +11141,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 120, y: -50}
+  m_AnchoredPosition: {x: 175, y: -49}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1204839684
@@ -11310,17 +11379,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1212462562}
   m_CullTransparentMesh: 1
---- !u!114 &1222064869 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 635972341442407111, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
-  m_PrefabInstance: {fileID: 1226716565}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &1226716565
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11352,6 +11410,18 @@ PrefabInstance:
     - target: {fileID: 353419134020001592, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 356742979782038876, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 712231653240135616, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1484570994327631189, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1630319327228617001, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -11445,6 +11515,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3958241668640198913, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4029907620799445963, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4945050739544707150, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -11517,6 +11595,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -10
       objectReference: {fileID: 0}
+    - target: {fileID: 7919028887139989560, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8311103261983744965, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: m_Name
       value: RecipeBookPanel
@@ -11566,13 +11648,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1161251540447001599, guid: 161776bd2ff5193458ed00dd96081c57, type: 3}
     - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: upgradeInfoPanel
+      value: 
+      objectReference: {fileID: 822383574}
+    - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: ingredientTabButton
       value: 
       objectReference: {fileID: 1078141602}
     - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: nextUpgradeInfoText
       value: 
-      objectReference: {fileID: 1222064869}
+      objectReference: {fileID: 630408988}
     - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: ingredientPanelGroup
       value: 
@@ -11581,6 +11667,30 @@ PrefabInstance:
       propertyPath: r_NeedIngredientGrid
       value: 
       objectReference: {fileID: 62092342}
+    - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: r_StarImages.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: 'r_StarImages.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1717392850}
+    - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: 'r_StarImages.Array.data[1]'
+      value: 
+      objectReference: {fileID: 425421840}
+    - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: 'r_StarImages.Array.data[2]'
+      value: 
+      objectReference: {fileID: 314215230}
+    - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: 'r_StarImages.Array.data[3]'
+      value: 
+      objectReference: {fileID: 619881519}
+    - target: {fileID: 8597195106022774266, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+      propertyPath: 'r_StarImages.Array.data[4]'
+      value: 
+      objectReference: {fileID: 2086695736}
     - target: {fileID: 8894388337254130985, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -15479,6 +15589,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1717091157}
   m_CullTransparentMesh: 1
+--- !u!114 &1717392850 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2117946783491726072, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+  m_PrefabInstance: {fileID: 1226716565}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!114 &1751292516 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3023927111546658686, guid: 85ccae20ab8814542b02fb961240999a, type: 3}
@@ -16163,7 +16284,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -75, y: 0}
+  m_AnchoredPosition: {x: -130, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1801189570
@@ -18442,6 +18563,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2078547487}
   m_CullTransparentMesh: 1
+--- !u!114 &2086695736 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7350311245835667031, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
+  m_PrefabInstance: {fileID: 1226716565}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &2086819084
 GameObject:
   m_ObjectHideFlags: 0
