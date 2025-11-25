@@ -15,8 +15,5 @@ MonoBehaviour:
   id: ING01
   ingredientName: "\uC9C8\uAE34 \uACE0\uAE30"
   icon: {fileID: -632203435183565488, guid: aa433d4a665fa02488fbb048250cdc53, type: 3}
-  description: "\uC5B4\uB514\uC11C\uB098 \uD754\uD558\uAC8C \uAD6C\uD560 \uC218 \uC788\uC9C0\uB9CC,
-    \uC81C\uB300\uB85C \uC694\uB9AC\uD558\uC9C0 \uC54A\uC73C\uBA74 \uC9C8\uACA8\uC11C
-    \uD131\uC774 \uC544\uD50C \uC218 \uC788\uB2E4."
   rarity: 0
   buyPrice: 5
