@@ -18,40 +18,30 @@ public class Employee : MonoBehaviour
     private Seeker seeker;
     private Path path;
     private int currentWaypoint = 0;
-    private float nextWaypointDistance = 0.5f; // 다음 경로 점으로 넘어갈 거리
+    private float nextWaypointDistance = 0.5f;
     private Vector3 lastDestination = Vector3.zero;
-    private float repathRate = 0.5f; // 경로 재계산 주기
+    private float repathRate = 0.5f;
     private float lastRepathTime = 0f;
+
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
+    private Rigidbody2D rb;
 
     public enum EmployeeState
     {
-        Idle,
-        MovingToCounterTop,
-        Cooking,
-        MovingToServe,
-        MovingToPickupFood,
-        MovingToIdle,
-        CheckingTable,
-        MovingToTable,
-        Cleaning
+        Idle, MovingToCounterTop, Cooking, MovingToServe, MovingToPickupFood,
+        MovingToIdle, CheckingTable, MovingToTable, Cleaning
     }
 
     public EmployeeState currentState;
 
-    [SerializeField]
-    private float movespeed = 3f;
-
-    [SerializeField]
-    private Customer targetCustomer;
-    [SerializeField]
-    private CounterTop targetCountertop;
-    [SerializeField]
-    private Table targetTable;
-    [SerializeField]
-    private Transform idlePosition;
+    [SerializeField] private float movespeed = 3f;
+    [SerializeField] private Customer targetCustomer;
+    [SerializeField] private CounterTop targetCountertop;
+    [SerializeField] private Table targetTable;
+    [SerializeField] private Transform idlePosition;
     private KitchenOrder targetOrder;
 
-    private Rigidbody2D rb;
 
     public void Initialize(EmployeeInstance data, Transform defaultIdlePosition)
     {
@@ -62,12 +52,6 @@ public class Employee : MonoBehaviour
         {
             this.movespeed = data.BaseData.baseMoveSpeed;
         }
-        else
-        {
-            Debug.LogWarning($"Initialize: {data.firstName}의 BaseData가 null입니다. 기본 이동속도(3f)를 사용합니다.");
-        }
-
-        Debug.Log($"{data.firstName} 초기화 완료. (이동 속도: {this.movespeed})");
         currentState = EmployeeState.Idle;
     }
 
@@ -75,30 +59,19 @@ public class Employee : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         seeker = GetComponent<Seeker>();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
-        if (rb == null)
-        {
-            Debug.LogError("Employee 프리팹에 Rigidbody 2D가 없습니다!");
-        }
-        if (seeker == null)
-        {
-            Debug.LogError("Employee 프리팹에 Seeker 컴포넌트가 없습니다!");
-        }
+        if (rb == null) Debug.LogError("Employee 프리팹에 Rigidbody 2D가 없습니다!");
+        if (seeker == null) Debug.LogError("Employee 프리팹에 Seeker 컴포넌트가 없습니다!");
+        if (spriteRenderer == null) Debug.LogError("Employee 프리팹에 SpriteRenderer가 없습니다!");
 
-        if (handPosition == null)
-        {
-            handPosition = this.transform;
-        }
-
-        if (employeeData == null)
-        {
-            currentState = EmployeeState.Idle;
-        }
+        if (handPosition == null) handPosition = this.transform;
+        if (employeeData == null) currentState = EmployeeState.Idle;
     }
 
     void Update()
     {
-        // 상태에 따라 도착 여부 확인 및 행동 수행
         switch (currentState)
         {
             case EmployeeState.Idle:
@@ -106,24 +79,17 @@ public class Employee : MonoBehaviour
                 break;
             case EmployeeState.MovingToIdle:
                 FindTask();
-
                 if (idlePosition != null)
                 {
                     if (currentState == EmployeeState.MovingToIdle)
-                    {
                         CheckArrived(idlePosition.position, () => { currentState = EmployeeState.Idle; });
-                    }
                 }
-                else
-                {
-                    currentState = EmployeeState.Idle;
-                }
+                else currentState = EmployeeState.Idle;
                 break;
             case EmployeeState.MovingToCounterTop:
                 CheckArrived(targetCountertop.transform.position, () => { StartCoroutine(CookFoodCoroutine()); });
                 break;
-            case EmployeeState.Cooking:
-                break;
+            case EmployeeState.Cooking: break;
             case EmployeeState.MovingToPickupFood:
                 CheckArrived(targetCountertop.transform.position, () => { StartCoroutine(PickupFoodCoroutine()); });
                 break;
@@ -136,61 +102,94 @@ public class Employee : MonoBehaviour
             case EmployeeState.MovingToTable:
                 CheckArrived(targetTable.transform.position, () => { StartCoroutine(CleaningTable()); });
                 break;
-            case EmployeeState.Cleaning:
-                break;
+            case EmployeeState.Cleaning: break;
         }
     }
 
-    // 실제 물리 이동은 여기서 A* 알고리즘으로 처리
+    // 물리 이동 및 애니메이션 처리는 여기서 함
     void FixedUpdate()
     {
-        // 이동해야 하는 상태가 아니면 정지
+        // 1. 이동해야 하는 상태가 아니면 정지
         if (currentState == EmployeeState.Idle ||
             currentState == EmployeeState.Cooking ||
             currentState == EmployeeState.Cleaning)
         {
             if (rb != null) rb.linearVelocity = Vector2.zero;
+            if (animator != null) animator.SetBool("IsMoving", false);
             return;
         }
 
-        // 현재 상태에 맞는 목적지 가져오기
+        // 2. A* 경로 이동 로직
         Vector3 targetDest = GetTargetPositionByState();
         if (targetDest == Vector3.zero) return;
 
-        // 경로 계산 요청 (목적지가 바뀌었거나 일정 시간이 지났을 때)
         if (Vector3.Distance(targetDest, lastDestination) > 0.1f || Time.time > lastRepathTime + repathRate)
         {
             lastRepathTime = Time.time;
             lastDestination = targetDest;
-            if (seeker.IsDone())
-            {
-                seeker.StartPath(rb.position, targetDest, OnPathComplete);
-            }
+            if (seeker.IsDone()) seeker.StartPath(rb.position, targetDest, OnPathComplete);
         }
 
-        // 경로가 없으면 대기
         if (path == null) return;
 
-        // 경로 끝에 도달했으면 정지
         if (currentWaypoint >= path.vectorPath.Count)
         {
             if (rb != null) rb.linearVelocity = Vector2.zero;
+            if (animator != null) animator.SetBool("IsMoving", false);
             return;
         }
 
-        // 다음 웨이포인트 방향 계산 (normalized로 방향만 가져옴)
+        // 3. 방향 계산 및 이동
         Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
-
-        // 최종 이동 속도 계산
         float finalMoveSpeed = CalculateFinalSpeed();
 
-        // Rigidbody로 이동
         if (rb != null)
         {
             rb.linearVelocity = direction * finalMoveSpeed;
         }
 
-        // 웨이포인트 근접 체크 (다음 점으로 넘어가기)
+        // ▼▼▼ [애니메이션 보정 로직] 지그재그 떨림 방지 ▼▼▼
+        if (animator != null)
+        {
+            bool isMoving = direction.sqrMagnitude > 0.01f;
+            animator.SetBool("IsMoving", isMoving);
+
+            if (isMoving)
+            {
+                float x = direction.x;
+                float y = direction.y;
+                float absX = Mathf.Abs(x);
+                float absY = Mathf.Abs(y);
+
+                // [핵심 수정] 
+                // Y축 이동량이 X축보다 "확실히(1.2배)" 커야만 위/아래 애니메이션 재생
+                // (대각선 이동 시 옆모습을 우선시해서 부자연스러운 떨림을 막음)
+                bool isVerticalMove = absY > absX * 1.2f;
+
+                if (isVerticalMove)
+                {
+                    // 위/아래 이동
+                    animator.SetFloat("InputX", 0f);
+                    animator.SetBool("Up", y > 0);
+                    animator.SetBool("Down", y < 0);
+                }
+                else
+                {
+                    // 좌/우 이동 (대각선 포함)
+                    animator.SetBool("Up", false);
+                    animator.SetBool("Down", false);
+                    animator.SetFloat("InputX", x); // -1 or 1
+
+                    // 좌우 반전
+                    if (spriteRenderer != null && absX > 0.01f)
+                    {
+                        spriteRenderer.flipX = (x < 0);
+                    }
+                }
+            }
+        }
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
         float distanceToWaypoint = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
         if (distanceToWaypoint < nextWaypointDistance)
         {
@@ -198,7 +197,20 @@ public class Employee : MonoBehaviour
         }
     }
 
-    // Seeker가 경로 계산을 마치면 호출
+    // 애니메이션 리셋 헬퍼 함수
+    void ResetAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetBool("Up", false);
+            animator.SetBool("Down", false);
+            animator.SetFloat("InputX", 0f);
+            // (멈췄을 때는 'Idle' 애니메이션이 나오도록 Animator에서 Transition 설정 필요)
+            // 예: 모든 파라미터가 0/false면 Idle로 가도록 설정
+            animator.SetBool("Idle", true); // Idle 파라미터가 있다면 사용
+        }
+    }
+
     void OnPathComplete(Path p)
     {
         if (!p.error)
@@ -208,20 +220,18 @@ public class Employee : MonoBehaviour
         }
     }
 
-    // 목표 지점에 도착했는지 확인하고 콜백 실행
     void CheckArrived(Vector3 destination, Action onArrived)
     {
         float dist = Vector2.Distance(transform.position, destination);
-        // 도착 판정 거리 (약간 여유 있게 0.5f ~ 0.8f 권장)
         if (dist < 0.5f)
         {
             if (rb != null) rb.linearVelocity = Vector2.zero;
-            path = null; // 경로 초기화
+            ResetAnimation(); // 도착 시 멈춤
+            path = null;
             onArrived?.Invoke();
         }
     }
 
-    // 현재 상태에 따른 목적지 좌표 반환
     Vector3 GetTargetPositionByState()
     {
         switch (currentState)
@@ -240,26 +250,19 @@ public class Employee : MonoBehaviour
         }
     }
 
-    // 시너지 및 특성을 적용한 최종 이동 속도 계산
     float CalculateFinalSpeed()
     {
         float synergySpeedBonus = 0f;
         float traitSpeedBonus = 0f;
 
-        if (SynergyManager.Instance != null)
-        {
-            synergySpeedBonus = SynergyManager.Instance.GetMoveSpeedMultiplier();
-        }
-
-        if (employeeData != null)
-        {
-            traitSpeedBonus = employeeData.GetTraitMoveSpeedMultiplier();
-        }
+        if (SynergyManager.Instance != null) synergySpeedBonus = SynergyManager.Instance.GetMoveSpeedMultiplier();
+        if (employeeData != null) traitSpeedBonus = employeeData.GetTraitMoveSpeedMultiplier();
 
         float finalSpeed = movespeed * (1.0f + synergySpeedBonus + traitSpeedBonus);
         return Mathf.Max(0.1f, finalSpeed);
     }
 
+    // (이하 기존 로직 함수들 - 삭제하지 마세요)
     void FindTask()
     {
         if (employeeData == null)
@@ -268,7 +271,6 @@ public class Employee : MonoBehaviour
             return;
         }
 
-        // 홀 담당: 서빙할 음식 찾기
         if (employeeData.assignedRole == EmployeeRole.Hall ||
             employeeData.assignedRole == EmployeeRole.Unassigned)
         {
@@ -292,7 +294,6 @@ public class Employee : MonoBehaviour
             }
         }
 
-        // 주방 담당: 요리할 주문 찾기
         if (employeeData.assignedRole == EmployeeRole.Kitchen ||
             employeeData.assignedRole == EmployeeRole.Unassigned)
         {
@@ -316,8 +317,6 @@ public class Employee : MonoBehaviour
             }
         }
 
-
-        // 홀 담당: 청소할 테이블 찾기
         if (employeeData.assignedRole == EmployeeRole.Hall ||
             employeeData.assignedRole == EmployeeRole.Unassigned)
         {
@@ -336,7 +335,6 @@ public class Employee : MonoBehaviour
             }
         }
 
-        // 할 일이 없으면 대기 위치로 이동
         if (idlePosition != null && Vector2.Distance(transform.position, idlePosition.position) > 0.5f)
         {
             currentState = EmployeeState.MovingToIdle;
