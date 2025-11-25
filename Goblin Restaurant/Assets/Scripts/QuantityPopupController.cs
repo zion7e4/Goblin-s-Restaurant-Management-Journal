@@ -46,6 +46,7 @@ public class QuantityPopupController : MonoBehaviour
         controller = uiController;
 
         recipeIcon.sprite = recipe.data.icon;
+        recipeIcon.preserveAspect = true;
         recipeNameText.text = recipe.data.recipeName;
 
         maxQuantity = InventoryManager.instance.GetMaxCookableAmount(recipe);

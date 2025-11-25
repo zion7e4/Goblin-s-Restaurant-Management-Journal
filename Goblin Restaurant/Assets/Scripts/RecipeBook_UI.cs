@@ -1,192 +1,239 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using System.Collections.Generic;
-using System.Text;
+using UnityEngine.UI; // Button, Image 사용
+using TMPro; // TextMeshProUGUI 사용
+using System.Linq; // .Count() 사용
+using System.Collections.Generic; // Dictionary 사용
+using System.Text; // ★ StringBuilder를 사용하기 위해 추가
 
+/// <summary>
+/// 레시피 도감 UI의 모든 기능을 관리합니다.
+/// (수집 현황, 목록 표시, 상세 정보, 강화, 열기/닫기, 다음 강화 비용/이름 표시)
+/// </summary>
 public class RecipeBook_UI : MonoBehaviour
 {
-    [Header("Left 레시피 목록 UI")]
+    [Header("List Panel (왼쪽 목록)")]
+    [Tooltip("수집 현황 텍스트 (예: 4 / 10 개)")]
     [SerializeField] private TextMeshProUGUI collectionStatusText;
+
+    [Tooltip("레시피 버튼 프리팹이 생성될 스크롤 뷰의 Content")]
     [SerializeField] private Transform recipeContentParent;
+
+    [Tooltip("목록에 사용할 '텍스트 버튼' 프리팹 (RecipeListButton 스크립트가 붙어있어야 함)")]
     [SerializeField] private GameObject recipeListButtonPrefab;
 
-    [Header("Right 레시피 상세 UI")]
+    [Header("Detail Panel (오른쪽 상세창)")]
+    [Tooltip("상세 정보를 표시할 패널 (오른쪽)")]
     [SerializeField] private GameObject detailPanel;
-    [SerializeField] private Image r_DetailImage;
-    [SerializeField] private TextMeshProUGUI r_Name;
-    [SerializeField] private TextMeshProUGUI r_Desc;
+    [SerializeField] private Image detailRecipeImage;
+    [SerializeField] private TextMeshProUGUI detailRecipeNameText;
+    [SerializeField] private TextMeshProUGUI detailRecipeDescriptionText;
+    [SerializeField] private TextMeshProUGUI detailRecipeLevelText;
+    [SerializeField] private Button enhanceButton; // 강화 버튼
 
-    [Header("상세 정보 텍스트 및 별점")]
-    [SerializeField] private TextMeshProUGUI r_Info;
-    [SerializeField] private Image[] r_StarImages;
-    [SerializeField] private Sprite starEmptySprite;
-    [SerializeField] private Sprite starFullSprite;
+    [Tooltip("강화에 필요한 기본 재료를 표시할 텍스트")]
+    [SerializeField] private TextMeshProUGUI detailBaseIngredientsText;
 
-    [Header("재료 아이콘 및 강화")]
-    [SerializeField] private Transform r_NeedIngredientGrid;
-    [SerializeField] private GameObject simpleIconPrefab;
-    [SerializeField] private Button enhanceButton;
-    [SerializeField] private TextMeshProUGUI nextUpgradeInfoText;
+    [Tooltip("다음 강화에 필요한 비용(골드/재료)을 표시할 텍스트")]
+    [SerializeField] private TextMeshProUGUI detailNextUpgradeCostText;
 
+    /// <summary>
+    /// 현재 상세창에서 보고 있는 레시피의 ID
+    /// </summary>
     private int currentRecipeID;
 
-    void Start()
+    /// <summary>
+    /// UI가 켜질 때마다 목록을 새로고침하고 상세창을 숨깁니다.
+    /// </summary>
+    void OnEnable()
     {
-        if (enhanceButton != null)
-            enhanceButton.onClick.AddListener(OnEnhanceButtonClick);
-
-        // 레시피 획득 또는 강화 시 목록 갱신 이벤트 연결
-        if (RecipeManager.instance != null)
-        {
-            RecipeManager.instance.onRecipeUpdated += RefreshBook;
-        }
-
-        // 시작할 때는 상세창을 끄고 목록만 갱신
-        if (detailPanel != null) detailPanel.SetActive(false);
-        RefreshBook();
-    }
-
-    void OnDestroy()
-    {
-        if (RecipeManager.instance != null)
-        {
-            RecipeManager.instance.onRecipeUpdated -= RefreshBook;
-        }
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape)) ClosePanel();
-    }
-
-    // 도감 열기
-    public void OpenPanel()
-    {
-        gameObject.SetActive(true);
-
-        // 도감을 열 때 상세창은 일단 숨김
         if (detailPanel != null)
         {
             detailPanel.SetActive(false);
         }
-
         RefreshBook();
     }
 
-    // 도감 닫기
-    public void ClosePanel()
+    /// <summary>
+    /// 게임 시작 시 강화 버튼에 클릭 이벤트를 연결합니다.
+    /// </summary>
+    void Start()
     {
-        if (GameManager.instance != null)
+        if (enhanceButton != null)
         {
-            GameManager.instance.CloseRecipeBook();
-        }
-        else
-        {
-            gameObject.SetActive(false);
+            enhanceButton.onClick.AddListener(OnEnhanceButtonClick);
         }
     }
 
-    // 목록 갱신
+    /// <summary>
+    /// ESC 키 입력을 감지하여 패널을 닫습니다.
+    /// </summary>
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ClosePanel();
+        }
+    }
+
+    /// <summary>
+    /// (외부 '도감 열기' 버튼이 호출) 패널을 활성화합니다.
+    /// </summary>
+    public void OpenPanel()
+    {
+        gameObject.SetActive(true);
+        // OnEnable()이 자동으로 호출됩니다.
+    }
+
+    /// <summary>
+    /// (ESC 키 또는 '닫기' 버튼이 호출) 패널을 비활성화합니다.
+    /// </summary>
+    public void ClosePanel()
+    {
+        gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// '강화' 버튼을 클릭했을 때 호출됩니다.
+    /// </summary>
+    void OnEnhanceButtonClick()
+    {
+        // RecipeManager에게 현재 ID의 레시피 강화를 요청합니다.
+        bool success = RecipeManager.instance.UpgradeRecipe(currentRecipeID);
+
+        // 강화에 성공했다면
+        if (success)
+        {
+            // 상세 정보 UI를 새로고침 (레벨 표시 등)
+            ShowRecipeDetails(currentRecipeID);
+
+            // 목록 UI도 새로고침 (목록의 레벨 텍스트도 바뀔 수 있으므로)
+            RefreshBook();
+        }
+    }
+
+    /// <summary>
+    /// 레시피 목록(왼쪽)을 새로고침합니다.
+    /// </summary>
     public void RefreshBook()
     {
+        // 1. 기존 리스트 삭제
         foreach (Transform child in recipeContentParent)
         {
             Destroy(child.gameObject);
         }
 
+        // 2. 보유한 레시피 목록 가져오기
         var ownedRecipes = RecipeManager.instance.playerRecipes;
         if (ownedRecipes == null) return;
 
-        int totalCount = GameDataManager.instance.GetAllRecipeData().Count;
-        collectionStatusText.text = $"수집 현황: {ownedRecipes.Count} / {totalCount}";
+        // 3. 수집 현황 텍스트 업데이트
+        UpdateCollectionStatus(ownedRecipes.Count);
 
-        foreach (var recipe in ownedRecipes.Values)
+        // 4. 레시피 목록 채우기
+        foreach (PlayerRecipe recipe in ownedRecipes.Values)
         {
-            GameObject go = Instantiate(recipeListButtonPrefab, recipeContentParent);
-            go.GetComponent<RecipeListButton>().Setup(recipe, this);
+            GameObject itemGO = Instantiate(recipeListButtonPrefab, recipeContentParent);
+            RecipeListButton itemUI = itemGO.GetComponent<RecipeListButton>();
+
+            if (itemUI != null)
+            {
+                itemUI.Setup(recipe, this);
+            }
+            else
+            {
+                Debug.LogError($"'{recipeListButtonPrefab.name}' 프리팹에 RecipeListButton 스크립트가 없습니다!", itemGO);
+            }
         }
     }
 
-    // 상세 정보 표시
+    /// <summary>
+    /// (RecipeListButton이 호출) 상세 정보 패널(오른쪽)을 엽니다.
+    /// </summary>
     public void ShowRecipeDetails(int recipeID)
     {
+        // 1. 강화 버튼이 참조할 수 있도록 현재 ID를 저장
         currentRecipeID = recipeID;
 
-        if (!RecipeManager.instance.playerRecipes.TryGetValue(recipeID, out PlayerRecipe playerRecipe)) return;
-
-        RecipeData data = playerRecipe.data;
-
-        // 버튼을 눌렀을 때만 상세창 활성화
-        if (detailPanel != null) detailPanel.SetActive(true);
-
-        r_DetailImage.sprite = data.fullImage != null ? data.fullImage : data.icon;
-        r_Name.text = data.recipeName;
-        r_Desc.text = data.description;
-
-        // 정보 텍스트 줄바꿈 적용
-        r_Info.text = $"음식 레벨 : LV.{playerRecipe.currentLevel}\n" +
-                      $"판매 가격 : {data.basePrice} 골드\n" +
-                      $"요리 시간 : {data.baseCookTime} 초";
-
-        // 레벨에 따른 별점 계산 (1~9: 1개, 10~19: 2개, 40이상: 5개)
-        int level = playerRecipe.currentLevel;
-        int starCount = 1;
-
-        if (level >= 40) starCount = 5;
-        else if (level >= 30) starCount = 4;
-        else if (level >= 20) starCount = 3;
-        else if (level >= 10) starCount = 2;
-
-        // 별 스프라이트 교체
-        for (int i = 0; i < r_StarImages.Length; i++)
+        // 2. 매니저에서 레시피 데이터 가져오기
+        if (!RecipeManager.instance.playerRecipes.TryGetValue(recipeID, out PlayerRecipe playerRecipe))
         {
-            if (i < starCount)
-                r_StarImages[i].sprite = starFullSprite;
-            else
-                r_StarImages[i].sprite = starEmptySprite;
+            Debug.LogError($"ID: {recipeID} 에 해당하는 레시피를 찾을 수 없습니다.");
+            return;
         }
 
-        // 필요 재료 아이콘 표시
-        foreach (Transform child in r_NeedIngredientGrid) Destroy(child.gameObject);
+        RecipeData data = playerRecipe.data;
+        int currentLevel = playerRecipe.currentLevel;
 
-        foreach (var req in data.requiredIngredients)
+        // 3. 기본 UI 정보 채우기
+        if (detailPanel != null)
         {
-            GameObject iconObj = Instantiate(simpleIconPrefab, r_NeedIngredientGrid);
-            IngredientData ingData = GameDataManager.instance.GetIngredientDataById(req.ingredientID);
-            if (ingData != null)
+            detailRecipeImage.sprite = data.icon;
+            detailRecipeImage.preserveAspect = true;
+            detailRecipeNameText.text = data.recipeName;
+            detailRecipeDescriptionText.text = data.description;
+            detailRecipeLevelText.text = $"현재 레벨: {currentLevel}";
+        }
+
+        // 4. "기본 필요 재료" 텍스트 채우기 (ID를 이름으로 변환)
+        if (detailBaseIngredientsText != null)
+        {
+            StringBuilder sb = new StringBuilder("기본 재료: \n");
+            foreach (IngredientRequirement req in data.requiredIngredients)
             {
-                iconObj.GetComponent<Image>().sprite = ingData.icon;
-                iconObj.GetComponentInChildren<TextMeshProUGUI>().text = $"x{req.amount}";
+                // GameDataManager에서 '재료 데이터'를 가져옴
+                IngredientData ingredient = GameDataManager.instance.GetIngredientDataById(req.ingredientID);
+
+                string ingredientName = req.ingredientID; // 기본값은 ID로 설정
+                if (ingredient != null)
+                {
+                    // 재료 데이터를 찾았다면 '이름'으로 교체
+                    // (가정: IngredientData.cs에 'ingredientName' 변수가 있음)
+                    ingredientName = ingredient.ingredientName;
+                }
+
+                sb.AppendLine($"- {ingredientName} {req.amount}개");
+            }
+            detailBaseIngredientsText.text = sb.ToString();
+        }
+
+        // 5. "다음 강화 필요 재료" 텍스트 채우기
+        if (detailNextUpgradeCostText != null)
+        {
+            int nextLevel = currentLevel + 1;
+            RecipeLevelEntry nextLevelData = GameDataManager.instance.GetRecipeLevelData(nextLevel);
+
+            if (nextLevelData == null)
+            {
+                // 최대 레벨이거나 데이터 테이블에 다음 레벨 정보가 없는 경우
+                detailNextUpgradeCostText.text = "최대 레벨입니다 (Lv.Max)";
+                enhanceButton.interactable = false; // 강화 버튼 비활성화
+            }
+            else
+            {
+                // 다음 레벨 강화 정보를 텍스트로 표시
+                int requiredGold = nextLevelData.Required_Gold;
+                int materialMultiplier = nextLevelData.Required_Item_Count;
+
+                detailNextUpgradeCostText.text = $"다음 강화 (Lv.{nextLevel}) 필요:\n" +
+                                                 $"- 골드: {requiredGold} G\n" +
+                                                 $"- 재료 배수: x{materialMultiplier}";
+                enhanceButton.interactable = true; // 강화 버튼 활성화
             }
         }
 
-        UpdateNextUpgradeInfo(playerRecipe);
-    }
-
-    void OnEnhanceButtonClick()
-    {
-        if (RecipeManager.instance.UpgradeRecipe(currentRecipeID))
+        // 6. 상세창 활성화
+        if (detailPanel != null)
         {
-            ShowRecipeDetails(currentRecipeID);
-            RefreshBook();
+            detailPanel.SetActive(true);
         }
     }
 
-    void UpdateNextUpgradeInfo(PlayerRecipe recipe)
+    /// <summary>
+    /// 수집 현황 텍스트를 업데이트합니다.
+    /// </summary>
+    private void UpdateCollectionStatus(int acquiredCount)
     {
-        int nextLv = recipe.currentLevel + 1;
-        RecipeLevelEntry entry = GameDataManager.instance.GetRecipeLevelData(nextLv);
-
-        if (entry == null)
-        {
-            nextUpgradeInfoText.text = "최대 레벨 (Max)";
-            enhanceButton.interactable = false;
-        }
-        else
-        {
-            nextUpgradeInfoText.text = $"[다음 강화 비용]\n골드: {entry.Required_Gold}G\n재료 배수: x{entry.Required_Item_Count}";
-            enhanceButton.interactable = true;
-        }
+        int totalCount = GameDataManager.instance.GetAllRecipeData().Count();
+        collectionStatusText.text = $"수집 현황: {acquiredCount} / {totalCount} 개";
     }
 }

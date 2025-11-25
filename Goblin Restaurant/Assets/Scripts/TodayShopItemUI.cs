@@ -45,7 +45,7 @@ public class TodayShopItemUI : MonoBehaviour
         this.currentItem = item;
         this.shopController = controller;
 
-        Rarity rarity = Rarity.Common;
+        Rarity rarity = Rarity.common;
 
         if (item.ingredientData != null)
         {
@@ -74,6 +74,8 @@ public class TodayShopItemUI : MonoBehaviour
             if (stockText) stockText.text = "레시피";
             if (buyButtonText) buyButtonText.text = "구매";
         }
+
+        if(itemIcon != null) itemIcon.preserveAspect = true;
 
         priceText.text = $"{item.CurrentPrice}";
 

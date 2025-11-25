@@ -1,20 +1,20 @@
 using UnityEngine;
 
-// 등급 (Page 8 등급 표시용)
-public enum Rarity { Common, Uncommon, Rare, Legendary }
+public enum Rarity { common, Uncommon, Rare, Legendary }
 
 [CreateAssetMenu(fileName = "Ingredient", menuName = "Game Data/Ingredient Data")]
+
 public class IngredientData : ScriptableObject
 {
     [Header("재료 고유 정보")]
-    public string id;
-    public string ingredientName;
-    public Sprite icon;
-
-    [Header("도감 표시용")]
-    [TextArea] public string description; // 와이어프레임 Page 8 재료 설명
+    public string id; // 재료를 구분하는 고유 ID 
+    public string ingredientName; // 게임에 표시될 이름
+    public Sprite icon; // UI에 표시될 아이콘
 
     [Header("재료 등급 및 가격")]
-    public Rarity rarity;
-    public int buyPrice;
+    public Rarity rarity; // 재료의 희귀도 (일반, 고급, 희귀, 전설)
+    public int buyPrice; // 상점에서 구매할 때의 가격
+
+    [TextArea(3, 5)] // 인스펙터에서 여러 줄로 보기 위해 TextArea 속성 사용
+    public string description;
 }

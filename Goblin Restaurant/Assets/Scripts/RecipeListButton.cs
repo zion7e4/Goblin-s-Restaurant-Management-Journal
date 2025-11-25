@@ -2,57 +2,44 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// 레시피 도감 목록에 표시될 각 '텍스트 버튼'의 UI를 제어합니다.
+/// </summary>
 public class RecipeListButton : MonoBehaviour
 {
-    [Header("UI 연결")]
-    [SerializeField] private Button thisButton;        // 버튼 본체
-    [SerializeField] private Image recipeIcon;         // 아이콘 이미지
-    [SerializeField] private TextMeshProUGUI nameText; // 요리 이름
+    [Header("UI References")]
+    [Tooltip("레시피 이름이 표시될 텍스트")]
+    [SerializeField] private TextMeshProUGUI recipeNameText;
 
-    [Header("별점 설정")]
-    [SerializeField] private Image[] starImages;      // 별 이미지 5개
-    [SerializeField] private Sprite starEmptySprite;  // 꺼진 별 그림
-    [SerializeField] private Sprite starFullSprite;   // 켜진 별 그림
+    [Tooltip("클릭 이벤트를 감지할 이 프리팹의 버튼")]
+    [SerializeField] private Button thisButton;
 
+    // 내부 저장용
     private PlayerRecipe myRecipe;
-    private RecipeBook_UI bookController;
+    private RecipeBook_UI bookController; // 메인 UI 컨트롤러
 
+    /// <summary>
+    /// RecipeBook_UI가 이 아이템을 초기화할 때 호출합니다.
+    /// </summary>
     public void Setup(PlayerRecipe playerRecipe, RecipeBook_UI book_UI)
     {
         myRecipe = playerRecipe;
         bookController = book_UI;
 
-        // 기본 정보 설정
-        if (nameText != null) nameText.text = playerRecipe.data.recipeName;
-        if (recipeIcon != null) recipeIcon.sprite = playerRecipe.data.icon;
+        // 1. 버튼의 텍스트를 레시피 이름으로 설정
+        recipeNameText.text = playerRecipe.data.recipeName;
 
-        // 레벨에 따른 별점 이미지 교체 로직
-        int level = playerRecipe.currentLevel;
-        int starCount = 1; // 기본 1개
-
-        if (level >= 40) starCount = 5;
-        else if (level >= 30) starCount = 4;
-        else if (level >= 20) starCount = 3;
-        else if (level >= 10) starCount = 2;
-
-        // 별 개수만큼은 켜진 별, 나머지는 꺼진 별로 교체
-        for (int i = 0; i < starImages.Length; i++)
-        {
-            if (starImages[i] == null) continue;
-
-            if (i < starCount)
-                starImages[i].sprite = starFullSprite;
-            else
-                starImages[i].sprite = starEmptySprite;
-        }
-
-        // 클릭 이벤트 연결
+        // 2. 버튼 클릭 리스너 연결
         thisButton.onClick.RemoveAllListeners();
         thisButton.onClick.AddListener(OnShowDetailsClick);
     }
 
+    /// <summary>
+    /// '상세보기' 버튼을 클릭했을 때 호출
+    /// </summary>
     void OnShowDetailsClick()
     {
+        // RecipeBook_UI에게 "이 레시피의 상세정보를 보여줘"라고 알림
         bookController.ShowRecipeDetails(myRecipe.data.id);
     }
 }
