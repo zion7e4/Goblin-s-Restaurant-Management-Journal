@@ -11,7 +11,7 @@ public class TodayShopItemUI : MonoBehaviour
     public Image itemIcon;
     public TextMeshProUGUI itemNameText;
     public TextMeshProUGUI priceText;
-    [Tooltip("Àç°í ÅØ½ºÆ® (¿¹: 5 / 5)")]
+    [Tooltip("ìž¬ê³  í…ìŠ¤íŠ¸ (ì˜ˆ: 5 / 5)")]
     public TextMeshProUGUI stockText;
     public Button buyButton;
     public GameObject soldOutOverlay;
@@ -26,13 +26,13 @@ public class TodayShopItemUI : MonoBehaviour
     public Color priceDecreaseColor = Color.blue;
 
     [Header("Quantity Controls (Ingredients Only)")]
-    [Tooltip("¼ö·® Á¶Àý UI (¹öÆ°, ÅØ½ºÆ®)¸¦ °¨½Î´Â ºÎ¸ð ¿ÀºêÁ§Æ®")]
+    [Tooltip("ìˆ˜ëŸ‰ ì¡°ì ˆ UI (ë²„íŠ¼, í…ìŠ¤íŠ¸)ë¥¼ ê°ì‹¸ëŠ” ë¶€ëª¨ ì˜¤ë¸Œì íŠ¸")]
     public GameObject quantityControlGroup;
     public Button plusButton;
     public Button minusButton;
-    [Tooltip("¼±ÅÃÇÑ ¼ö·®À» Ç¥½ÃÇÒ ÅØ½ºÆ®")]
+    [Tooltip("ì„ íƒëœ ìˆ˜ëŸ‰ì„ í‘œì‹œí•˜ëŠ” í…ìŠ¤íŠ¸")]
     public TMP_InputField selectedQuantityText;
-    [Tooltip("±¸¸Å ¹öÆ°¿¡ ÃÑ °¡°ÝÀ» Ç¥½ÃÇÒ ÅØ½ºÆ®")]
+    [Tooltip("êµ¬ë§¤ ë²„íŠ¼ì— ì´ ê°€ê²©ì„ í‘œì‹œí•˜ëŠ” í…ìŠ¤íŠ¸")]
     public TextMeshProUGUI buyButtonText;
 
     private GeneratedShopItem currentItem;
@@ -49,7 +49,7 @@ public class TodayShopItemUI : MonoBehaviour
 
         if (item.ingredientData != null)
         {
-            // --- Àç·á ¾ÆÀÌÅÛ ---
+            // --- ìž¬ë£Œ ì•„ì´í…œ ---
             itemIcon.sprite = item.ingredientData.icon;
             itemNameText.text = item.ingredientData.ingredientName;
             rarity = item.ingredientData.rarity;
@@ -57,7 +57,7 @@ public class TodayShopItemUI : MonoBehaviour
             if (quantityControlGroup) quantityControlGroup.SetActive(true);
             currentSelectedQuantity = 0;
 
-            // ¸®½º³Ê ¿¬°á
+            // ë¦¬ìŠ¤ë„ˆ ì—°ê²°
             if (plusButton) plusButton.onClick.AddListener(() => ChangeQuantity(1));
             if (minusButton) minusButton.onClick.AddListener(() => ChangeQuantity(-1));
 
@@ -65,14 +65,14 @@ public class TodayShopItemUI : MonoBehaviour
         }
         else if (item.recipeData != null)
         {
-            // --- ·¹½ÃÇÇ ¾ÆÀÌÅÛ ---
+            // --- ë ˆì‹œí”¼ ì•„ì´í…œ ---
             itemIcon.sprite = item.recipeData.icon;
             itemNameText.text = item.recipeData.recipeName;
             rarity = item.recipeData.rarity;
 
             if (quantityControlGroup) quantityControlGroup.SetActive(false);
-            if (stockText) stockText.text = "·¹½ÃÇÇ";
-            if (buyButtonText) buyButtonText.text = "±¸¸Å";
+            if (stockText) stockText.text = "ì˜êµ¬ì ";
+            if (buyButtonText) buyButtonText.text = "êµ¬ë§¤";
         }
 
         if(itemIcon != null) itemIcon.preserveAspect = true;
@@ -113,11 +113,11 @@ public class TodayShopItemUI : MonoBehaviour
 
             if (currentItem.recipeData != null)
             {
-                if (stockText) stockText.text = "º¸À¯ Áß";
+                if (stockText) stockText.text = "í•™ìŠµ ì™„ë£Œ";
             }
             else
             {
-                if (stockText) stockText.text = "¸ÅÁø";
+                if (stockText) stockText.text = "í’ˆì ˆ";
             }
         }
     }
@@ -204,9 +204,10 @@ public class TodayShopItemUI : MonoBehaviour
         if (buyButtonText)
         {
             int totalPrice = currentItem.CurrentPrice * currentSelectedQuantity;
-            buyButtonText.text = $"±¸¸Å ({totalPrice} G)";
+            buyButtonText.text = $"êµ¬ë§¤ ({totalPrice} G)";
         }
-
+        
+        if (buyButton) buyButton.interactable = currentSelectedQuantity > 0;
         if (minusButton) minusButton.interactable = currentSelectedQuantity > 0;
         if (plusButton) plusButton.interactable = currentSelectedQuantity < currentItem.CurrentStock;
     }

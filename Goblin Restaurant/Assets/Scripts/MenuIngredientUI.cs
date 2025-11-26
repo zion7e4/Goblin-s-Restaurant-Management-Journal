@@ -13,6 +13,7 @@ public class MenuIngredientUI : MonoBehaviour
         if (data != null)
         {
             ingredientIcon.sprite = data.icon;
+            ingredientIcon.preserveAspect = true;
             ingredientNameText.text = data.ingredientName;
             gradeText.text = data.rarity.ToString();
         }

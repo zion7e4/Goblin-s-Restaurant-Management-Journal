@@ -50,7 +50,7 @@ public class ShopIngredientItemUI : MonoBehaviour
 
         UpdateUI();
 
-        string tooltip = "»ç¿ëµÇ´Â ·¹½ÃÇÇ:\n";
+        string tooltip = "ì‚¬ìš©ë˜ëŠ” ë ˆì‹œí”¼:\n";
         foreach (var recipe in GameDataManager.instance.GetAllRecipeData())
         {
             foreach (var req in recipe.requiredIngredients)
@@ -90,8 +90,10 @@ public class ShopIngredientItemUI : MonoBehaviour
 
         if (buyButtonText != null)
         {
-            buyButtonText.text = $"±¸¸Å ({totalCost} G)";
+            buyButtonText.text = $"êµ¬ë§¤ ({totalCost} G)";
         }
+        
+        buyButton.interactable = currentQuantity > 0; // Added line
 
         if (controller != null)
         {
@@ -103,7 +105,7 @@ public class ShopIngredientItemUI : MonoBehaviour
     {
         if (currentQuantity <= 0)
         {
-            Debug.Log("±¸¸ÅÇÒ ¼ö·®ÀÌ 0ÀÔ´Ï´Ù.");
+            Debug.Log("ì„ íƒëœ ìˆ˜ëŸ‰ì´ 0ìž…ë‹ˆë‹¤.");
             return;
         }
 

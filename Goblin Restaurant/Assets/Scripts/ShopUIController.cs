@@ -7,38 +7,36 @@ using System.Text;
 
 public class ShopUIController : MonoBehaviour
 {
-    [Header("���� �� ��ư")]
+    [Header("메인 탭 버튼")]
     public Button recipeTabButton;
     public Button ingredientTabButton;
-    public Button todayShopTabButton; // "������ ��ǰ" �� ��ư
+    public Button todayShopTabButton; 
 
-    [Header("�� �г�")]
-    public GameObject recipeShopPanel; // "������" �� �г�
-    public GameObject ingredientShopPanel; // "���" �� �г�
-    public GameObject todayShopPanel; // "������ ��ǰ" �� �г�
+    [Header("탭 패널")]
+    public GameObject recipeShopPanel; 
+    public GameObject ingredientShopPanel; 
+    public GameObject todayShopPanel; 
 
-    [Header("1. ��� �� (�⺻)")]
-    public GameObject basicIngredientItemPrefab; // (ShopIngredientItemUI.cs ������)
+    [Header("1. 재료 탭 (기본)")]
+    public GameObject basicIngredientItemPrefab;
     public Transform basicIngredientContentParent;
-    public Button bulkPurchaseButton; // �ϰ����� ��ư
+    public Button bulkPurchaseButton; 
     public TextMeshProUGUI bulkTotalCostText;
     private List<ShopIngredientItemUI> spawnedBasicItems = new List<ShopIngredientItemUI>();
 
-    [Header("2. ������ ��ǰ �� (Ư�� ���)")]
-    public GameObject todayShopItemPrefab; // (TodayShopItemUI.cs ������)
-    public Transform todayShopContentParent; // "������ ��ǰ" ��ũ�Ѻ� Content
+    [Header("2. 오늘의 상품 탭 (특수 재료)")]
+    public GameObject todayShopItemPrefab; 
+    public Transform todayShopContentParent; 
 
-    [Header("3. ������ �� (������ ������)")]
-    public GameObject basicRecipeItemPrefab;
-    public Transform todayRecipeContentParent;
+    [Header("3. 레시피 탭 (영구)")]
     public Transform permanentRecipeContentParent;
-    // (todayShopItemPrefab�� ������ �ǿ����� �������� ����մϴ�)
+    public GameObject basicRecipeItemPrefab; // ShopRecipeItemUI
 
     void Awake()
     {
         recipeTabButton.onClick.AddListener(SwitchToRecipeTab);
         ingredientTabButton.onClick.AddListener(SwitchToIngredientTab);
-        todayShopTabButton.onClick.AddListener(SwitchToTodayShopTab); // [�߰�]
+        todayShopTabButton.onClick.AddListener(SwitchToTodayShopTab); 
 
         if (bulkPurchaseButton != null)
         {
@@ -46,24 +44,18 @@ public class ShopUIController : MonoBehaviour
         }
     }
 
-    void OnEnable()
-    {
-        CloseAllTabs();
-    }
-
+    void OnEnable() { CloseAllTabs(); }
     void OnDisable()
     {
         if (TooltipSystem.instance != null) TooltipSystem.instance.Hide();
         spawnedBasicItems.Clear();
         CloseAllTabs();
     }
-
     private void CloseAllTabs()
     {
         if (recipeShopPanel != null) recipeShopPanel.SetActive(false);
         if (ingredientShopPanel != null) ingredientShopPanel.SetActive(false);
-        if (todayShopPanel != null) todayShopPanel.SetActive(false); // [�߰�]
-
+        if (todayShopPanel != null) todayShopPanel.SetActive(false);
         if (bulkPurchaseButton != null) bulkPurchaseButton.gameObject.SetActive(false);
         if (bulkTotalCostText != null) bulkTotalCostText.gameObject.SetActive(false);
     }
@@ -72,42 +64,34 @@ public class ShopUIController : MonoBehaviour
     {
         recipeShopPanel.SetActive(true);
         ingredientShopPanel.SetActive(false);
-        todayShopPanel.SetActive(false); // [�߰�]
-
+        todayShopPanel.SetActive(false); 
         if (bulkPurchaseButton != null) bulkPurchaseButton.gameObject.SetActive(false);
         if (bulkTotalCostText != null) bulkTotalCostText.gameObject.SetActive(false);
-
         PopulateRecipeTab();
     }
-
     public void SwitchToIngredientTab()
     {
         recipeShopPanel.SetActive(false);
         ingredientShopPanel.SetActive(true);
-        todayShopPanel.SetActive(false); // [�߰�]
-
+        todayShopPanel.SetActive(false); 
         if (bulkPurchaseButton != null) bulkPurchaseButton.gameObject.SetActive(true);
         if (bulkTotalCostText != null) bulkTotalCostText.gameObject.SetActive(true);
-
         PopulateIngredientTab();
     }
-
     public void SwitchToTodayShopTab()
     {
         recipeShopPanel.SetActive(false);
         ingredientShopPanel.SetActive(false);
         todayShopPanel.SetActive(true);
-
         if (bulkPurchaseButton != null) bulkPurchaseButton.gameObject.SetActive(false);
         if (bulkTotalCostText != null) bulkTotalCostText.gameObject.SetActive(false);
-
         PopulateTodayShopTab();
     }
+
     void PopulateIngredientTab()
     {
         foreach (Transform child in basicIngredientContentParent) Destroy(child.gameObject);
         spawnedBasicItems.Clear();
-
         var allIngredients = GameDataManager.instance.GetAllIngredientData();
         var basicIngredients = allIngredients.Where(ing => ing.rarity == Rarity.Common);
 
@@ -125,17 +109,7 @@ public class ShopUIController : MonoBehaviour
     {
         if (permanentRecipeContentParent == null || basicRecipeItemPrefab == null) return;
         foreach (Transform child in permanentRecipeContentParent) Destroy(child.gameObject);
-
-        if (todayRecipeContentParent != null)
-        {
-            foreach (Transform child in todayRecipeContentParent) Destroy(child.gameObject);
-        }
-
-        if (ShopManager.Instance == null || ShopManager.Instance.recipePool == null)
-        {
-            Debug.LogError("ShopManager �Ǵ� RecipePoolSO�� ������� �ʾҽ��ϴ�.");
-            return;
-        }
+        if (ShopManager.Instance == null || ShopManager.Instance.recipePool == null) return;
 
         foreach (var poolEntry in ShopManager.Instance.recipePool.items)
         {
@@ -149,34 +123,26 @@ public class ShopUIController : MonoBehaviour
         if (todayShopContentParent == null || todayShopItemPrefab == null) return;
         foreach (Transform child in todayShopContentParent) Destroy(child.gameObject);
         if (ShopManager.Instance == null) return;
-
-        foreach (var item in ShopManager.Instance.TodaySpecialIngredients) 
+        
+        // 특수 재료만 생성
+        foreach (var item in ShopManager.Instance.TodaySpecialIngredients)
         {
             GameObject itemGO = Instantiate(todayShopItemPrefab, todayShopContentParent);
             itemGO.GetComponent<TodayShopItemUI>().Setup(item, this);
         }
     }
-
+    
     public void RefreshTodayShopTabs()
     {
-        if (ingredientShopPanel.activeSelf)
-        {
-        }
-        else if (recipeShopPanel.activeSelf)
-        {
-            PopulateRecipeTab();
-        }
-        else if (todayShopPanel.activeSelf)
-        {
-            PopulateTodayShopTab();
-        }
+        if (ingredientShopPanel.activeSelf) PopulateIngredientTab(); 
+        else if (recipeShopPanel.activeSelf) PopulateRecipeTab(); 
+        else if (todayShopPanel.activeSelf) PopulateTodayShopTab();
     }
 
-    public void OnBulkPurchaseClick()
+    public void OnBulkPurchaseClick() 
     {
         int totalCost = 0;
         Dictionary<IngredientData, int> itemsToBuy = new Dictionary<IngredientData, int>();
-
         foreach (var itemUI in spawnedBasicItems)
         {
             int quantity = itemUI.GetCurrentQuantity();
@@ -187,44 +153,36 @@ public class ShopUIController : MonoBehaviour
                 totalCost += data.buyPrice * quantity;
             }
         }
-
         if (totalCost == 0) return;
-
         if (GameManager.instance.totalGoldAmount >= totalCost)
         {
             GameManager.instance.SpendGold(totalCost);
-            StringBuilder sb = new StringBuilder("�ϰ� ���� �Ϸ�:\n");
-
+            StringBuilder sb = new StringBuilder("일괄 구매 완료:\n");
             foreach (var item in itemsToBuy)
             {
                 InventoryManager.instance.AddIngredient(item.Key.id, item.Value);
-                sb.AppendLine($"- {item.Key.ingredientName} {item.Value}��");
+                sb.AppendLine($"- {item.Key.ingredientName} {item.Value}개");
             }
-
-            sb.Append($"\n�� ����: -{totalCost} G");
+            sb.Append($"\n총 지출: -{totalCost} G");
             NotificationController.instance.ShowNotification(sb.ToString());
-            
             PopulateIngredientTab();
         }
         else
         {
-            NotificationController.instance.ShowNotification("��尡 �����մϴ�!");
+            NotificationController.instance.ShowNotification("골드가 부족합니다!");
         }
     }
-
-    public void UpdateBulkTotalCost()
+    public void UpdateBulkTotalCost() 
     {
         int totalCost = 0;
         foreach (var itemUI in spawnedBasicItems)
         {
             totalCost += itemUI.GetCurrentTotalCost();
         }
-
-        if (bulkTotalCostText != null) bulkTotalCostText.text = $"���հ�: {totalCost} G";
+        if (bulkTotalCostText != null) bulkTotalCostText.text = $"총합계: {totalCost} G";
         if (bulkPurchaseButton != null) bulkPurchaseButton.interactable = totalCost > 0;
     }
-
-    public void AttemptPurchaseIngredient(IngredientData ingredientData, int quantity)
+    public void AttemptPurchaseIngredient(IngredientData ingredientData, int quantity) 
     {
         if (quantity <= 0) return;
         int totalPrice = ingredientData.buyPrice * quantity;
@@ -232,34 +190,28 @@ public class ShopUIController : MonoBehaviour
         {
             GameManager.instance.SpendGold(totalPrice);
             InventoryManager.instance.AddIngredient(ingredientData.id, quantity);
-            Debug.Log($"'{ingredientData.ingredientName}' {quantity}�� ���� ����!");
-
-            NotificationController.instance.ShowNotification($"-{totalPrice} G\n ({ingredientData.ingredientName} {quantity}�� ����)");
+            NotificationController.instance.ShowNotification($"-{totalPrice} G\n ({ingredientData.ingredientName} {quantity}개 구매)");
         }
         else
         {
-            Debug.Log("��尡 �����Ͽ� ��Ḧ ������ �� �����ϴ�.");
-            NotificationController.instance.ShowNotification("��尡 �����մϴ�!");
+            NotificationController.instance.ShowNotification("골드가 부족합니다!");
         }
     }
-
-    public void AttemptPurchaseRecipe(RecipeData recipeData)
+    public void AttemptPurchaseRecipe(RecipeData recipeData) 
     {
         int price = (int)(recipeData.basePrice * 1.5f);
         if (GameManager.instance.totalGoldAmount >= price)
         {
             GameManager.instance.SpendGold(price);
             RecipeManager.instance.UnlockRecipe(recipeData.id);
-            Debug.Log($"'{recipeData.recipeName}' ������ ���� ����!");
-
+            Debug.Log($"'{recipeData.recipeName}' 레시피 구매 성공!");
             PopulateRecipeTab();
-
-            NotificationController.instance.ShowNotification($"-{price} G\n (������ ����)");
+            NotificationController.instance.ShowNotification($"-{price} G\n (레시피 구매)");
         }
         else
         {
-            Debug.Log("��尡 �����Ͽ� �����Ǹ� ������ �� �����ϴ�.");
-            NotificationController.instance.ShowNotification("��尡 �����մϴ�!");
+            Debug.Log("골드가 부족하여 레시피를 구매할 수 없습니다.");
+            NotificationController.instance.ShowNotification("골드가 부족합니다!");
         }
     }
 }

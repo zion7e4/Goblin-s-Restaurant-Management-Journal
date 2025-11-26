@@ -94,20 +94,6 @@ public class ShopManager : MonoBehaviour
         return null;
     }
 
-    public void RefreshTodayShop()
-    {
-        if (GameManager.instance.totalGoldAmount >= refreshCost)
-        {
-            GameManager.instance.SpendGold(refreshCost);
-            GenerateTodayItems(FameManager.instance.CurrentFamePoints);
-            NotificationController.instance.ShowNotification($"상점 목록 새로고침!\n-{refreshCost} G");
-        }
-        else
-        {
-            NotificationController.instance.ShowNotification("새로고침 비용이 부족합니다!");
-        }
-    }
-
     public bool PurchaseItem(GeneratedShopItem item, int quantity)
     {
         if (item.isSoldOut) return false;
@@ -127,19 +113,16 @@ public class ShopManager : MonoBehaviour
         {
             GameManager.instance.SpendGold(totalPrice);
 
-            if (item.ItemType == ShopItemType.Ingredient)
+            if (item.ItemType == ShopItemType.Ingredient && totalPrice != 0)
             {
                 // 재료 구매
                 InventoryManager.instance.AddIngredient(item.ItemID, quantity);
                 item.CurrentStock -= quantity; // 재고 차감
-                NotificationController.instance.ShowNotification($"{item.ingredientData.ingredientName} {quantity}개 구매!");
+                NotificationController.instance.ShowNotification($"-{totalPrice} G\n ({item.ingredientData.ingredientName} {quantity}개 구매)");
             }
-            else // Recipe
+            else if (totalPrice == 0)
             {
-                // 레시피 구매 (quantity는 1임)
-                RecipeManager.instance.UnlockRecipe(item.recipeData.id);
-                item.CurrentStock = 0; // 즉시 품절
-                NotificationController.instance.ShowNotification($"레시피 '{item.recipeData.recipeName}' 획득!");
+                
             }
             return true; // 구매 성공
         }
