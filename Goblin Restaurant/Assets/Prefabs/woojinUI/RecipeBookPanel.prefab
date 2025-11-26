@@ -1512,8 +1512,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uC218\uC9D1 \uD604\uD669:"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 83390fdb150211e4ba8d46fcd6f5cd68, type: 2}
-  m_sharedMaterial: {fileID: 1051251644626430405, guid: 83390fdb150211e4ba8d46fcd6f5cd68, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6b357fca14a1b6c408de09997c8ce91b, type: 2}
+  m_sharedMaterial: {fileID: -3418813170745583811, guid: 6b357fca14a1b6c408de09997c8ce91b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2998,8 +2998,9 @@ MonoBehaviour:
   r_NeedIngredientGrid: {fileID: 9020196909664864540}
   simpleIconPrefab: {fileID: 1161251540447001599, guid: 161776bd2ff5193458ed00dd96081c57, type: 3}
   enhanceButton: {fileID: 7953547457071713723}
-  upgradeInfoPanel: {fileID: 1484570994327631189}
   nextUpgradeInfoText: {fileID: 7919028887139989560}
+  upgradeInfoPanel: {fileID: 1484570994327631189}
+  tooltipText: {fileID: 0}
 --- !u!1 &8533480169813924586
 GameObject:
   m_ObjectHideFlags: 0

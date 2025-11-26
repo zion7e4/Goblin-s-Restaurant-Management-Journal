@@ -28,6 +28,7 @@ public class RecipeListButton : MonoBehaviour
         // 1. 기본 정보 (이름, 아이콘)
         if (nameText != null) nameText.text = data.recipeName;
         if (recipeIcon != null) recipeIcon.sprite = data.icon;
+        recipeIcon.preserveAspect = true;
 
         // 2. 보유 여부에 따른 시각적 처리 (핵심!)
         if (isOwned)

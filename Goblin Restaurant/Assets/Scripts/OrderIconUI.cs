@@ -10,6 +10,7 @@ public class OrderIconUI : MonoBehaviour
         if (iconImage != null && sprite != null)
         {
             iconImage.sprite = sprite;
+            iconImage.preserveAspect = true;
         }
     }
 }
