@@ -174,6 +174,7 @@ public class RecipeBook_UI : MonoBehaviour
         foreach (var req in data.requiredIngredients)
         {
             GameObject iconObj = Instantiate(simpleIconPrefab, r_NeedIngredientGrid);
+            
             IngredientData ingData = GameDataManager.instance.GetIngredientDataById(req.ingredientID);
             if (ingData != null)
             {

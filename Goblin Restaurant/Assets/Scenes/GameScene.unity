@@ -7900,7 +7900,6 @@ GameObject:
   - component: {fileID: 809728578}
   - component: {fileID: 809728579}
   - component: {fileID: 809728580}
-  - component: {fileID: 809728581}
   - component: {fileID: 809728582}
   - component: {fileID: 809728583}
   - component: {fileID: 809728584}
@@ -8027,19 +8026,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FameManager
   currentFamePoints: 0
   currentFameLevel: 0
---- !u!114 &809728581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 809728573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d88c9bfd5b99a54d8f14ed69e504957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TMP_FontChanger
-  FontAsset: {fileID: 11400000, guid: 157247b3519bab246beb5590a1b489d6, type: 2}
 --- !u!114 &809728582
 MonoBehaviour:
   m_ObjectHideFlags: 0

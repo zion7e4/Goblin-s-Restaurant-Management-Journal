@@ -11,9 +11,6 @@ public class IngredientData : ScriptableObject
     public string ingredientName;
     public Sprite icon;
 
-    [Header("���� ǥ�ÿ�")]
-    [TextArea] public string description; // ���̾������� Page 8 ��� ����
-
     [Header("��� ��� �� ����")]
     public Rarity rarity; // ����� ��͵� (�Ϲ�, ����, ���, ����)
     public int buyPrice; // �������� ������ ���� ����

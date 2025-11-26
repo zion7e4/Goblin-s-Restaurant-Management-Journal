@@ -8,7 +8,7 @@ public static class RarityExtensions
     {
         switch (rarity)
         { 
-            case Rarity.common:      return "일반";
+            case Rarity.Common:      return "일반";
             case Rarity.Uncommon:    return "고급";
             case Rarity.Rare:        return "희귀"; // (만약 있다면)
             case Rarity.Legendary:   return "전설";
