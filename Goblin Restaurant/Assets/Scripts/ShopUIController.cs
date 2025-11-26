@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,38 +7,38 @@ using System.Text;
 
 public class ShopUIController : MonoBehaviour
 {
-    [Header("¸ÞÀÎ ÅÇ ¹öÆ°")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Æ°")]
     public Button recipeTabButton;
     public Button ingredientTabButton;
-    public Button todayShopTabButton; // "¿À´ÃÀÇ »óÇ°" ÅÇ ¹öÆ°
+    public Button todayShopTabButton; // "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç°" ï¿½ï¿½ ï¿½ï¿½Æ°
 
-    [Header("ÅÇ ÆÐ³Î")]
-    public GameObject recipeShopPanel; // "·¹½ÃÇÇ" ÅÇ ÆÐ³Î
-    public GameObject ingredientShopPanel; // "Àç·á" ÅÇ ÆÐ³Î
-    public GameObject todayShopPanel; // "¿À´ÃÀÇ »óÇ°" ÅÇ ÆÐ³Î
+    [Header("ï¿½ï¿½ ï¿½Ð³ï¿½")]
+    public GameObject recipeShopPanel; // "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" ï¿½ï¿½ ï¿½Ð³ï¿½
+    public GameObject ingredientShopPanel; // "ï¿½ï¿½ï¿½" ï¿½ï¿½ ï¿½Ð³ï¿½
+    public GameObject todayShopPanel; // "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç°" ï¿½ï¿½ ï¿½Ð³ï¿½
 
-    [Header("1. Àç·á ÅÇ (±âº»)")]
-    public GameObject basicIngredientItemPrefab; // (ShopIngredientItemUI.cs ÇÁ¸®ÆÕ)
+    [Header("1. ï¿½ï¿½ï¿½ ï¿½ï¿½ (ï¿½âº»)")]
+    public GameObject basicIngredientItemPrefab; // (ShopIngredientItemUI.cs ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
     public Transform basicIngredientContentParent;
-    public Button bulkPurchaseButton; // ÀÏ°ý±¸¸Å ¹öÆ°
+    public Button bulkPurchaseButton; // ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°
     public TextMeshProUGUI bulkTotalCostText;
     private List<ShopIngredientItemUI> spawnedBasicItems = new List<ShopIngredientItemUI>();
 
-    [Header("2. ¿À´ÃÀÇ »óÇ° ÅÇ (Æ¯¼ö Àç·á)")]
-    public GameObject todayShopItemPrefab; // (TodayShopItemUI.cs ÇÁ¸®ÆÕ)
-    public Transform todayShopContentParent; // "¿À´ÃÀÇ »óÇ°" ½ºÅ©·Ñºä Content
+    [Header("2. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç° ï¿½ï¿½ (Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½)")]
+    public GameObject todayShopItemPrefab; // (TodayShopItemUI.cs ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+    public Transform todayShopContentParent; // "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç°" ï¿½ï¿½Å©ï¿½Ñºï¿½ Content
 
-    [Header("3. ·¹½ÃÇÇ ÅÇ (¿À´ÃÀÇ ·¹½ÃÇÇ)")]
+    [Header("3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
     public GameObject basicRecipeItemPrefab;
     public Transform todayRecipeContentParent;
     public Transform permanentRecipeContentParent;
-    // (todayShopItemPrefabÀ» ·¹½ÃÇÇ ÅÇ¿¡¼­µµ °ø¿ëÀ¸·Î »ç¿ëÇÕ´Ï´Ù)
+    // (todayShopItemPrefabï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½)
 
     void Awake()
     {
         recipeTabButton.onClick.AddListener(SwitchToRecipeTab);
         ingredientTabButton.onClick.AddListener(SwitchToIngredientTab);
-        todayShopTabButton.onClick.AddListener(SwitchToTodayShopTab); // [Ãß°¡]
+        todayShopTabButton.onClick.AddListener(SwitchToTodayShopTab); // [ï¿½ß°ï¿½]
 
         if (bulkPurchaseButton != null)
         {
@@ -62,7 +62,7 @@ public class ShopUIController : MonoBehaviour
     {
         if (recipeShopPanel != null) recipeShopPanel.SetActive(false);
         if (ingredientShopPanel != null) ingredientShopPanel.SetActive(false);
-        if (todayShopPanel != null) todayShopPanel.SetActive(false); // [Ãß°¡]
+        if (todayShopPanel != null) todayShopPanel.SetActive(false); // [ï¿½ß°ï¿½]
 
         if (bulkPurchaseButton != null) bulkPurchaseButton.gameObject.SetActive(false);
         if (bulkTotalCostText != null) bulkTotalCostText.gameObject.SetActive(false);
@@ -72,7 +72,7 @@ public class ShopUIController : MonoBehaviour
     {
         recipeShopPanel.SetActive(true);
         ingredientShopPanel.SetActive(false);
-        todayShopPanel.SetActive(false); // [Ãß°¡]
+        todayShopPanel.SetActive(false); // [ï¿½ß°ï¿½]
 
         if (bulkPurchaseButton != null) bulkPurchaseButton.gameObject.SetActive(false);
         if (bulkTotalCostText != null) bulkTotalCostText.gameObject.SetActive(false);
@@ -84,7 +84,7 @@ public class ShopUIController : MonoBehaviour
     {
         recipeShopPanel.SetActive(false);
         ingredientShopPanel.SetActive(true);
-        todayShopPanel.SetActive(false); // [Ãß°¡]
+        todayShopPanel.SetActive(false); // [ï¿½ß°ï¿½]
 
         if (bulkPurchaseButton != null) bulkPurchaseButton.gameObject.SetActive(true);
         if (bulkTotalCostText != null) bulkTotalCostText.gameObject.SetActive(true);
@@ -133,7 +133,7 @@ public class ShopUIController : MonoBehaviour
 
         if (ShopManager.Instance == null || ShopManager.Instance.recipePool == null)
         {
-            Debug.LogError("ShopManager ¶Ç´Â RecipePoolSO°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogError("ShopManager ï¿½Ç´ï¿½ RecipePoolSOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
@@ -193,22 +193,22 @@ public class ShopUIController : MonoBehaviour
         if (GameManager.instance.totalGoldAmount >= totalCost)
         {
             GameManager.instance.SpendGold(totalCost);
-            StringBuilder sb = new StringBuilder("ÀÏ°ý ±¸¸Å ¿Ï·á:\n");
+            StringBuilder sb = new StringBuilder("ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½:\n");
 
             foreach (var item in itemsToBuy)
             {
                 InventoryManager.instance.AddIngredient(item.Key.id, item.Value);
-                sb.AppendLine($"- {item.Key.ingredientName} {item.Value}°³");
+                sb.AppendLine($"- {item.Key.ingredientName} {item.Value}ï¿½ï¿½");
             }
 
-            sb.Append($"\nÃÑ ÁöÃâ: -{totalCost} G");
+            sb.Append($"\nï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: -{totalCost} G");
             NotificationController.instance.ShowNotification(sb.ToString());
             
             PopulateIngredientTab();
         }
         else
         {
-            NotificationController.instance.ShowNotification("°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù!");
+            NotificationController.instance.ShowNotification("ï¿½ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½!");
         }
     }
 
@@ -220,7 +220,7 @@ public class ShopUIController : MonoBehaviour
             totalCost += itemUI.GetCurrentTotalCost();
         }
 
-        if (bulkTotalCostText != null) bulkTotalCostText.text = $"ÃÑÇÕ°è: {totalCost} G";
+        if (bulkTotalCostText != null) bulkTotalCostText.text = $"ï¿½ï¿½ï¿½Õ°ï¿½: {totalCost} G";
         if (bulkPurchaseButton != null) bulkPurchaseButton.interactable = totalCost > 0;
     }
 
@@ -232,14 +232,14 @@ public class ShopUIController : MonoBehaviour
         {
             GameManager.instance.SpendGold(totalPrice);
             InventoryManager.instance.AddIngredient(ingredientData.id, quantity);
-            Debug.Log($"'{ingredientData.ingredientName}' {quantity}°³ ±¸¸Å ¼º°ø!");
+            Debug.Log($"'{ingredientData.ingredientName}' {quantity}ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!");
 
-            NotificationController.instance.ShowNotification($"-{totalPrice} G\n ({ingredientData.ingredientName} {quantity}°³ ±¸¸Å)");
+            NotificationController.instance.ShowNotification($"-{totalPrice} G\n ({ingredientData.ingredientName} {quantity}ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)");
         }
         else
         {
-            Debug.Log("°ñµå°¡ ºÎÁ·ÇÏ¿© Àç·á¸¦ ±¸¸ÅÇÒ ¼ö ¾ø½À´Ï´Ù.");
-            NotificationController.instance.ShowNotification("°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù!");
+            Debug.Log("ï¿½ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½á¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
+            NotificationController.instance.ShowNotification("ï¿½ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½!");
         }
     }
 
@@ -250,16 +250,16 @@ public class ShopUIController : MonoBehaviour
         {
             GameManager.instance.SpendGold(price);
             RecipeManager.instance.UnlockRecipe(recipeData.id);
-            Debug.Log($"'{recipeData.recipeName}' ·¹½ÃÇÇ ±¸¸Å ¼º°ø!");
+            Debug.Log($"'{recipeData.recipeName}' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!");
 
             PopulateRecipeTab();
 
-            NotificationController.instance.ShowNotification($"-{price} G\n (·¹½ÃÇÇ ±¸¸Å)");
+            NotificationController.instance.ShowNotification($"-{price} G\n (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)");
         }
         else
         {
-            Debug.Log("°ñµå°¡ ºÎÁ·ÇÏ¿© ·¹½ÃÇÇ¸¦ ±¸¸ÅÇÒ ¼ö ¾ø½À´Ï´Ù.");
-            NotificationController.instance.ShowNotification("°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù!");
+            Debug.Log("ï¿½ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
+            NotificationController.instance.ShowNotification("ï¿½ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½!");
         }
     }
 }
