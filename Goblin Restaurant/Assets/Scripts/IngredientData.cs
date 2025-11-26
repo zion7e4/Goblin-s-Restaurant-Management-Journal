@@ -1,20 +1,23 @@
 using UnityEngine;
 
-public enum Rarity { common, Uncommon, Rare, Legendary }
+// ï¿½ï¿½ï¿½ (Page 8 ï¿½ï¿½ï¿½ Ç¥ï¿½Ã¿ï¿½)
+public enum Rarity { Common, Uncommon, Rare, Legendary }
 
 [CreateAssetMenu(fileName = "Ingredient", menuName = "Game Data/Ingredient Data")]
-
 public class IngredientData : ScriptableObject
 {
-    [Header("Àç·á °íÀ¯ Á¤º¸")]
-    public string id; // Àç·á¸¦ ±¸ºÐÇÏ´Â °íÀ¯ ID 
-    public string ingredientName; // °ÔÀÓ¿¡ Ç¥½ÃµÉ ÀÌ¸§
-    public Sprite icon; // UI¿¡ Ç¥½ÃµÉ ¾ÆÀÌÄÜ
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    public string id;
+    public string ingredientName;
+    public Sprite icon;
 
-    [Header("Àç·á µî±Þ ¹× °¡°Ý")]
-    public Rarity rarity; // Àç·áÀÇ Èñ±Íµµ (ÀÏ¹Ý, °í±Þ, Èñ±Í, Àü¼³)
-    public int buyPrice; // »óÁ¡¿¡¼­ ±¸¸ÅÇÒ ¶§ÀÇ °¡°Ý
+    [Header("ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½Ã¿ï¿½")]
+    [TextArea] public string description; // ï¿½ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Page 8 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    [TextArea(3, 5)] // ÀÎ½ºÆåÅÍ¿¡¼­ ¿©·¯ ÁÙ·Î º¸±â À§ÇØ TextArea ¼Ó¼º »ç¿ë
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    public Rarity rarity; // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Íµï¿½ (ï¿½Ï¹ï¿½, ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½)
+    public int buyPrice; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+    [TextArea(3, 5)] // ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TextArea ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½
     public string description;
 }

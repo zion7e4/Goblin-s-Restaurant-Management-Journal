@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 9084094141245971557}
   - component: {fileID: 5335154892394829006}
   - component: {fileID: 4028608508384706822}
+  - component: {fileID: 5229562174176533236}
   m_Layer: 0
   m_Name: Goblin
   m_TagString: owner
@@ -93,7 +94,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -115,7 +116,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: -2070692364804167524, guid: 9b5640d6dc05e654688275fe164525f0, type: 3}
+  m_Sprite: {fileID: -4940996344436406240, guid: 0868c01fccd66ea44a012ff7beb4e549, type: 3}
   m_Color: {r: 0.010634471, g: 0.3509434, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -246,3 +247,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.0001, y: 0.0001}
   m_EdgeRadius: 0
+--- !u!95 &5229562174176533236
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3110601555778287819}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: -3032921494710912164, guid: 0868c01fccd66ea44a012ff7beb4e549, type: 3}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

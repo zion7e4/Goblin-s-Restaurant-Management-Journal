@@ -1,239 +1,257 @@
 using UnityEngine;
-using UnityEngine.UI; // Button, Image »ç¿ë
-using TMPro; // TextMeshProUGUI »ç¿ë
-using System.Linq; // .Count() »ç¿ë
-using System.Collections.Generic; // Dictionary »ç¿ë
-using System.Text; // ¡Ú StringBuilder¸¦ »ç¿ëÇÏ±â À§ÇØ Ãß°¡
+using UnityEngine.UI;
+using TMPro;
+using System.Collections.Generic;
+using System.Text;
 
-/// <summary>
-/// ·¹½ÃÇÇ µµ°¨ UIÀÇ ¸ðµç ±â´ÉÀ» °ü¸®ÇÕ´Ï´Ù.
-/// (¼öÁý ÇöÈ², ¸ñ·Ï Ç¥½Ã, »ó¼¼ Á¤º¸, °­È­, ¿­±â/´Ý±â, ´ÙÀ½ °­È­ ºñ¿ë/ÀÌ¸§ Ç¥½Ã)
-/// </summary>
 public class RecipeBook_UI : MonoBehaviour
 {
-    [Header("List Panel (¿ÞÂÊ ¸ñ·Ï)")]
-    [Tooltip("¼öÁý ÇöÈ² ÅØ½ºÆ® (¿¹: 4 / 10 °³)")]
+    [Header("Left ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ UI")]
     [SerializeField] private TextMeshProUGUI collectionStatusText;
-
-    [Tooltip("·¹½ÃÇÇ ¹öÆ° ÇÁ¸®ÆÕÀÌ »ý¼ºµÉ ½ºÅ©·Ñ ºäÀÇ Content")]
     [SerializeField] private Transform recipeContentParent;
-
-    [Tooltip("¸ñ·Ï¿¡ »ç¿ëÇÒ 'ÅØ½ºÆ® ¹öÆ°' ÇÁ¸®ÆÕ (RecipeListButton ½ºÅ©¸³Æ®°¡ ºÙ¾îÀÖ¾î¾ß ÇÔ)")]
     [SerializeField] private GameObject recipeListButtonPrefab;
 
-    [Header("Detail Panel (¿À¸¥ÂÊ »ó¼¼Ã¢)")]
-    [Tooltip("»ó¼¼ Á¤º¸¸¦ Ç¥½ÃÇÒ ÆÐ³Î (¿À¸¥ÂÊ)")]
+    [Header("Right ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ UI")]
     [SerializeField] private GameObject detailPanel;
-    [SerializeField] private Image detailRecipeImage;
-    [SerializeField] private TextMeshProUGUI detailRecipeNameText;
-    [SerializeField] private TextMeshProUGUI detailRecipeDescriptionText;
-    [SerializeField] private TextMeshProUGUI detailRecipeLevelText;
-    [SerializeField] private Button enhanceButton; // °­È­ ¹öÆ°
+    [SerializeField] private Image r_DetailImage;
+    [SerializeField] private TextMeshProUGUI r_Name;
+    [SerializeField] private TextMeshProUGUI r_Desc;
 
-    [Tooltip("°­È­¿¡ ÇÊ¿äÇÑ ±âº» Àç·á¸¦ Ç¥½ÃÇÒ ÅØ½ºÆ®")]
-    [SerializeField] private TextMeshProUGUI detailBaseIngredientsText;
+    [Header("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    [SerializeField] private TextMeshProUGUI r_Info;
+    [SerializeField] private Image[] r_StarImages;
+    [SerializeField] private Sprite starEmptySprite;
+    [SerializeField] private Sprite starFullSprite;
 
-    [Tooltip("´ÙÀ½ °­È­¿¡ ÇÊ¿äÇÑ ºñ¿ë(°ñµå/Àç·á)À» Ç¥½ÃÇÒ ÅØ½ºÆ®")]
-    [SerializeField] private TextMeshProUGUI detailNextUpgradeCostText;
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È­")]
+    [SerializeField] private Transform r_NeedIngredientGrid;
+    [SerializeField] private GameObject simpleIconPrefab;
+    [SerializeField] private Button enhanceButton;
+    [SerializeField] private TextMeshProUGUI nextUpgradeInfoText;
 
-    /// <summary>
-    /// ÇöÀç »ó¼¼Ã¢¿¡¼­ º¸°í ÀÖ´Â ·¹½ÃÇÇÀÇ ID
-    /// </summary>
+    // ï¿½ï¿½ï¿½ï¿½
+    [Header("ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    [SerializeField] private GameObject upgradeInfoPanel;
+    [SerializeField] private TextMeshProUGUI tooltipText; // (Inspector ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½!)
+
+    private string currentTooltipMessage;
     private int currentRecipeID;
 
-    /// <summary>
-    /// UI°¡ ÄÑÁú ¶§¸¶´Ù ¸ñ·ÏÀ» »õ·Î°íÄ§ÇÏ°í »ó¼¼Ã¢À» ¼û±é´Ï´Ù.
-    /// </summary>
-    void OnEnable()
-    {
-        if (detailPanel != null)
-        {
-            detailPanel.SetActive(false);
-        }
-        RefreshBook();
-    }
-
-    /// <summary>
-    /// °ÔÀÓ ½ÃÀÛ ½Ã °­È­ ¹öÆ°¿¡ Å¬¸¯ ÀÌº¥Æ®¸¦ ¿¬°áÇÕ´Ï´Ù.
-    /// </summary>
     void Start()
     {
         if (enhanceButton != null)
-        {
             enhanceButton.onClick.AddListener(OnEnhanceButtonClick);
+
+        if (RecipeManager.instance != null)
+        {
+            RecipeManager.instance.onRecipeUpdated += RefreshBook;
+        }
+
+        if (detailPanel != null) detailPanel.SetActive(false);
+        if (upgradeInfoPanel != null) upgradeInfoPanel.SetActive(false);
+
+        RefreshBook();
+    }
+
+    void OnDestroy()
+    {
+        if (RecipeManager.instance != null)
+        {
+            RecipeManager.instance.onRecipeUpdated -= RefreshBook;
         }
     }
 
-    /// <summary>
-    /// ESC Å° ÀÔ·ÂÀ» °¨ÁöÇÏ¿© ÆÐ³ÎÀ» ´Ý½À´Ï´Ù.
-    /// </summary>
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            ClosePanel();
-        }
+        if (Input.GetKeyDown(KeyCode.Escape)) ClosePanel();
     }
 
-    /// <summary>
-    /// (¿ÜºÎ 'µµ°¨ ¿­±â' ¹öÆ°ÀÌ È£Ãâ) ÆÐ³ÎÀ» È°¼ºÈ­ÇÕ´Ï´Ù.
-    /// </summary>
     public void OpenPanel()
     {
         gameObject.SetActive(true);
-        // OnEnable()ÀÌ ÀÚµ¿À¸·Î È£ÃâµË´Ï´Ù.
+        if (detailPanel != null) detailPanel.SetActive(false);
+        if (upgradeInfoPanel != null) upgradeInfoPanel.SetActive(false);
+        RefreshBook();
     }
 
-    /// <summary>
-    /// (ESC Å° ¶Ç´Â '´Ý±â' ¹öÆ°ÀÌ È£Ãâ) ÆÐ³ÎÀ» ºñÈ°¼ºÈ­ÇÕ´Ï´Ù.
-    /// </summary>
     public void ClosePanel()
     {
-        gameObject.SetActive(false);
+        if (GameManager.instance != null) GameManager.instance.CloseRecipeBook();
+        else gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// '°­È­' ¹öÆ°À» Å¬¸¯ÇßÀ» ¶§ È£ÃâµË´Ï´Ù.
-    /// </summary>
-    void OnEnhanceButtonClick()
-    {
-        // RecipeManager¿¡°Ô ÇöÀç IDÀÇ ·¹½ÃÇÇ °­È­¸¦ ¿äÃ»ÇÕ´Ï´Ù.
-        bool success = RecipeManager.instance.UpgradeRecipe(currentRecipeID);
-
-        // °­È­¿¡ ¼º°øÇß´Ù¸é
-        if (success)
-        {
-            // »ó¼¼ Á¤º¸ UI¸¦ »õ·Î°íÄ§ (·¹º§ Ç¥½Ã µî)
-            ShowRecipeDetails(currentRecipeID);
-
-            // ¸ñ·Ï UIµµ »õ·Î°íÄ§ (¸ñ·ÏÀÇ ·¹º§ ÅØ½ºÆ®µµ ¹Ù²ð ¼ö ÀÖÀ¸¹Ç·Î)
-            RefreshBook();
-        }
-    }
-
-    /// <summary>
-    /// ·¹½ÃÇÇ ¸ñ·Ï(¿ÞÂÊ)À» »õ·Î°íÄ§ÇÕ´Ï´Ù.
-    /// </summary>
+    // ï¿½ï¿½ï¿½ï¿½ [ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ 'ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½'ï¿½ï¿½ ï¿½ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public void RefreshBook()
     {
-        // 1. ±âÁ¸ ¸®½ºÆ® »èÁ¦
-        foreach (Transform child in recipeContentParent)
+        foreach (Transform child in recipeContentParent) Destroy(child.gameObject);
+
+        // 1. ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        List<RecipeData> allRecipes = GameDataManager.instance.GetAllRecipeData();
+        // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (IDï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        var ownedRecipeIDs = RecipeManager.instance.playerRecipes.Keys;
+
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È² ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+        int totalCount = allRecipes.Count;
+        int ownedCount = ownedRecipeIDs.Count;
+        collectionStatusText.text = $"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È²: {ownedCount} / {totalCount}";
+
+        // 3. ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        foreach (var data in allRecipes)
         {
-            Destroy(child.gameObject);
-        }
+            GameObject go = Instantiate(recipeListButtonPrefab, recipeContentParent);
+            RecipeListButton btn = go.GetComponent<RecipeListButton>();
 
-        // 2. º¸À¯ÇÑ ·¹½ÃÇÇ ¸ñ·Ï °¡Á®¿À±â
-        var ownedRecipes = RecipeManager.instance.playerRecipes;
-        if (ownedRecipes == null) return;
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+            bool isOwned = RecipeManager.instance.playerRecipes.ContainsKey(data.id);
 
-        // 3. ¼öÁý ÇöÈ² ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
-        UpdateCollectionStatus(ownedRecipes.Count);
-
-        // 4. ·¹½ÃÇÇ ¸ñ·Ï Ã¤¿ì±â
-        foreach (PlayerRecipe recipe in ownedRecipes.Values)
-        {
-            GameObject itemGO = Instantiate(recipeListButtonPrefab, recipeContentParent);
-            RecipeListButton itemUI = itemGO.GetComponent<RecipeListButton>();
-
-            if (itemUI != null)
-            {
-                itemUI.Setup(recipe, this);
-            }
-            else
-            {
-                Debug.LogError($"'{recipeListButtonPrefab.name}' ÇÁ¸®ÆÕ¿¡ RecipeListButton ½ºÅ©¸³Æ®°¡ ¾ø½À´Ï´Ù!", itemGO);
-            }
+            // ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½Æ®ï¿½Ñ·ï¿½)
+            btn.Setup(data, isOwned, this);
         }
     }
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    /// <summary>
-    /// (RecipeListButtonÀÌ È£Ãâ) »ó¼¼ Á¤º¸ ÆÐ³Î(¿À¸¥ÂÊ)À» ¿±´Ï´Ù.
-    /// </summary>
     public void ShowRecipeDetails(int recipeID)
     {
-        // 1. °­È­ ¹öÆ°ÀÌ ÂüÁ¶ÇÒ ¼ö ÀÖµµ·Ï ÇöÀç ID¸¦ ÀúÀå
         currentRecipeID = recipeID;
 
-        // 2. ¸Å´ÏÀú¿¡¼­ ·¹½ÃÇÇ µ¥ÀÌÅÍ °¡Á®¿À±â
-        if (!RecipeManager.instance.playerRecipes.TryGetValue(recipeID, out PlayerRecipe playerRecipe))
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        RecipeData data = GameDataManager.instance.GetRecipeDataById(recipeID);
+        if (data == null) return;
+
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
+        bool isOwned = RecipeManager.instance.playerRecipes.TryGetValue(recipeID, out PlayerRecipe playerRecipe);
+
+        if (detailPanel != null) detailPanel.SetActive(true);
+
+        // 1. ï¿½Ì¹ï¿½ï¿½ï¿½/ï¿½Ì¸ï¿½/ï¿½ï¿½ï¿½ï¿½ (ï¿½Ìºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+        r_DetailImage.sprite = data.fullImage != null ? data.fullImage : data.icon;
+        r_Name.text = data.recipeName;
+
+        // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½ Ã³ï¿½ï¿½
+        if (isOwned)
         {
-            Debug.LogError($"ID: {recipeID} ¿¡ ÇØ´çÇÏ´Â ·¹½ÃÇÇ¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
-            return;
+            r_DetailImage.color = Color.white; // ï¿½ï¿½ï¿½
+            r_Desc.text = data.description;
+
+            // ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+            int currentLevel = playerRecipe.currentLevel;
+            int currentPrice = RecipeManager.instance.GetRecipeSellingPrice(recipeID);
+
+            r_Info.text = $"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : LV.{currentLevel}\n" +
+                          $"ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½ : {currentPrice} ï¿½ï¿½ï¿½\n" +
+                          $"ï¿½ä¸® ï¿½Ã°ï¿½ : {data.baseCookTime} ï¿½ï¿½";
+
+            // ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
+            ShowStars(currentLevel);
+
+            // ï¿½ï¿½È­ ï¿½ï¿½Æ° È°ï¿½ï¿½È­
+            enhanceButton.interactable = true;
+            enhanceButton.GetComponentInChildren<TextMeshProUGUI>().text = "ï¿½ï¿½ È­";
+
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+            CalculateNextUpgradeInfo(playerRecipe);
+        }
+        else
+        {
+            // [ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½]
+            r_DetailImage.color = Color.black; // ï¿½Ç·ç¿§ Ã³ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½)
+            r_Desc.text = "ï¿½ï¿½ï¿½ï¿½ È¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.";
+            r_Info.text = "???";
+
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            foreach (var star in r_StarImages) star.gameObject.SetActive(false);
+
+            // ï¿½ï¿½È­ ï¿½ï¿½Æ° ï¿½ï¿½È°ï¿½ï¿½È­ ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+            enhanceButton.interactable = false;
+            enhanceButton.GetComponentInChildren<TextMeshProUGUI>().text = "ï¿½ï¿½È¹ï¿½ï¿½";
+
+            currentTooltipMessage = "ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¹ï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½.";
         }
 
-        RecipeData data = playerRecipe.data;
-        int currentLevel = playerRecipe.currentLevel;
-
-        // 3. ±âº» UI Á¤º¸ Ã¤¿ì±â
-        if (detailPanel != null)
+        // 3. ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½Ìºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½Æ®ï¿½ï¿½)
+        // (ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Í´Ù¸ï¿½ if(isOwned) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+        foreach (Transform child in r_NeedIngredientGrid) Destroy(child.gameObject);
+        foreach (var req in data.requiredIngredients)
         {
-            detailRecipeImage.sprite = data.icon;
-            detailRecipeImage.preserveAspect = true;
-            detailRecipeNameText.text = data.recipeName;
-            detailRecipeDescriptionText.text = data.description;
-            detailRecipeLevelText.text = $"ÇöÀç ·¹º§: {currentLevel}";
-        }
-
-        // 4. "±âº» ÇÊ¿ä Àç·á" ÅØ½ºÆ® Ã¤¿ì±â (ID¸¦ ÀÌ¸§À¸·Î º¯È¯)
-        if (detailBaseIngredientsText != null)
-        {
-            StringBuilder sb = new StringBuilder("±âº» Àç·á: \n");
-            foreach (IngredientRequirement req in data.requiredIngredients)
+            GameObject iconObj = Instantiate(simpleIconPrefab, r_NeedIngredientGrid);
+            IngredientData ingData = GameDataManager.instance.GetIngredientDataById(req.ingredientID);
+            if (ingData != null)
             {
-                // GameDataManager¿¡¼­ 'Àç·á µ¥ÀÌÅÍ'¸¦ °¡Á®¿È
-                IngredientData ingredient = GameDataManager.instance.GetIngredientDataById(req.ingredientID);
-
-                string ingredientName = req.ingredientID; // ±âº»°ªÀº ID·Î ¼³Á¤
-                if (ingredient != null)
+                iconObj.GetComponent<Image>().sprite = ingData.icon;
+                // ï¿½Ìºï¿½ï¿½ï¿½ ï¿½Ã¿ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
+                int amount = req.amount;
+                if (isOwned)
                 {
-                    // Àç·á µ¥ÀÌÅÍ¸¦ Ã£¾Ò´Ù¸é 'ÀÌ¸§'À¸·Î ±³Ã¼
-                    // (°¡Á¤: IngredientData.cs¿¡ 'ingredientName' º¯¼ö°¡ ÀÖÀ½)
-                    ingredientName = ingredient.ingredientName;
+                    RecipeLevelEntry entry = GameDataManager.instance.GetRecipeLevelData(playerRecipe.currentLevel);
+                    // (ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
                 }
-
-                sb.AppendLine($"- {ingredientName} {req.amount}°³");
+                iconObj.GetComponentInChildren<TextMeshProUGUI>().text = $"x{amount}";
             }
-            detailBaseIngredientsText.text = sb.ToString();
-        }
-
-        // 5. "´ÙÀ½ °­È­ ÇÊ¿ä Àç·á" ÅØ½ºÆ® Ã¤¿ì±â
-        if (detailNextUpgradeCostText != null)
-        {
-            int nextLevel = currentLevel + 1;
-            RecipeLevelEntry nextLevelData = GameDataManager.instance.GetRecipeLevelData(nextLevel);
-
-            if (nextLevelData == null)
-            {
-                // ÃÖ´ë ·¹º§ÀÌ°Å³ª µ¥ÀÌÅÍ Å×ÀÌºí¿¡ ´ÙÀ½ ·¹º§ Á¤º¸°¡ ¾ø´Â °æ¿ì
-                detailNextUpgradeCostText.text = "ÃÖ´ë ·¹º§ÀÔ´Ï´Ù (Lv.Max)";
-                enhanceButton.interactable = false; // °­È­ ¹öÆ° ºñÈ°¼ºÈ­
-            }
-            else
-            {
-                // ´ÙÀ½ ·¹º§ °­È­ Á¤º¸¸¦ ÅØ½ºÆ®·Î Ç¥½Ã
-                int requiredGold = nextLevelData.Required_Gold;
-                int materialMultiplier = nextLevelData.Required_Item_Count;
-
-                detailNextUpgradeCostText.text = $"´ÙÀ½ °­È­ (Lv.{nextLevel}) ÇÊ¿ä:\n" +
-                                                 $"- °ñµå: {requiredGold} G\n" +
-                                                 $"- Àç·á ¹è¼ö: x{materialMultiplier}";
-                enhanceButton.interactable = true; // °­È­ ¹öÆ° È°¼ºÈ­
-            }
-        }
-
-        // 6. »ó¼¼Ã¢ È°¼ºÈ­
-        if (detailPanel != null)
-        {
-            detailPanel.SetActive(true);
         }
     }
 
-    /// <summary>
-    /// ¼öÁý ÇöÈ² ÅØ½ºÆ®¸¦ ¾÷µ¥ÀÌÆ®ÇÕ´Ï´Ù.
-    /// </summary>
-    private void UpdateCollectionStatus(int acquiredCount)
+    void ShowStars(int level)
     {
-        int totalCount = GameDataManager.instance.GetAllRecipeData().Count();
-        collectionStatusText.text = $"¼öÁý ÇöÈ²: {acquiredCount} / {totalCount} °³";
+        foreach (var star in r_StarImages) star.gameObject.SetActive(true);
+
+        int starCount = 1;
+        if (level >= 40) starCount = 5;
+        else if (level >= 30) starCount = 4;
+        else if (level >= 20) starCount = 3;
+        else if (level >= 10) starCount = 2;
+
+        for (int i = 0; i < r_StarImages.Length; i++)
+        {
+            r_StarImages[i].sprite = (i < starCount) ? starFullSprite : starEmptySprite;
+        }
+    }
+
+    public void ShowTooltip(bool isShow)
+    {
+        if (upgradeInfoPanel != null)
+        {
+            upgradeInfoPanel.SetActive(isShow);
+            if (isShow && tooltipText != null)
+            {
+                tooltipText.text = currentTooltipMessage;
+            }
+        }
+    }
+
+    void OnEnhanceButtonClick()
+    {
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È­ ï¿½Ãµï¿½
+        if (RecipeManager.instance.playerRecipes.ContainsKey(currentRecipeID))
+        {
+            if (RecipeManager.instance.UpgradeRecipe(currentRecipeID))
+            {
+                ShowRecipeDetails(currentRecipeID);
+                RefreshBook();
+                if (upgradeInfoPanel.activeSelf && tooltipText != null)
+                {
+                    tooltipText.text = currentTooltipMessage;
+                }
+            }
+        }
+    }
+
+    void CalculateNextUpgradeInfo(PlayerRecipe recipe)
+    {
+        int currentLv = recipe.currentLevel;
+        int nextLv = currentLv + 1;
+        RecipeLevelEntry entry = GameDataManager.instance.GetRecipeLevelData(nextLv);
+
+        if (entry == null)
+        {
+            currentTooltipMessage = "ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ (Max)";
+            enhanceButton.interactable = false;
+        }
+        else
+        {
+            currentTooltipMessage = $"ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ {currentLv} -> {nextLv}\n" +
+                                    $"ï¿½ä±¸ ï¿½ï¿½ï¿½ : {entry.Required_Gold} G\n" +
+                                    $"ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ : {entry.SuccessRate}%";
+            enhanceButton.interactable = true;
+        }
     }
 }

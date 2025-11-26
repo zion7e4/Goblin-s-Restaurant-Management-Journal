@@ -45,7 +45,7 @@ public class TodayShopItemUI : MonoBehaviour
         this.currentItem = item;
         this.shopController = controller;
 
-        Rarity rarity = Rarity.common;
+        Rarity rarity = Rarity.Common;
 
         if (item.ingredientData != null)
         {
