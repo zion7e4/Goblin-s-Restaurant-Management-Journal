@@ -2903,7 +2903,7 @@ GameObject:
   - component: {fileID: 2358303425346053133}
   - component: {fileID: 3496991332482907464}
   - component: {fileID: 4037897049209749560}
-  - component: {fileID: 8597195106022774266}
+  - component: {fileID: 6461628396437779932}
   m_Layer: 5
   m_Name: RecipeBookPanel
   m_TagString: Untagged
@@ -2972,7 +2972,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8597195106022774266
+--- !u!114 &6461628396437779932
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2981,25 +2981,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 8311103261983744965}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee233e02bc9e6084fb9ba3e010351e8c, type: 3}
+  m_Script: {fileID: 11500000, guid: 67d54f8aeed07064d9994b95d3f9fdfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecipeBook_UI
-  collectionStatusText: {fileID: 5580332331643210402}
-  recipeContentParent: {fileID: 7143029489576971659}
-  recipeListButtonPrefab: {fileID: 4361632563878702794, guid: 2b0d14706ead8d64f9d22140b1acd093, type: 3}
-  detailPanel: {fileID: 7870568265241395045}
-  r_DetailImage: {fileID: 4029907620799445963}
-  r_Name: {fileID: 356742979782038876}
-  r_Desc: {fileID: 3958241668640198913}
-  r_Info: {fileID: 2844076013530715626}
+  collectionStatusText: {fileID: 0}
+  recipeContentParent: {fileID: 0}
+  recipeListButtonPrefab: {fileID: 0}
+  detailPanel: {fileID: 0}
+  r_DetailImage: {fileID: 0}
+  r_Name: {fileID: 0}
+  r_Desc: {fileID: 0}
+  r_Info: {fileID: 0}
   r_StarImages: []
-  starEmptySprite: {fileID: 7089176816025971521, guid: cb2b358e318b1794e9d183a2ff791413, type: 3}
-  starFullSprite: {fileID: -8339944751925473012, guid: 67a5da499f12c704c866b1c60ab98a46, type: 3}
-  r_NeedIngredientGrid: {fileID: 9020196909664864540}
-  simpleIconPrefab: {fileID: 1161251540447001599, guid: 161776bd2ff5193458ed00dd96081c57, type: 3}
-  enhanceButton: {fileID: 7953547457071713723}
-  nextUpgradeInfoText: {fileID: 7919028887139989560}
-  upgradeInfoPanel: {fileID: 1484570994327631189}
+  starEmptySprite: {fileID: 0}
+  starFullSprite: {fileID: 0}
+  r_NeedIngredientGrid: {fileID: 0}
+  simpleIconPrefab: {fileID: 0}
+  enhanceButton: {fileID: 0}
+  nextUpgradeInfoText: {fileID: 0}
+  upgradeInfoPanel: {fileID: 0}
   tooltipText: {fileID: 0}
 --- !u!1 &8533480169813924586
 GameObject:

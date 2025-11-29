@@ -1,0 +1,208 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5838332269128293682
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5838874177715017728}
+  - component: {fileID: 1081441856210285628}
+  - component: {fileID: 8443423506224527599}
+  - component: {fileID: 2687746403424324811}
+  - component: {fileID: -3227432270945655395}
+  - component: {fileID: 8743509305473315064}
+  - component: {fileID: -1954546226221901932}
+  - component: {fileID: 990361182187258041}
+  - component: {fileID: -331096709899271239}
+  - component: {fileID: 8025716511746793662}
+  - component: {fileID: -4842908940241336276}
+  - component: {fileID: 5104985702764227187}
+  m_Layer: 0
+  m_Name: Managers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5838874177715017728
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1081441856210285628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 916cf44af58a80e498259ddbe3d28074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipSystem
+  tooltipPanel: {fileID: 0}
+  tooltipText: {fileID: 0}
+--- !u!114 &8443423506224527599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fc589d71d47ae74293e77dc87f0d881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShopManager
+  specialIngredientPool: {fileID: 11400000, guid: 9131a2183e20e264facebf5a6e3b07f0, type: 2}
+  recipePool: {fileID: 11400000, guid: f05347075ea91cc40bca7c69ac097572, type: 2}
+  ingredientSlotCount: 3
+  refreshCost: 100
+--- !u!114 &2687746403424324811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa949ef6c46a9e44d97c22c62ff07fda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveManager
+--- !u!114 &-3227432270945655395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd23c417f0d3a0c4fa6f2e47e1167866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RecipeManager
+--- !u!114 &8743509305473315064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1a19c4e3232f724b8ab633c12e974a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuPlanner
+  isSoldOut: 0
+--- !u!114 &-1954546226221901932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbabdbdda4b2be240b51c2f7a54db517, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryManager
+--- !u!114 &990361182187258041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a848362ba5454f648a880875492454b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDataManager
+  allRecipeDataList: []
+  recipeLevelTable: {fileID: 0}
+  allIngredientDataList: []
+--- !u!114 &-331096709899271239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cbc1d807bcad8943bf9ac887ee2e27e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FameManager
+  currentFamePoints: 0
+  currentFameLevel: 0
+--- !u!114 &8025716511746793662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 751031f1c65e1514aba28695c1dbb4d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EmployeeUI_Controller
+  employeeSubMenuPanel: {fileID: 0}
+  applicantListPanel: {fileID: 0}
+  manageEmployeePanel: {fileID: 0}
+  Button_OpenHirePanel: {fileID: 0}
+  Button_OpenManagePanel: {fileID: 0}
+  applicantCardPrefab: {fileID: 0}
+  hiredCardPrefab: {fileID: 0}
+  applicantCardParent: {fileID: 0}
+  hiredCardParent: {fileID: 0}
+  normalTabColor: {r: 1, g: 1, b: 1, a: 1}
+  activeTabColor: {r: 0.8, g: 0.9, b: 1, a: 1}
+  Button_DebugLevelUp: {fileID: 0}
+  dismissalConfirmationPanel: {fileID: 0}
+  dismissalNameText: {fileID: 0}
+  Button_ConfirmDismiss: {fileID: 0}
+  Button_CancelDismiss: {fileID: 0}
+--- !u!114 &-4842908940241336276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e88d38e55e9faa4d9a2e53d10529aad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EmployeeManager
+  allSpeciesTemplates: []
+  hiredEmployees: []
+--- !u!114 &5104985702764227187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5838332269128293682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00eb52ccede634b45a5ef119dc08ee34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SynergyManager
+  allSynergies: []
+  activeSynergies: []
