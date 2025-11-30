@@ -11,7 +11,7 @@ public class FameManager : MonoBehaviour
     public float CurrentFamePoints
     {
         get { return currentFamePoints; }
-        private set { currentFamePoints = value; }
+        set { currentFamePoints = value; }
     }
 
     [SerializeField]
