@@ -28,19 +28,10 @@ public class SaveData
     [Serializable]
     public struct EmployeeSaveData
     {
-        public string speciesName; // EmployeeData ScriptableObject's name
-        public string firstName;
-        public int currentLevel;
-        public float currentExperience;
-        public int skillPoints;
-        public int currentSalary;
-        public int currentCookingStat;
-        public int currentServingStat;
-        public int currentCharmStat;
-        public EmployeeRole assignedRole;
-        public EmployeeGrade grade;
-        public bool isProtagonist;
-        public List<string> traitNames;
+        public string name;
+        public int cookStat;
+        public int serveStat;
+        public int charmStat;
     }
     public List<EmployeeSaveData> employees = new List<EmployeeSaveData>();
 }
