@@ -96,40 +96,66 @@ public class ShopManager : MonoBehaviour
 
     public bool PurchaseItem(GeneratedShopItem item, int quantity)
     {
-        if (item.isSoldOut) return false;
+        Debug.Log($"[Shop-1] 구매 시도: {item.ItemID} (타입: {item.ItemType}) x{quantity}");
 
-        // 1. 재고 확인
+        if (item.isSoldOut) 
+        {
+            Debug.Log("[Shop-End] 매진된 상품입니다.");
+            return false;
+        }
+        
         if (item.CurrentStock < quantity)
         {
+            Debug.Log("[Shop-End] 재고가 부족합니다.");
             NotificationController.instance.ShowNotification("재고가 부족합니다!");
             return false;
         }
-
-        // 2. 총 가격 계산
+        
         int totalPrice = item.CurrentPrice * quantity;
-
-        // 3. 골드 확인
+        
+        // 골드 확인
         if (GameManager.instance.totalGoldAmount >= totalPrice)
         {
+            Debug.Log("[Shop-2] 골드 충분함. 결제 진행.");
             GameManager.instance.SpendGold(totalPrice);
 
-            if (item.ItemType == ShopItemType.Ingredient && totalPrice != 0)
+            // 타입 체크
+            if (item.ItemType == ShopItemType.Ingredient)
             {
-                // 재료 구매
+                Debug.Log("[Shop-3] 재료 아이템임. 인벤토리 추가 및 퀘스트 갱신 시도.");
+
                 InventoryManager.instance.AddIngredient(item.ItemID, quantity);
-                item.CurrentStock -= quantity; // 재고 차감
+                item.CurrentStock -= quantity; 
+                
+                // ▼▼▼ 퀘스트 호출 구간 ▼▼▼
+                if (QuestManager.Instance != null)
+                {
+                    Debug.Log($"[Shop-4] QuestManager 발견! UpdateProgress 호출: {item.ItemID}");
+                    QuestManager.Instance.UpdateProgress(QuestTargetType.Collect, item.ItemID, quantity);
+                }
+                else
+                {
+                    Debug.LogError("[Shop-Error] QuestManager.Instance가 NULL입니다! 씬에 QuestManager가 있는지 확인하세요.");
+                }
+                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
                 NotificationController.instance.ShowNotification($"-{totalPrice} G\n ({item.ingredientData.ingredientName} {quantity}개 구매)");
             }
-            else if (totalPrice == 0)
+            else // Recipe
             {
-                
+                Debug.Log("[Shop-3] 레시피 아이템임.");
+                RecipeManager.instance.UnlockRecipe(item.recipeData.id);
+                item.CurrentStock = 0; 
+                NotificationController.instance.ShowNotification($"-{totalPrice} G\n (레시피 구매)");
             }
-            return true; // 구매 성공
+            
+            return true; 
         }
         else
         {
+            Debug.Log($"[Shop-End] 골드 부족 (보유: {GameManager.instance.totalGoldAmount} < 필요: {totalPrice})");
             NotificationController.instance.ShowNotification("골드가 부족합니다!");
-            return false; // 골드 부족
+            return false;
         }
     }
 }

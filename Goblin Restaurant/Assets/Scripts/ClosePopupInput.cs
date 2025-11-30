@@ -12,6 +12,7 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
     public GameObject RecipeIngredientsPanel;
     public GameObject centralUpgradePanel; // 중앙 업그레이드 패널
     public GameObject QuantityPopupPanel;
+    public GameObject QuestPanel;
 
     public GameObject PanelBlocker;
     public GameObject PopupManager;
@@ -71,12 +72,13 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        if (RecipeBookPanel != null && RecipeBookPanel.activeSelf)
+        if (QuestPanel != null && QuestPanel.activeSelf)
         {
-            RecipeBookPanel.SetActive(false);
+            QuestPanel.SetActive(false);
             PanelBlocker.SetActive(false);
             return;
         }
+
 
         if (centralUpgradePanel != null && centralUpgradePanel.activeSelf)
         {

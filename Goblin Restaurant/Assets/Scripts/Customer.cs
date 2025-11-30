@@ -157,7 +157,19 @@ public class Customer : MonoBehaviour
         }
         else
         {
-            Debug.LogError("손님이 주문할 메뉴가 오늘의 메뉴에 하나도 편성되어 있지 않습니다!");
+            
+            Debug.Log("주문 가능한 메뉴가 없어 손님이 화를 내며 떠납니다.");
+
+            if (targetTable != null)
+            {
+                targetTable.GetComponent<Table>().Vacate();
+            }
+
+            if (RestaurantManager.instance != null)
+            {
+                RestaurantManager.instance.customers.Remove(this);
+            }
+
             currentState = CustomerState.Leaving;
         }
     }
@@ -231,6 +243,8 @@ public class Customer : MonoBehaviour
 
         int totalPayment = price + tip;
         GameManager.instance.AddGold(totalPayment);
+
+        QuestManager.Instance.UpdateProgress(QuestTargetType.Count, "누적 주문량", 1);
 
         // 리뷰(말풍선) 표시
         if (RestaurantReviwe != null && iconSpawnPoint != null)

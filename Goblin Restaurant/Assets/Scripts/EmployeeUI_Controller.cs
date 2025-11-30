@@ -512,17 +512,28 @@ public class EmployeeUI_Controller : MonoBehaviour
     /// <param name="newRole">새롭게 선택된 역할 (Unassigned, Kitchen, Hall)</param>
     private void OnRoleChanged(EmployeeInstance employee, EmployeeRole newRole)
     {
-        // 1. 직원의 데이터(EmployeeInstance)에 새 역할을 저장합니다.
+        // 1. 데이터 변경
         employee.assignedRole = newRole;
-        Debug.Log($"[역할 변경] {employee.firstName}의 역할이 {newRole.ToString()}(으)로 지정되었습니다.");
+        Debug.Log($"[역할 변경] {employee.firstName} -> {newRole}");
 
-        // 2. 시너지 매니저를 호출하여 시너지를 즉시 새로고침합니다.
+        // 2. 시너지 갱신
         if (SynergyManager.Instance != null && EmployeeManager.Instance != null)
         {
             SynergyManager.Instance.UpdateActiveSynergies(EmployeeManager.Instance.hiredEmployees);
         }
 
-        // 3. (선택 사항) UI를 새로고침하여 이름 옆에 (Kitchen) 등이 표시되게 할 수 있습니다.
-        // UpdateHiredEmployeeListUI();
+        // ▼▼▼ [추가] 퀘스트 업데이트 (4007번: 직원 배치) ▼▼▼
+        if (QuestManager.Instance != null && EmployeeManager.Instance != null)
+        {
+            // '미지정(Unassigned)'이 아닌, 역할을 가진(Kitchen, Hall) 직원의 수를 셉니다.
+            int assignedCount = EmployeeManager.Instance.hiredEmployees
+                .Count(e => e.assignedRole != EmployeeRole.Unassigned);
+
+            // (중요) CSV 파일의 Target 값과 똑같은 단어를 써야 합니다. 
+            // 예: "직원 배치 수" 또는 "배치된 직원" (CSV를 꼭 확인하세요!)
+            // 여기서는 "직원 배치"라고 가정하고 작성합니다.
+            QuestManager.Instance.SetProgress(QuestTargetType.Count, "배치된 직원 수", assignedCount);
+        }
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
     }
 }

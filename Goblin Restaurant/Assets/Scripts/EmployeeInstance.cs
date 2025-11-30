@@ -19,7 +19,7 @@ public class EmployeeInstance
     /// <summary>
     /// �� ������ ���ΰ����� �����Դϴ�. (�ذ� ������)
     /// </summary>
-    public bool isProtagonist { get; private set; }
+    public bool isProtagonist { get; set; }
 
     /// <summary>
     /// ���� �� �ο��� ������ �̸��Դϴ�.

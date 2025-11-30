@@ -117,6 +117,13 @@ public class RecipeManager : MonoBehaviour
         recipeToUpgrade.currentLevel++;
         Debug.Log($"강화 성공! Lv.{recipeToUpgrade.currentLevel}");
 
+        if (QuestManager.Instance != null)
+        {
+            // QuestManager의 SetProgress를 사용하여 현재 레벨을 전달합니다.
+            // CSV의 target 키워드가 "레시피 레벨"인지 꼭 확인하세요!
+            QuestManager.Instance.SetProgress(QuestTargetType.Level, "레시피 레벨", recipeToUpgrade.currentLevel);
+        }
+
         // UI 갱신 알림
         onRecipeUpdated?.Invoke();
 

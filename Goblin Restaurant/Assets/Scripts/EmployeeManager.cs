@@ -212,6 +212,12 @@ public class EmployeeManager : MonoBehaviour
                 EmployeeUI_Controller.Instance.UpdateApplicantListUI(applicants);
                 EmployeeUI_Controller.Instance.UpdateHiredEmployeeListUI();
             }
+
+            if (QuestManager.Instance != null)
+        {
+            // "고용한 직원 수"라는 키워드는 CSV의 Target과 일치해야 합니다.
+            QuestManager.Instance.SetProgress(QuestTargetType.Collect, "고용한 직원 수", hiredEmployees.Count);
+        }
         }
     }
 
@@ -226,10 +232,13 @@ public class EmployeeManager : MonoBehaviour
             Debug.Log($"{employeeToDismiss.firstName} 직원({employeeToDismiss.BaseData.speciesName})을 해고했습니다.");
 
             // 해고 후 직원 관리 UI를 새로고침합니다.
-            if (EmployeeUI_Controller.Instance != null)
-            {
-                EmployeeUI_Controller.Instance.UpdateHiredEmployeeListUI();
-            }
+            if (QuestManager.Instance != null)
+        {
+            // hiredEmployees 리스트에서 isProtagonist가 false인 사람만 셉니다.
+            int hiredCount = hiredEmployees.Count(e => !e.isProtagonist);
+            
+            QuestManager.Instance.SetProgress(QuestTargetType.Collect, "고용한 직원 수", hiredCount);
+        }
         }
     }
 }

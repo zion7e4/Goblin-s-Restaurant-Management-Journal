@@ -83,6 +83,12 @@ public class FameManager : MonoBehaviour
             }
         }
         if (CurrentFameLevel > 5) CurrentFameLevel = 5;
+
+        if (QuestManager.Instance != null)
+        {
+            // TargetType.Level, 키워드 "명성도 레벨"
+            QuestManager.Instance.SetProgress(QuestTargetType.Level, "식당 명성도 레벨", CurrentFameLevel);
+        }
     }
 
     public float GetProgressToNextLevel()

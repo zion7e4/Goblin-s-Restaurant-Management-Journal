@@ -26,9 +26,18 @@ public class MenuPlanner : MonoBehaviour
 
     public void SetDailyMenu(int slotIndex, PlayerRecipe recipe)
     {
+        Debug.Log("오늘의 메뉴를 설정합니다.");
         if (slotIndex >= 0 && slotIndex < 5)
         {
             dailyMenu[slotIndex] = recipe;
+        }
+
+        if (QuestManager.Instance != null)
+        {
+            int count = dailyMenu.Count(r => r != null);
+            
+            // 문자열이 CSV의 'target' 컬럼과 토씨 하나 틀리지 않고 같아야 합니다!
+            QuestManager.Instance.SetProgress(QuestTargetType.Count, "메뉴 편성 개수", count);
         }
     }
 
@@ -53,6 +62,13 @@ public class MenuPlanner : MonoBehaviour
             {
                 dailyMenuQuantities[recipe.data.id] = quantity;
             }
+        }
+
+        if (QuestManager.Instance != null)
+        {
+            int count = dailyMenu.Count(r => r != null);
+            
+            QuestManager.Instance.SetProgress(QuestTargetType.Count, "메뉴 편성 개수", count);
         }
     }
 

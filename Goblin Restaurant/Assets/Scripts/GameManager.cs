@@ -79,6 +79,7 @@ public class GameManager : MonoBehaviour
     public GameObject recipeShopPanel;
     public GameObject ingredientShopPanel;
     public GameObject RecipeBook;
+    public GameObject QuestPanel;
 
     public Button TimeScaleButton;
     public GameObject panelBlocker;
@@ -88,6 +89,14 @@ public class GameManager : MonoBehaviour
     [Header("직원 UI")]
     [Tooltip("PreparePanel에서 열릴 '직원 서브 메뉴' 패널을 연결하세요.")]
     public GameObject employeeSubMenuPanel;
+
+    [Header("사이드 메뉴 버튼 (인스펙터에서 직접 연결)")]
+    public Button btnRecipeBook;  // 레시피 버튼
+    public Button btnEmployee;    // 직원 버튼
+
+    [Header("기능 해금 상태 (기본값: false)")]
+    public bool isRecipeUnlocked = false;   // 레시피 도감 & 메뉴 편성
+    public bool isEmployeeUnlocked = false; // 직원 관리
 
     private InputSystem_Actions inputActions;
 
@@ -175,6 +184,8 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("[GameManager] ShopManager.Instance가 null입니다.");
         }
+
+        UpdateLockedButtons();
     }
 
     void Update()
@@ -254,14 +265,16 @@ public class GameManager : MonoBehaviour
                 ShopManager.Instance.GenerateTodayItems(FameManager.instance.CurrentFamePoints);
             }
 
-            if (DayCount >= 1)
+            if (isEmployeeUnlocked) // [추가된 조건]
             {
-                float currentFamePoints = FameManager.instance.CurrentFamePoints;
-                EmployeeManager.Instance.GenerateApplicants((int)currentFamePoints);
-
-                if (EmployeeUI_Controller.Instance != null)
+                // if ((DayCount - 1) % 7 == 0 && DayCount > 1)
+                if (DayCount >= 1)
                 {
-                    EmployeeUI_Controller.Instance.OpenPanel();
+                    EmployeeManager.Instance.GenerateApplicants((int)FameManager.instance.CurrentFamePoints);
+                    Debug.Log($"[GameManager] {DayCount}일차 아침, 새로운 지원자들을 생성합니다.");
+                    
+                    if (NotificationController.instance != null)
+                        NotificationController.instance.ShowNotification("새로운 지원자가 도착했습니다!");
                 }
             }
         }
@@ -345,6 +358,8 @@ public class GameManager : MonoBehaviour
         totalGoldAmount += amount;
         todaysGold += amount;
         totalGold.text = totalGoldAmount.ToString();
+
+        QuestManager.Instance.SetProgress(QuestTargetType.Collect, "골드 보유량", totalGoldAmount);
     }
 
     public void SpendGold(int amount)
@@ -386,6 +401,21 @@ public class GameManager : MonoBehaviour
             case 2: Time.timeScale = 0; TimeScaleButtonText.text = "||"; break;
         }
     }
+
+    public void OpenQuestPanel()
+    {
+        if (QuestPanel != null) QuestPanel.SetActive(true);
+        if (panelBlocker != null) panelBlocker.SetActive(true);
+        if (PopupManager != null) PopupManager.SetActive(true);
+    }
+
+    public void CloseQuestPanel()
+    {
+        if (QuestPanel != null) QuestPanel.SetActive(false);
+        if (panelBlocker != null) panelBlocker.SetActive(false);
+        if (PopupManager != null) PopupManager.SetActive(false);
+    }
+
 
     public void OpenRecipeBook()
     {
@@ -566,5 +596,30 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("GameManager: Restaurant Manager가 연결되지 않았습니다!");
         }
+    }
+
+    private void UpdateLockedButtons()
+    {
+        if (btnRecipeBook != null) btnRecipeBook.interactable = isRecipeUnlocked;
+        
+        if (btnEmployee != null) btnEmployee.interactable = isEmployeeUnlocked;
+    }
+
+    public void UnlockRecipeSystem()
+    {
+        isRecipeUnlocked = true;
+        UpdateLockedButtons();
+        
+        if (NotificationController.instance != null) 
+            NotificationController.instance.ShowNotification("레시피 도감 기능이 해금되었습니다!");
+    }
+
+    public void UnlockEmployeeSystem()
+    {
+        isEmployeeUnlocked = true;
+        UpdateLockedButtons(); 
+        
+        if (NotificationController.instance != null) 
+            NotificationController.instance.ShowNotification("직원 관리 기능이 해금되었습니다!");
     }
 }
