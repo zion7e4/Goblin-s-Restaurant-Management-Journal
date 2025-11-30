@@ -34,7 +34,7 @@ public class UpgradePanelController : MonoBehaviour
 
         panel.SetActive(true);
         panel.transform.SetAsLastSibling();
-        GameManager.instance.PanelBlocker.SetActive(true);
+        GameManager.instance.panelBlocker.SetActive(true);
     }
 
     private void OnConfirm()
@@ -62,6 +62,6 @@ public class UpgradePanelController : MonoBehaviour
     private void HidePanel()
     {
         panel.SetActive(false);
-        GameManager.instance.PanelBlocker.SetActive(false);
+        GameManager.instance.panelBlocker.SetActive(false);
     }
 }
