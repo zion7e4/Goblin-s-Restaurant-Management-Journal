@@ -294,7 +294,6 @@ GameObject:
   - component: {fileID: 27131086}
   - component: {fileID: 27131085}
   - component: {fileID: 27131084}
-  - component: {fileID: 27131087}
   m_Layer: 5
   m_Name: RecipeButton
   m_TagString: Untagged
@@ -416,19 +415,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 27131082}
   m_CullTransparentMesh: 1
---- !u!114 &27131087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 27131082}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9fc2987429372a4ca01a15c9c29bb19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GlobalButton
-  buttonType: 9
 --- !u!1 &27302157 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 396901278571882632, guid: d01caf345a318174fbb31e068474a4cb, type: 3}
@@ -519,7 +505,6 @@ GameObject:
   - component: {fileID: 36498494}
   - component: {fileID: 36498493}
   - component: {fileID: 36498492}
-  - component: {fileID: 36498495}
   m_Layer: 5
   m_Name: Recipe
   m_TagString: Untagged
@@ -642,19 +627,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 36498490}
   m_CullTransparentMesh: 1
---- !u!114 &36498495
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36498490}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9fc2987429372a4ca01a15c9c29bb19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GlobalButton
-  buttonType: 4
 --- !u!1 &51753542
 GameObject:
   m_ObjectHideFlags: 0
@@ -5290,7 +5262,6 @@ GameObject:
   - component: {fileID: 604768737}
   - component: {fileID: 604768736}
   - component: {fileID: 604768735}
-  - component: {fileID: 604768738}
   m_Layer: 5
   m_Name: OpenButton
   m_TagString: Untagged
@@ -5412,19 +5383,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 604768733}
   m_CullTransparentMesh: 1
---- !u!114 &604768738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 604768733}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9fc2987429372a4ca01a15c9c29bb19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GlobalButton
-  buttonType: 0
 --- !u!1 &619166090
 GameObject:
   m_ObjectHideFlags: 0
@@ -6967,7 +6925,6 @@ GameObject:
   - component: {fileID: 767156688}
   - component: {fileID: 767156687}
   - component: {fileID: 767156686}
-  - component: {fileID: 767156689}
   m_Layer: 5
   m_Name: Store
   m_TagString: Untagged
@@ -7089,19 +7046,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 767156684}
   m_CullTransparentMesh: 1
---- !u!114 &767156689
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 767156684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9fc2987429372a4ca01a15c9c29bb19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GlobalButton
-  buttonType: 7
 --- !u!1 &771849269
 GameObject:
   m_ObjectHideFlags: 0
@@ -9032,7 +8976,6 @@ GameObject:
   - component: {fileID: 1018134190}
   - component: {fileID: 1018134189}
   - component: {fileID: 1018134188}
-  - component: {fileID: 1018134191}
   m_Layer: 5
   m_Name: ShowMenuPlanner
   m_TagString: Untagged
@@ -9154,19 +9097,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1018134186}
   m_CullTransparentMesh: 1
---- !u!114 &1018134191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1018134186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9fc2987429372a4ca01a15c9c29bb19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GlobalButton
-  buttonType: 6
 --- !u!1 &1019374114
 GameObject:
   m_ObjectHideFlags: 0
@@ -9584,7 +9514,6 @@ GameObject:
   - component: {fileID: 1078141604}
   - component: {fileID: 1078141603}
   - component: {fileID: 1078141602}
-  - component: {fileID: 1078141605}
   m_Layer: 5
   m_Name: IngredientsButton
   m_TagString: Untagged
@@ -9706,19 +9635,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1078141600}
   m_CullTransparentMesh: 1
---- !u!114 &1078141605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1078141600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9fc2987429372a4ca01a15c9c29bb19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GlobalButton
-  buttonType: 10
 --- !u!1 &1084973246
 GameObject:
   m_ObjectHideFlags: 0
@@ -11330,7 +11246,6 @@ GameObject:
   - component: {fileID: 1247922195}
   - component: {fileID: 1247922194}
   - component: {fileID: 1247922193}
-  - component: {fileID: 1247922196}
   m_Layer: 5
   m_Name: Employee
   m_TagString: Untagged
@@ -11453,19 +11368,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1247922191}
   m_CullTransparentMesh: 1
---- !u!114 &1247922196
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1247922191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9fc2987429372a4ca01a15c9c29bb19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GlobalButton
-  buttonType: 5
 --- !u!114 &1272059849 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4029907620799445963, guid: d6ff79b2e6ae43c448edbf56ab62d3b9, type: 3}
@@ -13025,60 +12927,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
-<<<<<<< HEAD
-=======
---- !u!114 &1488921540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1488921534}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1db3002795cf034d89959b0f755a59c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameSceneConnector
-  timeText: {fileID: 1564339060}
-  dayText: {fileID: 2064170289}
-  totalGold: {fileID: 1204839684}
-  todaysGoldText: {fileID: 328112275}
-  totalGoldText: {fileID: 1939384892}
-  customerCountText: {fileID: 783668181}
-  TimeScaleButtonText: {fileID: 727612939}
-  OpenButton: {fileID: 604768735}
-  TimeScaleButton: {fileID: 1474165262}
-  upgradeTableButtons:
-  - {fileID: 1616242648}
-  - {fileID: 1960288134}
-  - {fileID: 1003125075}
-  - {fileID: 2115172474}
-  PreparePanel: {fileID: 2117771407}
-  settlementPanel: {fileID: 54454918}
-  menuPlanner: {fileID: 422321821}
-  RecipeSelection: {fileID: 214194043}
-  recipeIngredientsPanel: {fileID: 619166090}
-  shopPanel: {fileID: 576219769}
-  recipeShopPanel: {fileID: 574270569}
-  ingredientShopPanel: {fileID: 2016777626}
-  RecipeBook: {fileID: 1783817225}
-  UpgradeTablePanel: {fileID: 2043181331}
-  employeeSubMenuPanel: {fileID: 3579974002442677777, guid: 85ccae20ab8814542b02fb961240999a, type: 3}
-  PanelBlocker: {fileID: 1777553055}
-  NextDayButton: {fileID: 786050625}
-  CheckButton: {fileID: 459368485}
-  UpgradeTableButton: {fileID: 1616242648}
-  PopupManager: {fileID: 210998733}
-  restaurantManager: {fileID: 125082561}
-  menuPlannerUI: {fileID: 422321825}
-  inventoryUI: {fileID: 1840199833}
-  closePopupInput: {fileID: 1875315517197707594}
-  pauseMenuController: {fileID: 1385528020}
-  btnRecipeBook: {fileID: 36498492}
-  btnMenuPlanner: {fileID: 1018134188}
-  btnShop: {fileID: 767156686}
-  btnEmployee: {fileID: 1247922193}
->>>>>>> parent of f777b1c (Revert "fuck")
 --- !u!1 &1496046467 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4785782250043326467, guid: 875e0b9091f2b71409bfa3236e50b451, type: 3}
@@ -15000,17 +14848,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 5872160719280557603, guid: bf207b8fcce8b5c489047561bf2d9efd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2088587810}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bf207b8fcce8b5c489047561bf2d9efd, type: 3}
---- !u!4 &1707204610 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5872160719280557603, guid: bf207b8fcce8b5c489047561bf2d9efd, type: 3}
-  m_PrefabInstance: {fileID: 1707204609}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1717091157
 GameObject:
   m_ObjectHideFlags: 0
@@ -18282,15 +18122,15 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1707204610}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2092077159041091155, guid: 5225db30b905017429ff685ff3d42495, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.802
+      value: 6.222
       objectReference: {fileID: 0}
     - target: {fileID: 2092077159041091155, guid: 5225db30b905017429ff685ff3d42495, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.26
+      value: 3.73
       objectReference: {fileID: 0}
     - target: {fileID: 2092077159041091155, guid: 5225db30b905017429ff685ff3d42495, type: 3}
       propertyPath: m_LocalPosition.z
@@ -18302,15 +18142,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2092077159041091155, guid: 5225db30b905017429ff685ff3d42495, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2092077159041091155, guid: 5225db30b905017429ff685ff3d42495, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2092077159041091155, guid: 5225db30b905017429ff685ff3d42495, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2092077159041091155, guid: 5225db30b905017429ff685ff3d42495, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -18333,11 +18173,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5225db30b905017429ff685ff3d42495, type: 3}
---- !u!4 &2088587810 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2092077159041091155, guid: 5225db30b905017429ff685ff3d42495, type: 3}
-  m_PrefabInstance: {fileID: 2088587809}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2110920214
 GameObject:
   m_ObjectHideFlags: 0
@@ -18575,11 +18410,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2115172474}
   m_CullTransparentMesh: 1
---- !u!1 &2117771407 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7606401253011076915, guid: 875e0b9091f2b71409bfa3236e50b451, type: 3}
-  m_PrefabInstance: {fileID: 98660797}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2122736912
 GameObject:
   m_ObjectHideFlags: 0
@@ -18985,6 +18815,7 @@ SceneRoots:
   - {fileID: 1065148208}
   - {fileID: 1678798613}
   - {fileID: 362785796}
+  - {fileID: 2088587809}
   - {fileID: 1707204609}
   - {fileID: 1673676685}
   - {fileID: 584677968}
