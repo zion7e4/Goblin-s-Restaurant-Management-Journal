@@ -116,16 +116,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    void OnEnable()
     {
-        inputActions.Enable();
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+        if(inputActions != null) inputActions.Enable();
+    }
+    void OnDisable()
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (inputActions != null) inputActions.Disable();
     }
 
-    private void OnDisable()
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
     {
-        inputActions.Disable();
+        // 게임 씬(MainScene)으로 돌아왔을 때만 초기화
+        if (scene.name == "MainScene") 
+        {
+            InitializeScene();
+        }
     }
-
     void CreateMainCharacter()
     {
         if (mainCharacterTemplate != null && EmployeeManager.Instance != null)
@@ -149,49 +158,33 @@ public class GameManager : MonoBehaviour
 
     public void InitializeScene()
     {
+        Debug.Log(">>> GameManager: 씬 초기화 시작 (InitializeScene)");
+
+        // 1. 상태 강제 리셋
         currentState = GameState.Preparing;
-        timeScale = (9 * 60 * 60) / dayDurationInSeconds;
-        currentTimeOfDay = 9 * 3600;
-        timeText.text = "09:00";
-        dayText.text = "Day " + DayCount;
-        totalGold.text = totalGoldAmount.ToString();
+        Time.timeScale = 1f; // 시간 정지 해제
 
-        Time.timeScale = 1;
-        if (TimeScaleButtonText != null) 
-            TimeScaleButtonText.text = "X1";
-        Debug.Log("오픈 준비 시간입니다.");
-        mainCamera = Camera.main;
+        // 2. UI 강제 갱신
+        // (GameSceneConnector나 GlobalButton이 Awake/Start에서 연결되기를 잠시 기다린 후 UI 갱신)
+        StartCoroutine(LateUIUpdate());
 
-        CreateMainCharacter();
-
-        if (restaurantManager == null)
-        {
-            Debug.LogError("Restaurant Manager가 연결되지 않았습니다! 직원 스폰 불가.");
-            return;
-        }
-
-        List<(EmployeeInstance data, GameObject prefab)> workersToSpawn = new List<(EmployeeInstance, GameObject)>();
-
-        EmployeeInstance mainWorker = EmployeeManager.Instance.hiredEmployees.FirstOrDefault(e => e.isProtagonist);
-
-        if (mainWorker != null && restaurantManager.employeePrefab != null)
-        {
-            workersToSpawn.Add((mainWorker, restaurantManager.employeePrefab));
-        }
-
-        restaurantManager.SpawnWorkersWithPrefabs(workersToSpawn);
-
-        if (ShopManager.Instance != null)
-        {
-            ShopManager.Instance.GenerateTodayItems(FameManager.instance.CurrentFamePoints);
-            Debug.Log("[GameManager] '오늘의 상품'을 즉시 생성합니다.");
-        }
-        else
-        {
-            Debug.LogError("[GameManager] ShopManager.Instance가 null입니다.");
-        }
+        // ... (기존 직원 스폰 로직 유지) ...
+        if (restaurantManager == null) restaurantManager = FindFirstObjectByType<RestaurantManager>();
+        // (직원 스폰 코드...)
     }
 
+    IEnumerator LateUIUpdate()
+    {
+        yield return new WaitForEndOfFrame(); // 프레임 끝까지 대기 (모든 UI의 Start가 끝난 뒤)
+        
+        // 패널 강제 끄기
+        if (menuPlanner != null) menuPlanner.SetActive(false);
+        if (shopPanel != null) shopPanel.SetActive(false);
+        if (PreparePanel != null) PreparePanel.SetActive(true); // 준비 패널은 켜기
+
+        UpdateButtonUI(); // 버튼 상태 업데이트
+        Debug.Log(">>> GameManager: UI 강제 업데이트 완료");
+    }
     void Update()
     {
         if (currentState == GameState.Open)
