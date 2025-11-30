@@ -19,7 +19,7 @@ public class TooltipSystem : MonoBehaviour
 
     void Update()
     {
-        if (tooltipPanel != null && tooltipPanel.activeSelf)
+        if (tooltipPanel.activeSelf)
         {
             // 툴팁 패널의 위치를 현재 마우스 커서 위치로 설정
             tooltipRect.position = Mouse.current.position.ReadValue();
