@@ -14,29 +14,14 @@ public class PauseMenuController : MonoBehaviour
 
     void Awake()
     {
-        // '계속하기' 버튼을 누르면 GameManager를 통해 닫기 명령을 수행
         if (resumeButton != null) resumeButton.onClick.AddListener(() => GameManager.instance.ClosePauseMenu());
         if (toTitleButton != null) toTitleButton.onClick.AddListener(GoToTitle);
         if (toDesktopButton != null) toDesktopButton.onClick.AddListener(QuitGame);
     }
 
-    // ▼▼▼ [추가] GameManager가 호출할 함수들 ▼▼▼
-    public void OpenPauseMenu()
-    {
-        gameObject.SetActive(true); // 패널 켜기
-        Time.timeScale = 0f;        // 시간 정지
-    }
-
-    public void ClosePauseMenu()
-    {
-        Time.timeScale = 1f;        // 시간 정상화
-        gameObject.SetActive(false); // 패널 끄기
-    }
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
     public void GoToTitle()
     {
-        Time.timeScale = 1f; // 시간 정상화 (필수)
+        Time.timeScale = 1f; // 시간 정상화
         SceneManager.LoadScene(titleSceneName);
     }
 
