@@ -13134,7 +13134,7 @@ MonoBehaviour:
   - {fileID: 1960288134}
   - {fileID: 1003125075}
   - {fileID: 2115172474}
-  PreparePanel: {fileID: 2117771407}
+  PreparePanel: {fileID: 642338989}
   settlementPanel: {fileID: 54454918}
   menuPlanner: {fileID: 422321821}
   RecipeSelection: {fileID: 214194043}
@@ -13159,8 +13159,17 @@ MonoBehaviour:
   btnMenuPlanner: {fileID: 1018134188}
   btnShop: {fileID: 767156686}
   btnEmployee: {fileID: 1247922193}
+<<<<<<< HEAD
 =======
 >>>>>>> parent of da8bde4 (.)
+=======
+  btnInventory: {fileID: 0}
+  btnCloseInventory: {fileID: 0}
+  btnCloseRecipeBook: {fileID: 0}
+  btnCloseEmployee: {fileID: 0}
+  btnCloseShop: {fileID: 0}
+  btnCloseMenuPlanner: {fileID: 0}
+>>>>>>> parent of f004c78 (Reapply "fuck")
 --- !u!1 &1496046467 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4785782250043326467, guid: 875e0b9091f2b71409bfa3236e50b451, type: 3}
