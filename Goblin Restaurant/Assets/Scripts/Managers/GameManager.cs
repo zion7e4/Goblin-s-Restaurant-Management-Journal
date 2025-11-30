@@ -150,14 +150,11 @@ public class GameManager : MonoBehaviour
 
     public void InitializeScene()
     {
-<<<<<<< HEAD
         Debug.Log(">>> GameManager: 씬 초기화 시작 (InitializeScene)");
 
         // 1. 상태 강제 리셋
 =======
 >>>>>>> parent of da8bde4 (.):Goblin Restaurant/Assets/Scripts/GameManager.cs
-=======
->>>>>>> parent of f004c78 (Reapply "fuck")
         currentState = GameState.Preparing;
         timeScale = (9 * 60 * 60) / dayDurationInSeconds;
         currentTimeOfDay = 9 * 3600;
@@ -165,7 +162,6 @@ public class GameManager : MonoBehaviour
         dayText.text = "Day " + DayCount;
         totalGold.text = totalGoldAmount.ToString();
 
-<<<<<<< HEAD
 <<<<<<< HEAD:Goblin Restaurant/Assets/Scripts/Managers/GameManager.cs
         // 2. UI 강제 갱신
         // (GameSceneConnector나 GlobalButton이 Awake/Start에서 연결되기를 잠시 기다린 후 UI 갱신)
@@ -180,14 +176,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("오픈 준비 시간입니다.");
         mainCamera = Camera.main;
 
-=======
-        Time.timeScale = 1;
-        if (TimeScaleButtonText != null) 
-            TimeScaleButtonText.text = "X1";
-        Debug.Log("오픈 준비 시간입니다.");
-        mainCamera = Camera.main;
-
->>>>>>> parent of f004c78 (Reapply "fuck")
         CreateMainCharacter();
 
         if (restaurantManager == null)
@@ -200,10 +188,7 @@ public class GameManager : MonoBehaviour
 
         EmployeeInstance mainWorker = EmployeeManager.Instance.hiredEmployees.FirstOrDefault(e => e.isProtagonist);
 
-<<<<<<< HEAD
         // [수정됨] greenPrefab이 삭제되었으므로, RestaurantManager의 기본 프리팹을 사용하도록 변경
-=======
->>>>>>> parent of f004c78 (Reapply "fuck")
         if (mainWorker != null && restaurantManager.employeePrefab != null)
         {
             workersToSpawn.Add((mainWorker, restaurantManager.employeePrefab));
@@ -220,10 +205,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("[GameManager] ShopManager.Instance가 null입니다.");
         }
-<<<<<<< HEAD
 >>>>>>> parent of da8bde4 (.):Goblin Restaurant/Assets/Scripts/GameManager.cs
-=======
->>>>>>> parent of f004c78 (Reapply "fuck")
     }
 
     void Update()
