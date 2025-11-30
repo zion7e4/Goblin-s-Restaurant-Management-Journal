@@ -35,17 +35,6 @@ public class InventoryUIController : MonoBehaviour
     public Transform usedRecipesContentParent; 
     public GameObject usedRecipeSlotPrefab;    
 
-    private void Awake() // (Start 대신 Awake 권장)
-    {
-        // ▼▼▼ [추가] GameManager에게 나 자신을 등록 ▼▼▼
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.inventoryUI = this;
-            // GameManager에 inventoryPanel GameObject 변수가 있다면:
-            // GameManager.instance.InventoryPanel = this.gameObject;
-        }
-    }
-
     private void OnEnable()
     {
         UpdateInventoryList();

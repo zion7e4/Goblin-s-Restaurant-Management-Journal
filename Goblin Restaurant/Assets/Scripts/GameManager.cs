@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
     public int totalGoldAmount = 0;
     private int todaysGold = 0;
     private int todaysCustomers = 0;
-    public int DayCount = 1;
+    [SerializeField] private int DayCount = 1;
     private Camera mainCamera;
 
     [Header("주인공 설정")]
@@ -91,16 +91,6 @@ public class GameManager : MonoBehaviour
 
     private InputSystem_Actions inputActions;
 
-    [Header("Pause Menu")]
-    public PauseMenuController pauseMenuController; // 인스펙터에서 연결
-    [Header("UI Controllers (Auto Assigned)")]
-    public ClosePopupInput closePopupInput;        
-
-    public bool IsPauseMenuOpen 
-    { 
-        get { return pauseMenuController != null && pauseMenuController.gameObject.activeSelf; } 
-    }
-
     private void Awake()
     {
         inputActions = new InputSystem_Actions();
@@ -144,11 +134,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        
-    }
-
-    public void InitializeScene()
-    {
         currentState = GameState.Preparing;
         timeScale = (9 * 60 * 60) / dayDurationInSeconds;
         currentTimeOfDay = 9 * 3600;
@@ -157,8 +142,7 @@ public class GameManager : MonoBehaviour
         totalGold.text = totalGoldAmount.ToString();
 
         Time.timeScale = 1;
-        if (TimeScaleButtonText != null) 
-            TimeScaleButtonText.text = "X1";
+        TimeScaleButtonText.text = "X1";
         Debug.Log("오픈 준비 시간입니다.");
         mainCamera = Camera.main;
 
@@ -174,6 +158,7 @@ public class GameManager : MonoBehaviour
 
         EmployeeInstance mainWorker = EmployeeManager.Instance.hiredEmployees.FirstOrDefault(e => e.isProtagonist);
 
+        // [수정됨] greenPrefab이 삭제되었으므로, RestaurantManager의 기본 프리팹을 사용하도록 변경
         if (mainWorker != null && restaurantManager.employeePrefab != null)
         {
             workersToSpawn.Add((mainWorker, restaurantManager.employeePrefab));
@@ -279,20 +264,11 @@ public class GameManager : MonoBehaviour
                     EmployeeUI_Controller.Instance.OpenPanel();
                 }
             }
-
-            if (SaveManager.Instance != null)
-            {
-                SaveManager.Instance.SaveGame();
-            }
         }
     }
 
     private void UpdateButtonUI()
     {
-        if (PreparePanel == null) return; 
-
-        PreparePanel.SetActive(currentState == GameState.Preparing);
-
         PreparePanel.SetActive(currentState == GameState.Preparing);
         NextDayButton.SetActive(currentState == GameState.Settlement);
 
@@ -368,19 +344,13 @@ public class GameManager : MonoBehaviour
     {
         totalGoldAmount += amount;
         todaysGold += amount;
-        if (totalGold != null)
-        {
-            totalGold.text = totalGoldAmount.ToString();
-        }
+        totalGold.text = totalGoldAmount.ToString();
     }
 
     public void SpendGold(int amount)
     {
         totalGoldAmount -= amount;
-        if (totalGold != null)
-        {
-            totalGold.text = totalGoldAmount.ToString();
-        }
+        totalGold.text = totalGoldAmount.ToString();
     }
 
     public void RefundIngredients(RecipeData recipe)
@@ -545,28 +515,6 @@ public class GameManager : MonoBehaviour
         }
 
         if (PopupManager != null) PopupManager.SetActive(false);
-    }
-
-    public void OpenPauseMenu()
-    {
-        if (pauseMenuController != null)
-        {
-            pauseMenuController.gameObject.SetActive(true);
-            PopupManager.SetActive(true);
-            panelBlocker.SetActive(true);
-            Time.timeScale = 0f;
-        }
-    }
-
-    public void ClosePauseMenu()
-    {
-        if (pauseMenuController != null)
-        {
-            pauseMenuController.gameObject.SetActive(false);
-            PopupManager.SetActive(false);
-            panelBlocker.SetActive(false);
-            Time.timeScale = 1f;
-        }
     }
 
     private IEnumerator ClearSelectedObjectDeferred()
