@@ -52,15 +52,7 @@ public class GameSceneConnector : MonoBehaviour
     public Button btnMenuPlanner;   // 메뉴 편성 버튼
     public Button btnShop;          // 상점 버튼
     public Button btnEmployee;      // 직원 관리 버튼
-    public Button btnInventory;     // 인벤토리 버튼 (있다면)
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-    [Header("7. 패널 닫기 버튼 (Panel Close Buttons)")]
-    public Button btnCloseInventory;
-    public Button btnCloseRecipeBook;
-    public Button btnCloseEmployee;
-    public Button btnCloseShop;
-    public Button btnCloseMenuPlanner;
 
     void Start()
     {
@@ -102,6 +94,9 @@ public class GameSceneConnector : MonoBehaviour
         GameManager.instance.inventoryUI = inventoryUI;
         GameManager.instance.closePopupInput = closePopupInput;
         GameManager.instance.pauseMenuController = pauseMenuController;
+        GameManager.instance.recipeIngredientsPanel = recipeIngredientsPanel;
+
+
 
         // --- UI 갱신 및 초기화 ---
         GameManager.instance.AddGold(0);
@@ -161,38 +156,6 @@ public class GameSceneConnector : MonoBehaviour
         {
             btnEmployee.onClick.RemoveAllListeners();
             btnEmployee.onClick.AddListener(GameManager.instance.OpenEmployeeSubMenu);
-        }
-        if (btnInventory != null)
-        {
-            btnInventory.onClick.RemoveAllListeners();
-            btnInventory.onClick.AddListener(GameManager.instance.OpenInventoryPanel);
-        }
-
-        // 3. 패널 닫기 버튼
-        if (btnCloseInventory != null)
-        {
-            btnCloseInventory.onClick.RemoveAllListeners();
-            btnCloseInventory.onClick.AddListener(GameManager.instance.CloseInventoryPanel);
-        }
-        if (btnCloseRecipeBook != null)
-        {
-            btnCloseRecipeBook.onClick.RemoveAllListeners();
-            btnCloseRecipeBook.onClick.AddListener(GameManager.instance.CloseRecipeBook);
-        }
-        if (btnCloseEmployee != null)
-        {
-            btnCloseEmployee.onClick.RemoveAllListeners();
-            btnCloseEmployee.onClick.AddListener(GameManager.instance.CloseEmployeeSubMenu);
-        }
-        if (btnCloseShop != null)
-        {
-            btnCloseShop.onClick.RemoveAllListeners();
-            btnCloseShop.onClick.AddListener(GameManager.instance.CloseShopPanel);
-        }
-        if (btnCloseMenuPlanner != null)
-        {
-            btnCloseMenuPlanner.onClick.RemoveAllListeners();
-            btnCloseMenuPlanner.onClick.AddListener(GameManager.instance.CloseMenuPlanner);
         }
 
         Debug.Log("✅ [GameSceneConnector] 모든 UI 연결 및 버튼 이벤트 복구 완료.");

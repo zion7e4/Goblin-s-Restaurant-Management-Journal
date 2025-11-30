@@ -75,6 +75,31 @@ public class SaveManager : MonoBehaviour
             }
         }
 
+        if (EmployeeManager.Instance != null)
+        {
+            data.employees.Clear();
+            foreach (var empInstance in EmployeeManager.Instance.hiredEmployees)
+            {
+                var empSaveData = new SaveData.EmployeeSaveData
+                {
+                    speciesName = empInstance.BaseData.name, // Using ScriptableObject's name as ID
+                    firstName = empInstance.firstName,
+                    currentLevel = empInstance.currentLevel,
+                    currentExperience = empInstance.currentExperience,
+                    skillPoints = empInstance.skillPoints,
+                    currentSalary = empInstance.currentSalary,
+                    currentCookingStat = empInstance.currentCookingStat,
+                    currentServingStat = empInstance.currentServingStat,
+                    currentCharmStat = empInstance.currentCharmStat,
+                    assignedRole = empInstance.assignedRole,
+                    grade = empInstance.grade,
+                    isProtagonist = empInstance.isProtagonist,
+                    traitNames = empInstance.currentTraits.Select(t => t.name).ToList()
+                };
+                data.employees.Add(empSaveData);
+            }
+        }
+
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(saveFilePath, json);
 
@@ -144,6 +169,11 @@ public class SaveManager : MonoBehaviour
             {
                 RecipeManager.instance.UnlockRecipe(recipeData.id);
             }
+        }
+
+        if (EmployeeManager.Instance != null && data.employees != null)
+        {
+            EmployeeManager.Instance.LoadHiredEmployees(data.employees);
         }
 
         loadedDataBuffer = null;
