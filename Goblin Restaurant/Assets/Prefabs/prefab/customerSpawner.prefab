@@ -42,11 +42,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5936096482905722952}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31cea19bdcc0eb44d962037e426f3c13, type: 3}
+  m_Script: {fileID: 11500000, guid: 404e70d09a1adf24a980c42097fee098, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomerSpawner
-  customerPrefab: {fileID: 4692864309884961495, guid: e3b237fb0ad3448499cbd5a8118434e3, type: 3}
-  spawnPoint: {fileID: 8970576874620857491}
+  customerPrefabs:
+  - {fileID: 4692864309884961495, guid: e3b237fb0ad3448499cbd5a8118434e3, type: 3}
+  - {fileID: 4692864309884961495, guid: 92b6ed2ceeb88034a86f3a54fae97929, type: 3}
+  - {fileID: 4692864309884961495, guid: cc7398e31f5c1f140af0d205977339db, type: 3}
+  - {fileID: 4692864309884961495, guid: eee50b07362d8f049b261ffb99dda20e, type: 3}
+  - {fileID: 4692864309884961495, guid: 01c0c52d1ba4fa34aa6570c0e4d6e676, type: 3}
+  spawnPoint: {fileID: 0}
   spawnInterval: 5
 --- !u!1001 &2541076348111860402
 PrefabInstance:
