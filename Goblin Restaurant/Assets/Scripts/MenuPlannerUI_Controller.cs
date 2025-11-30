@@ -28,12 +28,6 @@ public class MenuPlannerUI_Controller : MonoBehaviour
 
     void Awake()
     {
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.menuPlannerUI = this;
-            GameManager.instance.menuPlanner = this.gameObject;
-        }
-
         if (quantityPopupPanel != null)
         {
             quantityPopup = quantityPopupPanel.GetComponent<QuantityPopupController>();
