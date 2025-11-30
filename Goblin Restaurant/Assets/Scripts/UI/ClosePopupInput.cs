@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
-public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
+public class ClosePopupInput : MonoBehaviour
 {
     [Header("Game UI Panels")]
     public GameObject RecipeBookPanel;
@@ -12,111 +10,58 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
     public GameObject RecipeIngredientsPanel;
     public GameObject centralUpgradePanel; 
     public GameObject QuantityPopupPanel;
+    public GameObject recipeSubMenuPanel; // 추가
 
-    [Header("Blockers & Managers")]
+    [Header("Blockers")]
     public GameObject PanelBlocker;
-    public GameObject PopupManager;
-    
-    private InputSystem_Actions inputActions;
+    public GameObject PopupManager; 
 
-    private void Awake()
-    {
-        inputActions = new InputSystem_Actions();
-    }
-
-    void OnEnable()
-    {
-        inputActions.UI.ClosePopup.performed += OnClosePopup;
-        inputActions.UI.Enable();
-    }
-
-    private void OnDisable()
-    {
-        inputActions.UI.ClosePopup.performed -= OnClosePopup;
-        inputActions.UI.Disable();
-    }
-
-    private void OnClosePopup(InputAction.CallbackContext context)
-    {
-        if (GameManager.instance != null && GameManager.instance.IsPauseMenuOpen)
-        {
-            GameManager.instance.ClosePauseMenu();
-            return;
-        }
-
-        if (TryCloseTopPopup())
-        {
-            return; 
-        }
-
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.OpenPauseMenu();
-        }
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Right)
-        {
-            TryCloseTopPopup();
-        }
-    }
-
+    // 반환값: 닫은게 있으면 true
     public bool TryCloseTopPopup()
     {
         if (QuantityPopupPanel != null && QuantityPopupPanel.activeSelf)
         {
             QuantityPopupPanel.SetActive(false);
-            return true; 
+            return true;
         }
-
+        if (recipeSubMenuPanel != null && recipeSubMenuPanel.activeSelf)
+        {
+            recipeSubMenuPanel.SetActive(false);
+            if(PopupManager) PopupManager.SetActive(false);
+            return true;
+        }
         if (centralUpgradePanel != null && centralUpgradePanel.activeSelf)
         {
-            centralUpgradePanel.GetComponent<UpgradePanelController>().OnCancel();
-            return true;
-        }
-
-        if (MenuPlanner != null && MenuPlanner.activeSelf)
-        {
-            MenuPlanner.SetActive(false);
-            if (PanelBlocker != null) PanelBlocker.SetActive(false);
-            return true;
-        }
-
-        if (RecipeBookPanel != null && RecipeBookPanel.activeSelf)
-        {
-            RecipeBookPanel.SetActive(false);
-            if (PanelBlocker != null) PanelBlocker.SetActive(false);
-            return true;
-        }
-
-        if (ShopPanel != null && ShopPanel.activeSelf)
-        {
-            ShopPanel.SetActive(false);
-            if (PanelBlocker != null) PanelBlocker.SetActive(false);
-            return true;
-        }
-
-        if (InventoryPanel != null && InventoryPanel.activeSelf)
-        {
-            InventoryPanel.SetActive(false);
-            if (PanelBlocker != null) PanelBlocker.SetActive(false);
+            var ctrl = centralUpgradePanel.GetComponent<UpgradePanelController>();
+            if(ctrl) ctrl.OnCancel(); else centralUpgradePanel.SetActive(false);
             return true;
         }
         
-        if (RecipeIngredientsPanel != null && RecipeIngredientsPanel.activeSelf)
-        {
-            RecipeIngredientsPanel.SetActive(false);
-            return true;
-        }
-
+        // 메인 패널들
+        if (ClosePanelIfActive(MenuPlanner)) return true;
+        if (ClosePanelIfActive(RecipeBookPanel)) return true;
+        if (ClosePanelIfActive(ShopPanel)) return true;
+        if (ClosePanelIfActive(InventoryPanel)) return true;
+        if (ClosePanelIfActive(RecipeIngredientsPanel)) return true;
+        
+        // 팝업 매니저 (블로커)
         if (PopupManager != null && PopupManager.activeSelf)
         {
             PopupManager.SetActive(false);
             return true;
         }
 
-        return false; 
+        return false;
+    }
+
+    private bool ClosePanelIfActive(GameObject panel)
+    {
+        if (panel != null && panel.activeSelf)
+        {
+            panel.SetActive(false);
+            if (PanelBlocker != null) PanelBlocker.SetActive(false);
+            return true;
+        }
+        return false;
     }
 }
