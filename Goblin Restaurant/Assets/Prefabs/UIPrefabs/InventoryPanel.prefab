@@ -1897,7 +1897,7 @@ GameObject:
   - component: {fileID: 2995791281690295957}
   - component: {fileID: 2921342115003356618}
   - component: {fileID: 5190552310830017617}
-  - component: {fileID: 1193867446127909501}
+  - component: {fileID: 1073528859000103772}
   m_Layer: 5
   m_Name: InventoryPanel
   m_TagString: Untagged
@@ -1965,7 +1965,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1193867446127909501
+--- !u!114 &1073528859000103772
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1974,25 +1974,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 7098399061146872437}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cb89bff5cc231c44bad9d67c34b1492, type: 3}
+  m_Script: {fileID: 11500000, guid: d9871a2fe4d549a439f76f7c18d9489a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryUIController
-  listPanelRect: {fileID: 0}
+  listPanelRect: {fileID: 4548497558167509202}
   centerPosition: {x: 0, y: 0}
-  leftPosition: {x: -350, y: 0}
+  leftPosition: {x: -550, y: 0}
   animationDuration: 0.3
-  rarityBackgrounds: []
-  inventoryItemPrefab: {fileID: 0}
-  inventoryContentParent: {fileID: 0}
-  detailPanel: {fileID: 0}
-  detailIcon: {fileID: 0}
-  detailNameText: {fileID: 0}
-  detailRarityText: {fileID: 0}
-  detailRarityBackground: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
-  detailQuantityText: {fileID: 0}
-  usedRecipesContentParent: {fileID: 0}
-  usedRecipeSlotPrefab: {fileID: 0}
+  rarityBackgrounds:
+  - rarity: 0
+    backgroundSprite: {fileID: -7335532595583009275, guid: ae317670fd24d634daad62ae726828dc, type: 3}
+  - rarity: 1
+    backgroundSprite: {fileID: 4403879287122678639, guid: 194a2e5f508f9714787f9eaf48454556, type: 3}
+  - rarity: 2
+    backgroundSprite: {fileID: 8419225994706910630, guid: 35d55a5586f1e184d8b897f3d4f5880f, type: 3}
+  - rarity: 3
+    backgroundSprite: {fileID: -1127003376486549558, guid: 13b49dd2ca315c34881616070f1a83fb, type: 3}
+  inventoryItemPrefab: {fileID: 5498416419632400894, guid: 20dc5a829a2597543b9699236b3f15a4, type: 3}
+  inventoryContentParent: {fileID: 2477950528231956203}
+  detailPanel: {fileID: 5280051903768958014}
+  detailIcon: {fileID: 9179891104938681245}
+  detailNameText: {fileID: 5576692885346632935}
+  detailRarityText: {fileID: 965829836053766518}
+  detailRarityBackground: {fileID: 2284197203095120521}
+  detailDescriptionText: {fileID: 4522123138650135291}
+  detailQuantityText: {fileID: 421520160812590968}
+  usedRecipesContentParent: {fileID: 2239396668848283889}
+  usedRecipeSlotPrefab: {fileID: 8867643515008906766, guid: b03d9d790bcacf6488fda351c42ef47d, type: 3}
 --- !u!1 &7296506653515208355
 GameObject:
   m_ObjectHideFlags: 0
