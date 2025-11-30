@@ -34,6 +34,17 @@ public class ShopUIController : MonoBehaviour
 
     void Awake()
     {
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.shopPanel = this.gameObject; // Shop 패널 오브젝트
+            // GameManager에 ShopUIController 변수가 있다면 그것도 연결
+            // GameManager.instance.shopUI = this; 
+            
+            // 하위 패널들도 찾아서 연결해주면 좋습니다.
+            GameManager.instance.recipeShopPanel = recipeShopPanel;
+            GameManager.instance.ingredientShopPanel = ingredientShopPanel;
+        }
+        
         recipeTabButton.onClick.AddListener(SwitchToRecipeTab);
         ingredientTabButton.onClick.AddListener(SwitchToIngredientTab);
         todayShopTabButton.onClick.AddListener(SwitchToTodayShopTab); 

@@ -37,6 +37,16 @@ public class RecipeBook_UI : MonoBehaviour
     private string currentTooltipMessage;
     private int currentRecipeID;
 
+    void Awake() // Start -> Awake로 변경 권장
+    {
+        // ▼▼▼ [추가] GameManager에게 나 자신을 등록 ▼▼▼
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.RecipeBook = this.gameObject;
+        }
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+    }
+
     void Start()
     {
         if (enhanceButton != null)
