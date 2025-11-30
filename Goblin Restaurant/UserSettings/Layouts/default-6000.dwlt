@@ -19,8 +19,13 @@ MonoBehaviour:
     width: 2048
     height: 1060.8
   m_ShowMode: 4
+<<<<<<< HEAD
   m_Title: Hierarchy
   m_RootView: {fileID: 5}
+=======
+  m_Title: Game
+  m_RootView: {fileID: 3}
+>>>>>>> parent of 3bb2047 (수정 중)
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
   m_Maximized: 1
@@ -34,6 +39,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+<<<<<<< HEAD
   m_Name: InspectorWindow
   m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.DockArea
   m_Children: []
@@ -86,23 +92,31 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+=======
+>>>>>>> parent of 3bb2047 (수정 중)
   m_Name: GameView
   m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.DockArea
   m_Children: []
   m_Position:
     serializedVersion: 2
+<<<<<<< HEAD
     x: 640
     y: 0
     width: 648.80005
+=======
+    x: 587.2
+    y: 0
+    width: 1076
+>>>>>>> parent of 3bb2047 (수정 중)
     height: 692
-  m_MinSize: {x: 201, y: 226}
-  m_MaxSize: {x: 4001, y: 4026}
+  m_MinSize: {x: 202, y: 226}
+  m_MaxSize: {x: 4002, y: 4026}
   m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 16}
   m_Selected: 0
   m_LastSelected: 0
---- !u!114 &5
+--- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,9 +129,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Children:
+  - {fileID: 4}
   - {fileID: 6}
-  - {fileID: 8}
-  - {fileID: 7}
+  - {fileID: 5}
   m_Position:
     serializedVersion: 2
     x: 0
@@ -130,7 +144,7 @@ MonoBehaviour:
   m_TopViewHeight: 36
   m_UseBottomView: 1
   m_BottomViewHeight: 20
---- !u!114 &6
+--- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -152,7 +166,7 @@ MonoBehaviour:
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
   m_LastLoadedLayoutName: 
---- !u!114 &7
+--- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -173,6 +187,58 @@ MonoBehaviour:
     height: 20
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
+--- !u!114 &6
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children:
+  - {fileID: 7}
+  - {fileID: 12}
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 36
+    width: 2048
+    height: 1004.80005
+  m_MinSize: {x: 400, y: 100}
+  m_MaxSize: {x: 32384, y: 16192}
+  vertical: 0
+  controlID: 112
+  draggingID: 0
+--- !u!114 &7
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children:
+  - {fileID: 8}
+  - {fileID: 11}
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1663.2
+    height: 1004.80005
+  m_MinSize: {x: 300, y: 100}
+  m_MaxSize: {x: 24288, y: 16192}
+  vertical: 1
+  controlID: 10693
+  draggingID: 0
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -186,19 +252,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Children:
-  - {fileID: 3}
-  - {fileID: 2}
   - {fileID: 9}
+  - {fileID: 10}
+  - {fileID: 2}
   m_Position:
     serializedVersion: 2
     x: 0
-    y: 36
-    width: 2048
-    height: 1004.80005
-  m_MinSize: {x: 400, y: 100}
-  m_MaxSize: {x: 32384, y: 16192}
+    y: 0
+    width: 1663.2
+    height: 692
+  m_MinSize: {x: 300, y: 50}
+  m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
+<<<<<<< HEAD
   controlID: 69
+=======
+  controlID: 10694
+>>>>>>> parent of 3bb2047 (수정 중)
   draggingID: 0
 --- !u!114 &9
 MonoBehaviour:
@@ -209,9 +279,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 1
-  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
+  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: SceneHierarchyWindow
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   m_Children:
   - {fileID: 10}
   - {fileID: 12}
@@ -241,10 +312,14 @@ MonoBehaviour:
   m_Children:
   - {fileID: 11}
   - {fileID: 4}
+=======
+  m_Children: []
+>>>>>>> parent of 3bb2047 (수정 중)
   m_Position:
     serializedVersion: 2
     x: 0
     y: 0
+<<<<<<< HEAD
     width: 1288.8
     height: 692
   m_MinSize: {x: 200, y: 50}
@@ -253,6 +328,18 @@ MonoBehaviour:
   controlID: 71
   draggingID: 0
 --- !u!114 &11
+=======
+    width: 319.2
+    height: 692
+  m_MinSize: {x: 201, y: 226}
+  m_MaxSize: {x: 4001, y: 4026}
+  m_ActualView: {fileID: 14}
+  m_Panes:
+  - {fileID: 14}
+  m_Selected: 0
+  m_LastSelected: 0
+--- !u!114 &10
+>>>>>>> parent of 3bb2047 (수정 중)
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -267,20 +354,23 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 0
+    x: 319.2
     y: 0
+<<<<<<< HEAD
     width: 640
+=======
+    width: 268
+>>>>>>> parent of 3bb2047 (수정 중)
     height: 692
-  m_MinSize: {x: 202, y: 226}
-  m_MaxSize: {x: 4002, y: 4026}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 15}
   m_Panes:
   - {fileID: 15}
   - {fileID: 17}
-  - {fileID: 13}
   m_Selected: 0
-  m_LastSelected: 2
---- !u!114 &12
+  m_LastSelected: 0
+--- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -297,7 +387,11 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 692
+<<<<<<< HEAD
     width: 1288.8
+=======
+    width: 1663.2
+>>>>>>> parent of 3bb2047 (수정 중)
     height: 312.80005
   m_MinSize: {x: 231, y: 276}
   m_MaxSize: {x: 10001, y: 10026}
@@ -305,6 +399,33 @@ MonoBehaviour:
   m_Panes:
   - {fileID: 18}
   - {fileID: 19}
+  - {fileID: 13}
+  m_Selected: 0
+  m_LastSelected: 1
+--- !u!114 &12
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: InspectorWindow
+  m_EditorClassIdentifier: 
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 1663.2
+    y: 0
+    width: 384.80005
+    height: 1004.80005
+  m_MinSize: {x: 275, y: 100}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_ActualView: {fileID: 20}
+  m_Panes:
+  - {fileID: 20}
   m_Selected: 0
   m_LastSelected: 1
 --- !u!114 &13
@@ -328,10 +449,10 @@ MonoBehaviour:
     m_TextWithWhitespace: "Animator\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 565.60004
-    y: 79.200005
-    width: 734.8
-    height: 666
+    x: 0
+    y: 771.2
+    width: 1662.2
+    height: 286.80005
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -365,14 +486,14 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
-    - e00: 0.6769968
+    - e00: 0.7225
       e01: 0
       e02: 0
-      e03: 26.006622
+      e03: 356.07324
       e10: 0
-      e11: 0.6769968
+      e11: 0.7225
       e12: 0
-      e13: 142.639
+      e13: 210.63327
       e20: 0
       e21: 0
       e22: 1
@@ -436,8 +557,13 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 79.200005
+<<<<<<< HEAD
     width: 311
     height: 978.80005
+=======
+    width: 318.2
+    height: 666
+>>>>>>> parent of 3bb2047 (수정 중)
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -452,26 +578,36 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
+<<<<<<< HEAD
       m_SelectedIDs: e6faffff
       m_LastClickedID: -1306
       m_ExpandedIDs: 20f5ffff02f6ffff0cf6ffff14f6ffff2cf6ffff44f6ffff5cf6ffff64f6ffff76f6ffff80f6ffff98f6ffff9cf6ffff04fbffff94c30000a4c30000b4c30000f4c3000020c400002ac4000084c4000074c50000bac5000068c60000bac60000ccc60000e6c600001cc700006cc70000e4c70000eec7000012c8000032c80000
+=======
+      m_SelectedIDs: 76d10000
+      m_LastClickedID: 53622
+      m_ExpandedIDs: 12ebffff22ebffff5aecffff72ce0000bece0000ecce000014cf000042cf000092cf000066d00000d4d00000ded00000fcd0000062d1000086d10000aed10000e4d10000bad20000
+>>>>>>> parent of 3bb2047 (수정 중)
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: Interior_2 (2)
+        m_OriginalName: Interior_2 (2)
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: -5780
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_TrimLeadingAndTrailingWhitespace: 0
+<<<<<<< HEAD
         m_ClientGUIView: {fileID: 3}
+=======
+        m_ClientGUIView: {fileID: 9}
+>>>>>>> parent of 3bb2047 (수정 중)
       m_SearchString: 
     m_ExpandedScenes: []
     m_CurrenRootInstanceID: 0
@@ -500,9 +636,15 @@ MonoBehaviour:
     m_TextWithWhitespace: "Scene\u200B"
   m_Pos:
     serializedVersion: 2
+<<<<<<< HEAD
     x: 759.2
     y: 79.200005
     width: 638
+=======
+    x: 319.2
+    y: 79.200005
+    width: 266
+>>>>>>> parent of 3bb2047 (수정 중)
     height: 666
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1058,9 +1200,15 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
+<<<<<<< HEAD
     m_Target: {x: 986.06836, y: 540.24963, z: -11.117327}
     speed: 2
     m_Value: {x: 986.06836, y: 540.24963, z: -11.117327}
+=======
+    m_Target: {x: 243.0604, y: 494.85284, z: -3.4596505}
+    speed: 2
+    m_Value: {x: 243.0604, y: 494.85284, z: -3.4596505}
+>>>>>>> parent of 3bb2047 (수정 중)
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1110,9 +1258,15 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
+<<<<<<< HEAD
     m_Target: 1193.1267
     speed: 2
     m_Value: 1193.1267
+=======
+    m_Target: 416.67435
+    speed: 2
+    m_Value: 416.67435
+>>>>>>> parent of 3bb2047 (수정 중)
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1167,9 +1321,15 @@ MonoBehaviour:
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
     serializedVersion: 2
+<<<<<<< HEAD
     x: 1399.2001
     y: 79.200005
     width: 647.80005
+=======
+    x: 587.2
+    y: 79.200005
+    width: 1074
+>>>>>>> parent of 3bb2047 (수정 중)
     height: 666
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1224,10 +1384,17 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 21
+<<<<<<< HEAD
       width: 647.80005
       height: 645
     m_Scale: {x: 0.42174482, y: 0.42174482}
     m_Translation: {x: 323.90002, y: 322.5}
+=======
+      width: 1074
+      height: 645
+    m_Scale: {x: 0.69921875, y: 0.69921875}
+    m_Translation: {x: 537, y: 322.5}
+>>>>>>> parent of 3bb2047 (수정 중)
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
@@ -1235,12 +1402,21 @@ MonoBehaviour:
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
       x: -768
+<<<<<<< HEAD
       y: -764.6804
       width: 1536
       height: 1529.3608
     m_MinimalGUI: 1
   m_defaultScale: 0.42174482
   m_LastWindowPixelSize: {x: 809.75006, y: 832.5}
+=======
+      y: -461.22906
+      width: 1536
+      height: 922.4581
+    m_MinimalGUI: 1
+  m_defaultScale: 0.69921875
+  m_LastWindowPixelSize: {x: 1342.5, y: 832.5}
+>>>>>>> parent of 3bb2047 (수정 중)
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000000000000000000
@@ -1307,9 +1483,15 @@ MonoBehaviour:
     m_TextWithWhitespace: "Project\u200B"
   m_Pos:
     serializedVersion: 2
+<<<<<<< HEAD
     x: 759.2
     y: 771.2
     width: 1287.8
+=======
+    x: 0
+    y: 771.2
+    width: 1662.2
+>>>>>>> parent of 3bb2047 (수정 중)
     height: 286.80005
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1349,10 +1531,17 @@ MonoBehaviour:
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
+<<<<<<< HEAD
     scrollPos: {x: 0, y: 89.19995}
     m_SelectedIDs: 90d10000
     m_LastClickedID: 53648
     m_ExpandedIDs: 0000000086d1000088d100008ad100008cd100008ed1000090d1000092d1000094d1000000ca9a3b
+=======
+    scrollPos: {x: 0, y: 377.19995}
+    m_SelectedIDs: 08e10000
+    m_LastClickedID: 57608
+    m_ExpandedIDs: 000000002ce000002ee0000030e0000032e0000034e0000036e000009ae00000a8e0000000ca9a3b
+>>>>>>> parent of 3bb2047 (수정 중)
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1369,7 +1558,7 @@ MonoBehaviour:
       m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_TrimLeadingAndTrailingWhitespace: 0
-      m_ClientGUIView: {fileID: 12}
+      m_ClientGUIView: {fileID: 11}
     m_SearchString: 
     m_CreateAssetUtility:
       m_EndAction: {fileID: 0}
@@ -1381,7 +1570,11 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
+<<<<<<< HEAD
     m_ExpandedIDs: 0000000086d1000088d100008ad100008cd100008ed1000090d1000092d1000094d10000
+=======
+    m_ExpandedIDs: 000000002ce000002ee0000030e0000032e0000034e0000036e00000
+>>>>>>> parent of 3bb2047 (수정 중)
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1421,7 +1614,11 @@ MonoBehaviour:
     m_ScrollPosition: {x: 0, y: 120.19995}
     m_GridSize: 16
   m_SkipHiddenPackages: 0
+<<<<<<< HEAD
   m_DirectoriesAreaWidth: 213
+=======
+  m_DirectoriesAreaWidth: 207
+>>>>>>> parent of 3bb2047 (수정 중)
 --- !u!114 &19
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1479,9 +1676,15 @@ MonoBehaviour:
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
+<<<<<<< HEAD
     x: 312
     y: 79.200005
     width: 445.2
+=======
+    x: 1663.2001
+    y: 79.200005
+    width: 383.80005
+>>>>>>> parent of 3bb2047 (수정 중)
     height: 978.80005
   m_SerializedDataModeController:
     m_DataMode: 0
