@@ -1,81 +1,85 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
 /// <summary>
-/// ����� ���� ������ ���� ����(����, �ɷ�ġ, Ư�� ��)�� �����ϰ� �����ϴ� ������ Ŭ�����Դϴ�.
-/// �� Ŭ������ �ν��Ͻ��� ���� ���� �� �ε��� ����� �˴ϴ�.
+/// 고용된 직원의 개별 정보(이름, 능력치, 특성 등)를 저장하고 관리하는 데이터 클래스입니다.
+/// 이 클래스의 인스턴스는 게임 내의 한 명의 직원을 나타냅니다.
 /// </summary>
 [System.Serializable]
 public class EmployeeInstance
 {
-    // --- ��� ���� ---
+    // --- 기본 정보 ---
 
     /// <summary>
-    /// �� ������ ������ �Ǵ� ���� ������(ScriptableObject)�Դϴ�. ������ �ʴ� �⺻ ������ ��� �ֽ��ϴ�.
+    /// 이 직원의 기반이 되는 종족 데이터(ScriptableObject)입니다. 변하지 않는 기본 정보를 담고 있습니다.
     /// </summary>
     public EmployeeData BaseData { get; private set; }
 
     /// <summary>
-    /// �� ������ ���ΰ����� �����Դϴ�. (�ذ� ������)
+    /// 이 직원이 주인공인지 여부입니다. (해고 불가능)
     /// </summary>
     public bool isProtagonist { get; set; }
 
     /// <summary>
-    /// ���� �� �ο��� ������ �̸��Դϴ�.
+    /// 게임 내 표시될 직원의 이름입니다.
     /// </summary>
     public string firstName;
 
     /// <summary>
-    /// ������ ���� �����Դϴ�.
+    /// 직원의 현재 레벨입니다.
     /// </summary>
     public int currentLevel;
 
     /// <summary>
-    /// ���� �������� ���� ����ġ�Դϴ�.
+    /// 다음 레벨까지의 현재 경험치입니다.
     /// </summary>
     public float currentExperience;
 
     /// <summary>
-    /// ���� ������ ��ų ����Ʈ�Դϴ�.
+    /// 현재 보유한 스킬 포인트입니다.
     /// </summary>
     public int skillPoints;
 
     /// <summary>
-    /// ������ ���� �޿��Դϴ�.
+    /// 직원의 현재 급여입니다.
     /// </summary>
     public int currentSalary;
 
     /// <summary>
-    /// ������ ���� �丮 �ɷ�ġ�Դϴ�.
+    /// 직원의 현재 요리 능력치입니다.
     /// </summary>
     public int currentCookingStat;
 
     /// <summary>
-    /// ������ ���� ���� �ɷ�ġ�Դϴ�.
+    /// 직원의 현재 서빙 능력치입니다.
     /// </summary>
     public int currentServingStat;
 
     /// <summary>
-    /// ������ ���� �ŷ� �ɷ�ġ�Դϴ�.
+    /// 직원의 현재 매력 능력치입니다.
     /// </summary>
     public int currentCharmStat;
 
     /// <summary>
-    /// ������ ���� ������ Ư�� ����Դϴ�.
+    /// 직원이 현재 보유한 특성 목록입니다.
     /// </summary>
     public List<Trait> currentTraits;
 
     /// <summary>
-    [Tooltip("���� ����â���� �Ҵ�� ���� (�ֹ�, Ȧ)")]
+    /// [Tooltip("직원 관리창에서 할당된 역할 (주방, 홀, 미지정)")]
+    /// </summary>
     public EmployeeRole assignedRole = EmployeeRole.Unassigned;
 
+    /// <summary>
+    /// 직원의 등급입니다. (S, A, B, C)
+    /// </summary>
     public EmployeeGrade grade;
 
-    // --- ������ ---
+    // --- 생성자 ---
 
     /// <summary>
-    /// '������(GeneratedApplicant)' �����͸� �������� ���ο� ���� �ν��Ͻ��� �����մϴ�. (�Ϲ� ����)
+    /// '지원자(GeneratedApplicant)' 데이터를 바탕으로 새로운 직원 인스턴스를 생성합니다. (일반 고용)
     /// </summary>
     public EmployeeInstance(GeneratedApplicant applicant)
     {
@@ -83,70 +87,70 @@ public class EmployeeInstance
         firstName = applicant.GeneratedFirstName;
         currentLevel = 1;
         currentExperience = 0;
-        skillPoints = 0;
+        skillPoints = 5;
         currentSalary = applicant.BaseSpeciesData.salary;
         currentTraits = new List<Trait>(applicant.GeneratedTraits);
         currentCookingStat = applicant.GeneratedCookingStat;
         currentServingStat = applicant.GeneratedServingStat;
         currentCharmStat = applicant.GeneratedCharmStat;
 
-        // �������� ����� �����մϴ�.
+        // 등급(Grade)을 설정합니다.
         this.grade = applicant.grade;
 
-        // �Ϲ� ������ false�� ����
+        // 일반 직원은 false로 설정
         isProtagonist = false;
     }
 
     /// <summary>
-    /// '���ΰ�'ó�� ������ ���ø�(EmployeeData)���� ���� ���� �ν��Ͻ��� �����մϴ�.
+    /// '주인공'처럼 종족 템플릿(EmployeeData)에서 직접 직원 인스턴스를 생성합니다.
     /// </summary>
     public EmployeeInstance(EmployeeData baseData)
     {
         BaseData = baseData;
-        // ������ ���� �ĺ��� ���� �⺻ �̸� ����
+        // 주인공 식별을 위한 기본 이름 설정
         firstName = "Goblin Chef";
         currentLevel = 1;
         currentExperience = 0;
-        skillPoints = 5; // ���ΰ��� �⺻ ��ų ����Ʈ ���� (����)
+        skillPoints = 5; // 주인공은 기본 스킬 포인트 보유 (보너스)
         currentSalary = baseData.salary;
         currentCookingStat = baseData.baseCookingStat;
         currentServingStat = baseData.baseServingStat;
         currentCharmStat = baseData.baseCharmStat;
 
-        // baseData(mainCharacterTemplate)�� ����� Ư��("���ΰ�")��
-        // �� ������ ���� Ư��(currentTraits) ����Ʈ�� �����մϴ�.
+        // baseData(mainCharacterTemplate)에 정의된 특성('주인공')을
+        // 이 직원의 보유 특성(currentTraits) 리스트로 복사합니다.
         currentTraits = new List<Trait>(baseData.possibleTraits);
 
-        // (���ΰ��� �⺻ ����� C������� ����. �ʿ�� ����)
+        // (주인공의 기본 등급은 C등급으로 설정. 필요시 변경)
         this.grade = EmployeeGrade.C;
 
-        // ���ΰ� ���θ� �����մϴ�.
+        // 주인공 여부를 설정합니다.
         isProtagonist = true;
     }
 
-    // --- �ٽ� ��� �Լ� ---
+    // --- 스탯 조작 함수 ---
 
-    // ************* [����ġ ���� �Լ��� ���� �������� �ʾ����Ƿ� ����] *************
+    // ************* [능력치 관련 함수] *************
 
     /// <summary>
-    /// �丮 ���ȿ� ��ų ����Ʈ�� ����ϰ� ������ ������ŵ�ϴ�.
+    /// 요리 스탯에 스킬 포인트를 사용하여 능력을 향상시킵니다.
     /// </summary>
-    /// <returns>���� ������ ���������� true�� ��ȯ�մϴ�.</returns>
+    /// <returns>스탯 상승에 성공하면 true를 반환합니다.</returns>
     public bool SpendSkillPointOnCooking()
     {
         if (skillPoints > 0)
         {
             skillPoints--;
             currentCookingStat++;
-            Debug.Log($"{firstName}: �丮 ������ {currentCookingStat}���� �����߽��ϴ�. ���� ����Ʈ: {skillPoints}");
+            Debug.Log($"{firstName}: 요리 스탯이 {currentCookingStat}로 상승했습니다. 남은 포인트: {skillPoints}");
             return true;
         }
-        Debug.LogWarning($"{firstName}: ��ų ����Ʈ�� �����Ͽ� �丮 ������ �ø� �� �����ϴ�.");
+        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 요리 스탯을 올릴 수 없습니다.");
         return false;
     }
 
     /// <summary>
-    /// ���� ���ȿ� ��ų ����Ʈ�� ����ϰ� ������ ������ŵ�ϴ�.
+    /// 서빙 스탯에 스킬 포인트를 사용하여 능력을 향상시킵니다.
     /// </summary>
     public bool SpendSkillPointOnServing()
     {
@@ -154,15 +158,15 @@ public class EmployeeInstance
         {
             skillPoints--;
             currentServingStat++;
-            Debug.Log($"{firstName}: ���� ������ {currentServingStat}���� �����߽��ϴ�. ���� ����Ʈ: {skillPoints}");
+            Debug.Log($"{firstName}: 서빙 스탯이 {currentServingStat}로 상승했습니다. 남은 포인트: {skillPoints}");
             return true;
         }
-        Debug.LogWarning($"{firstName}: ��ų ����Ʈ�� �����Ͽ� ���� ������ �ø� �� �����ϴ�.");
+        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 서빙 스탯을 올릴 수 없습니다.");
         return false;
     }
 
     /// <summary>
-    /// �ŷ� ���ȿ� ��ų ����Ʈ�� ����ϰ� ������ ������ŵ�ϴ�.
+    /// 매력 스탯에 스킬 포인트를 사용하여 능력을 향상시킵니다.
     /// </summary>
     public bool SpendSkillPointOnCharm()
     {
@@ -170,14 +174,15 @@ public class EmployeeInstance
         {
             skillPoints--;
             currentCharmStat++;
-            Debug.Log($"{firstName}: �ŷ� ������ {currentCharmStat}���� �����߽��ϴ�. ���� ����Ʈ: {skillPoints}");
+            Debug.Log($"{firstName}: 매력 스탯이 {currentCharmStat}로 상승했습니다. 남은 포인트: {skillPoints}");
             return true;
         }
-        Debug.LogWarning($"{firstName}: ��ų ����Ʈ�� �����Ͽ� �ŷ� ������ �ø� �� �����ϴ�.");
+        Debug.LogWarning($"{firstName}: 스킬 포인트가 부족하여 매력 스탯을 올릴 수 없습니다.");
         return false;
     }
+
     /// <summary>
-    /// �� ������ ���� ��� Ư������ '����� ����' ���ʽ� ������ ��ȯ�մϴ�.
+    /// 이 직원이 보유한 모든 특성에서 '재료 절약' 확률의 합을 반환합니다.
     /// </summary>
     public float GetTraitSaveChance()
     {
@@ -186,19 +191,19 @@ public class EmployeeInstance
             return 0f;
         }
 
-        // ��� Ư���� 'ingredientSaveChance' ���� �ջ�
+        // 모든 특성의 'ingredientSaveChance' 값을 합산
         return currentTraits.Sum(trait => trait.ingredientSaveChance);
     }
 
 
     /// <summary>
-    /// (��ȹ�� ����) ������ 1������ ��ŵ�ϴ�.
-    /// ��� �Ҹ�, �ִ� ���� üũ, SP 1 ȹ���� �̷�����ϴ�.
+    /// (기획서 기반) 레벨을 1단계 상승시킵니다.
+    /// 비용 소모, 최대 레벨 체크, SP 1 획득이 이루어집니다.
     /// </summary>
-    /// <returns>������ ���� ����</returns>
+    /// <returns>레벨업 성공 여부</returns>
     public bool TryLevelUp()
     {
-        // 1. ���(Grade)�� ���� �ִ� ������ �����մϴ�. (��ȹ�� ����)
+        // 1. 등급(Grade)에 따른 최대 레벨을 결정합니다. (기획서 참고)
         int maxLevel;
         switch (this.grade)
         {
@@ -215,36 +220,37 @@ public class EmployeeInstance
                 maxLevel = 50;
                 break;
             default:
-                maxLevel = 20; // �⺻�� C���
+                maxLevel = 20; // 기본값 C등급
                 break;
         }
 
         if (currentLevel >= maxLevel)
         {
-            Debug.LogWarning($"{firstName}({this.grade}���)��(��) �̹� �ִ� ����({maxLevel})�Դϴ�.");
+            Debug.LogWarning($"{firstName}({this.grade}등급)은(는) 이미 최대 레벨({maxLevel})입니다.");
             return false;
         }
 
-        // 2. ��� �Ҹ� Ȯ�� (��ȹ�� ����)
-        // (��ȹ�� ����: ���� ���� ��� = ���� ���� ��� * 1.1)
-        int requiredGold = (int)(100 * Mathf.Pow(1.1f, currentLevel - 1)); // (��ȹ�� 10% ���� ���� �ӽ� ����)
+        // 2. 비용 소모 확인 (기획서 기반)
+        // (기획서 내용: 다음 레벨 비용 = 현재 레벨 비용 * 1.1)
+        int requiredGold = (int)(100 * Mathf.Pow(1.1f, currentLevel - 1)); // (기획서 10% 증가 공식 임시 적용)
 
         if (GameManager.instance.totalGoldAmount < requiredGold)
         {
-            Debug.LogWarning($"{firstName} ������ ����: ��尡 �����մϴ�. (�ʿ�: {requiredGold}G)");
+            Debug.LogWarning($"{firstName} 레벨업 실패: 골드가 부족합니다. (필요: {requiredGold}G)");
             return false;
         }
 
-        // 3. ��� �Ҹ� �� ������ ó��
+        // 3. 비용 소모 및 레벨업 처리
         GameManager.instance.SpendGold(requiredGold);
         currentLevel++;
-        skillPoints++; // �ڡڡ� ��ȹ����� SP 1 ���� �ڡڡ�
+        skillPoints++; // ★ 기획서대로 SP 1 지급 ★
 
-        Debug.Log($"[������!] {firstName} (Lv. {currentLevel}), SP +1. (���: {requiredGold}G)");
+        Debug.Log($"[레벨업!] {firstName} (Lv. {currentLevel}), SP +1. (소모: {requiredGold}G)");
         return true;
     }
+
     /// <summary>
-    /// �� ������ ���� ��� Ư������ '����� ��ĥ' ���ʽ� ������ ��ȯ�մϴ�.
+    /// 이 직원이 보유한 모든 특성에서 '재료 훔침' 확률의 합을 반환합니다.
     /// </summary>
     public float GetTraitStealChance()
     {
@@ -253,11 +259,12 @@ public class EmployeeInstance
             return 0f;
         }
 
-        // ��� Ư���� 'ingredientStealChance' ���� �ջ�
+        // 모든 특성의 'ingredientStealChance' 값을 합산
         return currentTraits.Sum(trait => trait.ingredientStealChance);
     }
+
     /// <summary>
-    /// �� ������ ���� ��� Ư������ '�丮 ���� ����' ���ʽ� ������ ��ȯ�մϴ�.
+    /// 이 직원이 보유한 모든 특성에서 '요리 능력치 보정' 배수의 합을 반환합니다.
     /// </summary>
     public float GetTraitCookingStatMultiplier()
     {
@@ -266,11 +273,12 @@ public class EmployeeInstance
             return 0f;
         }
 
-        // ��� Ư���� 'cookingStatMultiplier' ���� �ջ�
+        // 모든 특성의 'cookingStatMultiplier' 값을 합산
         return currentTraits.Sum(trait => trait.cookingStatMultiplier);
     }
+
     /// <summary>
-    /// �� ������ ���� ��� Ư������ '�̵� �ӵ� ����' ���ʽ� ������ ��ȯ�մϴ�.
+    /// 이 직원이 보유한 모든 특성에서 '이동 속도 보정' 배수의 합을 반환합니다.
     /// </summary>
     public float GetTraitMoveSpeedMultiplier()
     {
@@ -278,12 +286,12 @@ public class EmployeeInstance
         {
             return 0f;
         }
-        // "������"(-0.1) ���� Ư���� ���� �ջ�
+        // '느림보'(-0.1) 같은 특성 값의 합산
         return currentTraits.Sum(trait => trait.moveSpeedMultiplier);
     }
 
     /// <summary>
-    /// �� ������ ���� ��� Ư������ '�۾� �ӵ� ����' ���ʽ� ������ ��ȯ�մϴ�.
+    /// 이 직원이 보유한 모든 특성에서 '작업 속도 보정' 배수의 합을 반환합니다.
     /// </summary>
     public float GetTraitWorkSpeedMultiplier()
     {
@@ -291,11 +299,12 @@ public class EmployeeInstance
         {
             return 0f;
         }
-        // "������"(-0.1) ���� Ư���� ���� �ջ�
+        // 특성 값의 합산
         return currentTraits.Sum(trait => trait.workSpeedMultiplier);
     }
+
     /// <summary>
-    /// �� ������ ���� ��� Ư������ '���� ����' ���ʽ�/���Ƽ ������ ��ȯ�մϴ�.
+    /// 이 직원이 보유한 모든 특성에서 '서비스 점수' 보너스/페널티 합을 반환합니다.
     /// </summary>
     public int GetTraitServiceScoreBonus()
     {
@@ -304,11 +313,12 @@ public class EmployeeInstance
             return 0;
         }
 
-        // "�Ǽ�������"(-5)�� "������"(+?) ���� Ư���� ���� �ջ�
+        // '불친절함'(-5)이나 '친절함'(+?) 같은 특성 값의 합산
         return currentTraits.Sum(trait => trait.serviceScoreModifier);
     }
+
     /// <summary>
-    /// �� ������ ���� ��� Ư������ '�� Ȯ��' ���ʽ� ������ ��ȯ�մϴ�.
+    /// 이 직원이 보유한 모든 특성에서 '팁 확률' 보너스 합을 반환합니다.
     /// </summary>
     public float GetTraitTipChanceBonus()
     {
@@ -316,12 +326,12 @@ public class EmployeeInstance
         {
             return 0f;
         }
-        // "��Ȥ" Ư���� ���� �ջ�
+        // '매혹' 특성 등의 값 합산
         return currentTraits.Sum(trait => trait.tipChanceBonus);
     }
 
     /// <summary>
-    /// �� ������ ���� ��� Ư������ '��� ���� ����' ���ʽ� ������ ��ȯ�մϴ�.
+    /// 이 직원이 보유한 모든 특성에서 '모든 능력치 보정' 배수의 합을 반환합니다.
     /// </summary>
     public float GetTraitAllStatMultiplier()
     {
@@ -329,7 +339,7 @@ public class EmployeeInstance
         {
             return 0f;
         }
-        // "���ΰ�" Ư���� ���� �ջ�
+        // '주인공' 특성 등의 값 합산
         return currentTraits.Sum(trait => trait.allStatMultiplier);
     }
 }

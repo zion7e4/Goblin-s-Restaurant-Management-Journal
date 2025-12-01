@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +23,7 @@ public class Employee : MonoBehaviour
     private float repathRate = 0.5f;
     private float lastRepathTime = 0f;
 
+    // 애니메이션 및 렌더링 변수
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
@@ -41,7 +42,6 @@ public class Employee : MonoBehaviour
     [SerializeField] private Table targetTable;
     [SerializeField] private Transform idlePosition;
     private KitchenOrder targetOrder;
-
 
     public void Initialize(EmployeeInstance data, Transform defaultIdlePosition)
     {
@@ -62,9 +62,9 @@ public class Employee : MonoBehaviour
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        if (rb == null) Debug.LogError("Employee 프리팹에 Rigidbody 2D가 없습니다!");
-        if (seeker == null) Debug.LogError("Employee 프리팹에 Seeker 컴포넌트가 없습니다!");
-        if (spriteRenderer == null) Debug.LogError("Employee 프리팹에 SpriteRenderer가 없습니다!");
+        if (rb == null) Debug.LogError("Employee 프리팹에 Rigidbody 2D가 없습니다");
+        if (seeker == null) Debug.LogError("Employee 프리팹에 Seeker 컴포넌트가 없습니다");
+        if (spriteRenderer == null) Debug.LogError("Employee 프리팹에 SpriteRenderer가 없습니다");
 
         if (handPosition == null) handPosition = this.transform;
         if (employeeData == null) currentState = EmployeeState.Idle;
@@ -106,20 +106,20 @@ public class Employee : MonoBehaviour
         }
     }
 
-    // 물리 이동 및 애니메이션 처리는 여기서 함
+    // 물리 이동 및 애니메이션 처리는 여기서 수행
     void FixedUpdate()
     {
-        // 1. 이동해야 하는 상태가 아니면 정지
+        // 1. 이동 중지 상태
         if (currentState == EmployeeState.Idle ||
             currentState == EmployeeState.Cooking ||
             currentState == EmployeeState.Cleaning)
         {
             if (rb != null) rb.linearVelocity = Vector2.zero;
-            if (animator != null) animator.SetBool("IsMoving", false);
+            ResetAnimation(); // 멈춤 애니메이션 재생
             return;
         }
 
-        // 2. A* 경로 이동 로직
+        // 2. A* 경로 계산
         Vector3 targetDest = GetTargetPositionByState();
         if (targetDest == Vector3.zero) return;
 
@@ -135,11 +135,11 @@ public class Employee : MonoBehaviour
         if (currentWaypoint >= path.vectorPath.Count)
         {
             if (rb != null) rb.linearVelocity = Vector2.zero;
-            if (animator != null) animator.SetBool("IsMoving", false);
+            ResetAnimation(); // 도착 시 멈춤
             return;
         }
 
-        // 3. 방향 계산 및 이동
+        // 3. 이동 처리
         Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
         float finalMoveSpeed = CalculateFinalSpeed();
 
@@ -148,47 +148,40 @@ public class Employee : MonoBehaviour
             rb.linearVelocity = direction * finalMoveSpeed;
         }
 
-        // ▼▼▼ [애니메이션 보정 로직] 지그재그 떨림 방지 ▼▼▼
+        // 4. 애니메이션 제어 (요청하신 부분)
         if (animator != null)
         {
-            bool isMoving = direction.sqrMagnitude > 0.01f;
-            animator.SetBool("IsMoving", isMoving);
+            // 파라미터 초기화
+            animator.SetBool("Up", false);
+            animator.SetBool("Down", false);
+            animator.SetBool("Idle", false);
+            animator.SetFloat("InputX", 0f);
 
-            if (isMoving)
+            if (direction.sqrMagnitude > 0.01f) // 움직이는 중일 때
             {
-                float x = direction.x;
-                float y = direction.y;
-                float absX = Mathf.Abs(x);
-                float absY = Mathf.Abs(y);
-
-                // [핵심 수정] 
-                // Y축 이동량이 X축보다 "확실히(1.2배)" 커야만 위/아래 애니메이션 재생
-                // (대각선 이동 시 옆모습을 우선시해서 부자연스러운 떨림을 막음)
-                bool isVerticalMove = absY > absX * 1.2f;
-
-                if (isVerticalMove)
+                // Y축 이동이 더 클 경우 위아래 애니메이션
+                if (Mathf.Abs(direction.y) > Mathf.Abs(direction.x))
                 {
-                    // 위/아래 이동
-                    animator.SetFloat("InputX", 0f);
-                    animator.SetBool("Up", y > 0);
-                    animator.SetBool("Down", y < 0);
+                    if (direction.y > 0) animator.SetBool("Up", true);
+                    else animator.SetBool("Down", true);
                 }
-                else
+                else // X축 이동이 더 클 경우 좌우 애니메이션
                 {
-                    // 좌/우 이동 (대각선 포함)
-                    animator.SetBool("Up", false);
-                    animator.SetBool("Down", false);
-                    animator.SetFloat("InputX", x); // -1 or 1
+                    // Walk_Side 애니메이션을 재생하기 위해 양수 값을 전달
+                    animator.SetFloat("InputX", Mathf.Abs(direction.x));
 
-                    // 좌우 반전
-                    if (spriteRenderer != null && absX > 0.01f)
+                    // 왼쪽(-x)으로 갈 때는 이미지를 반전시킴
+                    if (spriteRenderer != null)
                     {
-                        spriteRenderer.flipX = (x < 0);
+                        spriteRenderer.flipX = (direction.x < 0);
                     }
                 }
             }
+            else
+            {
+                ResetAnimation(); // 속도가 거의 없으면 멈춤 처리
+            }
         }
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         float distanceToWaypoint = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
         if (distanceToWaypoint < nextWaypointDistance)
@@ -197,7 +190,7 @@ public class Employee : MonoBehaviour
         }
     }
 
-    // 애니메이션 리셋 헬퍼 함수
+    // 멈춤 상태로 애니메이션 리셋
     void ResetAnimation()
     {
         if (animator != null)
@@ -205,9 +198,7 @@ public class Employee : MonoBehaviour
             animator.SetBool("Up", false);
             animator.SetBool("Down", false);
             animator.SetFloat("InputX", 0f);
-            // (멈췄을 때는 'Idle' 애니메이션이 나오도록 Animator에서 Transition 설정 필요)
-            // 예: 모든 파라미터가 0/false면 Idle로 가도록 설정
-            animator.SetBool("Idle", true); // Idle 파라미터가 있다면 사용
+            animator.SetBool("Idle", true);
         }
     }
 
@@ -226,11 +217,13 @@ public class Employee : MonoBehaviour
         if (dist < 0.5f)
         {
             if (rb != null) rb.linearVelocity = Vector2.zero;
-            ResetAnimation(); // 도착 시 멈춤
+            ResetAnimation(); // 도착했으니 멈춤 애니메이션
             path = null;
             onArrived?.Invoke();
         }
     }
+
+    // 이하 기존 로직 함수들
 
     Vector3 GetTargetPositionByState()
     {
@@ -262,12 +255,11 @@ public class Employee : MonoBehaviour
         return Mathf.Max(0.1f, finalSpeed);
     }
 
-    // (이하 기존 로직 함수들 - 삭제하지 마세요)
     void FindTask()
     {
         if (employeeData == null)
         {
-            Debug.LogWarning("Employee.cs: employeeData가 null이라 FindTask를 실행할 수 없습니다.");
+            Debug.LogWarning("Employee.cs employeeData가 null이라 FindTask를 실행할 수 없습니다");
             return;
         }
 
@@ -285,7 +277,7 @@ public class Employee : MonoBehaviour
 
             if (targetOrder != null)
             {
-                Debug.Log($"{employeeData?.firstName ?? "Worker"} (홀) 서빙할 음식 발견!");
+                Debug.Log($"{employeeData?.firstName ?? "Worker"} 홀 서빙할 음식 발견");
                 targetOrder.status = OrderStatus.Completed;
                 targetCustomer = targetOrder.customer;
                 targetCountertop = targetOrder.cookedOnCounterTop;
@@ -304,7 +296,7 @@ public class Employee : MonoBehaviour
 
             if (targetOrder != null)
             {
-                Debug.Log($"{employeeData?.firstName ?? "Worker"} (주방) 요리할 주문 발견");
+                Debug.Log($"{employeeData?.firstName ?? "Worker"} 주방 요리할 주문 발견");
                 targetCountertop = RestaurantManager.instance.counterTops.FirstOrDefault(s => s != null && !s.isBeingUsed);
 
                 if (targetCountertop != null)
@@ -328,7 +320,7 @@ public class Employee : MonoBehaviour
 
             if (targetTable != null)
             {
-                Debug.Log($"{employeeData?.firstName ?? "Worker"} (홀) 청소할 테이블 발견");
+                Debug.Log($"{employeeData?.firstName ?? "Worker"} 홀 청소할 테이블 발견");
                 targetTable.isBeingUsedForCleaning = true;
                 currentState = EmployeeState.MovingToTable;
                 return;
@@ -348,7 +340,7 @@ public class Employee : MonoBehaviour
 
         if (targetOrder.foodObject == null)
         {
-            Debug.LogError($"[요리 오류] {targetOrder.recipe.data.recipeName}의 foodObject가 null입니다! 작업을 중단합니다.");
+            Debug.LogError($"요리 오류 {targetOrder.recipe.data.recipeName}의 foodObject가 null입니다 작업을 중단합니다");
             if (targetCountertop != null) targetCountertop.isBeingUsed = false;
             currentState = EmployeeState.MovingToIdle;
             targetCustomer = null;
@@ -367,7 +359,7 @@ public class Employee : MonoBehaviour
         }
         else
         {
-            Debug.LogError("CookFoodCoroutine: targetOrder.recipe.data가 null입니다!");
+            Debug.LogError("CookFoodCoroutine targetOrder.recipe.data가 null입니다");
         }
 
         int baseCookingStat = employeeData.currentCookingStat;
@@ -399,7 +391,7 @@ public class Employee : MonoBehaviour
         finalCookTime = finalCookTime * (1.0f - workSpeedMultiplier_Trait);
         finalCookTime = Mathf.Max(0.5f, finalCookTime);
 
-        Debug.Log($"[{employeeData.firstName}] 요리 시간: {finalCookTime:F1}s");
+        Debug.Log($"[{employeeData.firstName}] 요리 시간 {finalCookTime:F1}s");
 
         yield return new WaitForSeconds(finalCookTime);
 
@@ -410,7 +402,7 @@ public class Employee : MonoBehaviour
         if (employeeData != null) { totalSaveChance += employeeData.GetTraitSaveChance(); }
         if (totalSaveChance > 0 && UnityEngine.Random.Range(0f, 1f) < totalSaveChance)
         {
-            Debug.Log($"[재료 절약!] {employeeData.firstName} 재료 절약 성공");
+            Debug.Log($"재료 절약 {employeeData.firstName} 재료 절약 성공");
             if (GameManager.instance != null && targetOrder.recipe != null)
             {
                 GameManager.instance.RefundIngredients(targetOrder.recipe.data);
@@ -496,7 +488,7 @@ public class Employee : MonoBehaviour
         finalCleaningTime = finalCleaningTime * (1.0f - workSpeedMultiplier_Trait);
         finalCleaningTime = Mathf.Max(0.5f, finalCleaningTime);
 
-        Debug.Log($"[{employeeData.firstName}] 청소 시간: {finalCleaningTime:F1}s");
+        Debug.Log($"[{employeeData.firstName}] 청소 시간 {finalCleaningTime:F1}s");
 
         yield return new WaitForSeconds(finalCleaningTime);
 
@@ -514,7 +506,7 @@ public class Employee : MonoBehaviour
     {
         if (targetOrder.foodObject != null)
         {
-            Debug.Log($"{employeeData?.firstName ?? "Worker"} 픽업 완료.");
+            Debug.Log($"{employeeData?.firstName ?? "Worker"} 픽업 완료");
 
             targetOrder.foodObject.transform.SetParent(handPosition);
             targetOrder.foodObject.transform.localPosition = Vector3.zero;
@@ -531,7 +523,7 @@ public class Employee : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"[픽업 오류] foodObject가 null입니다!");
+            Debug.LogError($"픽업 오류 foodObject가 null입니다");
 
             if (targetCountertop != null)
             {

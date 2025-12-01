@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Linq;
 
-// 역할: 게임의 시간, 명성, 돈, 게임 상태 등 전반적인 상태를 관리합니다.
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
@@ -46,10 +45,7 @@ public class GameManager : MonoBehaviour
     private Camera mainCamera;
 
     [Header("주인공 설정")]
-    [Tooltip("주인공으로 사용할 직원의 설계도(EmployeeData 에셋)")]
     public EmployeeData mainCharacterTemplate;
-
-    // [삭제됨] 테스트용 프리팹 변수들 (Green, Red, Blue, TestTemplate) 제거 완료
 
     [Header("UI 및 프리팹")]
     public List<GameObject> upgradeTableButtons;
@@ -68,6 +64,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI todaysGoldText;
     public TextMeshProUGUI totalGoldText;
     public TextMeshProUGUI customerCountText;
+
+    // UI 패널들
     public GameObject menuPlanner;
     public GameObject RecipeSelection;
     public GameObject UpgradeTableButton;
@@ -86,17 +84,15 @@ public class GameManager : MonoBehaviour
     public GameObject PopupManager;
     public GameObject UpgradeTablePanel;
 
-    [Header("직원 UI")]
-    [Tooltip("PreparePanel에서 열릴 '직원 서브 메뉴' 패널을 연결하세요.")]
-    public GameObject employeeSubMenuPanel;
+    // [삭제됨] 예전 employeeSubMenuPanel 변수는 더 이상 사용하지 않음
 
-    [Header("사이드 메뉴 버튼 (인스펙터에서 직접 연결)")]
-    public Button btnRecipeBook;  // 레시피 버튼
-    public Button btnEmployee;    // 직원 버튼
+    [Header("사이드 메뉴 버튼")]
+    public Button btnRecipeBook;
+    public Button btnEmployee;
 
-    [Header("기능 해금 상태 (기본값: false)")]
-    public bool isRecipeUnlocked = false;   // 레시피 도감 & 메뉴 편성
-    public bool isEmployeeUnlocked = false; // 직원 관리
+    [Header("기능 해금 상태")]
+    public bool isRecipeUnlocked = false;
+    public bool isEmployeeUnlocked = false;
 
     private InputSystem_Actions inputActions;
 
@@ -132,9 +128,6 @@ public class GameManager : MonoBehaviour
             if (!EmployeeManager.Instance.hiredEmployees.Any(e => e.isProtagonist))
             {
                 EmployeeInstance mainCharacter = new EmployeeInstance(mainCharacterTemplate);
-                // 주의: EmployeeInstance에 isProtagonist가 public이어야 에러가 안 납니다.
-                // 만약 에러가 나면 EmployeeInstance.cs에서 { get; private set; }을 지우세요.
-                // mainCharacter.isProtagonist = true; 
                 EmployeeManager.Instance.hiredEmployees.Add(mainCharacter);
                 Debug.Log($"주인공 '{mainCharacter.firstName}'이(가) 식당에 합류했습니다!");
             }
@@ -164,10 +157,8 @@ public class GameManager : MonoBehaviour
         }
 
         List<(EmployeeInstance data, GameObject prefab)> workersToSpawn = new List<(EmployeeInstance, GameObject)>();
-
         EmployeeInstance mainWorker = EmployeeManager.Instance.hiredEmployees.FirstOrDefault(e => e.isProtagonist);
 
-        // [수정됨] greenPrefab이 삭제되었으므로, RestaurantManager의 기본 프리팹을 사용하도록 변경
         if (mainWorker != null && restaurantManager.employeePrefab != null)
         {
             workersToSpawn.Add((mainWorker, restaurantManager.employeePrefab));
@@ -178,11 +169,6 @@ public class GameManager : MonoBehaviour
         if (ShopManager.Instance != null)
         {
             ShopManager.Instance.GenerateTodayItems(FameManager.instance.CurrentFamePoints);
-            Debug.Log("[GameManager] '오늘의 상품'을 즉시 생성합니다.");
-        }
-        else
-        {
-            Debug.LogError("[GameManager] ShopManager.Instance가 null입니다.");
         }
 
         UpdateLockedButtons();
@@ -235,11 +221,6 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.Settlement)
         {
-            if (EmployeeManager.Instance != null && InventoryManager.instance != null)
-            {
-                // 식탐 로직 공간
-            }
-
             timeText.text = "09:00";
             todaysGold = 0;
             todaysCustomers = 0;
@@ -258,24 +239,19 @@ public class GameManager : MonoBehaviour
             currentTimeOfDay = 9 * 3600;
             DayCount += 1;
             dayText.text = "Day " + DayCount;
-            Debug.Log("다음 날 준비.");
 
             if (ShopManager.Instance != null)
             {
                 ShopManager.Instance.GenerateTodayItems(FameManager.instance.CurrentFamePoints);
             }
 
-            if (isEmployeeUnlocked) // [추가된 조건]
+            if (isEmployeeUnlocked && DayCount >= 1)
             {
-                // if ((DayCount - 1) % 7 == 0 && DayCount > 1)
-                if (DayCount >= 1)
-                {
-                    EmployeeManager.Instance.GenerateApplicants((int)FameManager.instance.CurrentFamePoints);
-                    Debug.Log($"[GameManager] {DayCount}일차 아침, 새로운 지원자들을 생성합니다.");
-                    
-                    if (NotificationController.instance != null)
-                        NotificationController.instance.ShowNotification("새로운 지원자가 도착했습니다!");
-                }
+                EmployeeManager.Instance.GenerateApplicants((int)FameManager.instance.CurrentFamePoints);
+                Debug.Log($"[GameManager] {DayCount}일차 아침, 새로운 지원자 생성.");
+
+                if (NotificationController.instance != null)
+                    NotificationController.instance.ShowNotification("새로운 지원자가 도착했습니다!");
             }
         }
     }
@@ -285,17 +261,11 @@ public class GameManager : MonoBehaviour
         PreparePanel.SetActive(currentState == GameState.Preparing);
         NextDayButton.SetActive(currentState == GameState.Settlement);
 
-        if (OpenButton != null)
-        {
-            OpenButton.gameObject.SetActive(currentState == GameState.Preparing);
-        }
+        if (OpenButton != null) OpenButton.gameObject.SetActive(currentState == GameState.Preparing);
 
         bool isPreparing = (currentState == GameState.Preparing);
 
-        if (TimeScaleButton != null)
-        {
-            TimeScaleButton.gameObject.SetActive(currentState == GameState.Open);
-        }
+        if (TimeScaleButton != null) TimeScaleButton.gameObject.SetActive(currentState == GameState.Open);
 
         foreach (GameObject button in upgradeTableButtons)
         {
@@ -311,11 +281,7 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.Preparing)
         {
-            if (currentTimeOfDay > 9 * 3600)
-            {
-                currentTimeOfDay = 9 * 3600;
-                timeText.text = "09:00";
-            }
+            if (currentTimeOfDay > 9 * 3600) currentTimeOfDay = 9 * 3600;
 
             currentState = GameState.Open;
             if (menuPlanner != null) menuPlanner.SetActive(false);
@@ -325,16 +291,12 @@ public class GameManager : MonoBehaviour
                 MenuPlanner.instance.ConsumeIngredientsForToday();
                 MenuPlanner.instance.StartDaySales();
             }
-            Debug.Log("영업 시작");
         }
     }
 
     public void SetStartButtonInteractable(bool isInteractable)
     {
-        if (OpenButton != null)
-        {
-            OpenButton.interactable = isInteractable;
-        }
+        if (OpenButton != null) OpenButton.interactable = isInteractable;
     }
 
     public void closeSettlementPanal()
@@ -370,26 +332,18 @@ public class GameManager : MonoBehaviour
 
     public void RefundIngredients(RecipeData recipe)
     {
-        if (recipe == null || recipe.requiredIngredients == null || !recipe.requiredIngredients.Any())
-            return;
-
+        if (recipe == null || recipe.requiredIngredients == null) return;
         var ingredientsList = recipe.requiredIngredients;
-        IngredientRequirement itemToRefund = ingredientsList[UnityEngine.Random.Range(0, ingredientsList.Count)];
+        if (ingredientsList.Count == 0) return;
 
-        if (itemToRefund == null || string.IsNullOrEmpty(itemToRefund.ingredientID))
-            return;
-
+        var itemToRefund = ingredientsList[UnityEngine.Random.Range(0, ingredientsList.Count)];
         if (InventoryManager.instance != null)
         {
             InventoryManager.instance.AddIngredient(itemToRefund.ingredientID, 1);
-            Debug.Log($"[재료 반환!] {itemToRefund.ingredientID} 1개를 돌려받았습니다!");
         }
     }
 
-    public void AddCustomerCount()
-    {
-        todaysCustomers += 1;
-    }
+    public void AddCustomerCount() { todaysCustomers += 1; }
 
     public void ChangeTimeScale()
     {
@@ -401,6 +355,8 @@ public class GameManager : MonoBehaviour
             case 2: Time.timeScale = 0; TimeScaleButtonText.text = "||"; break;
         }
     }
+
+    // --- 패널 관리 ---
 
     public void OpenQuestPanel()
     {
@@ -415,7 +371,6 @@ public class GameManager : MonoBehaviour
         if (panelBlocker != null) panelBlocker.SetActive(false);
         if (PopupManager != null) PopupManager.SetActive(false);
     }
-
 
     public void OpenRecipeBook()
     {
@@ -520,15 +475,21 @@ public class GameManager : MonoBehaviour
         if (recipeShopPanel != null) recipeShopPanel.SetActive(false);
     }
 
-    public void OpenEmployeeSubMenu()
+    // =========================================================================
+    // ★★★ [수정됨] 직원 관리 메뉴 열기 (OpenEmployeeMenu) ★★★
+    // =========================================================================
+    public void OpenEmployeeMenu()
     {
-        Debug.Log("GameManager가 EmployeeUI_Controller에게 패널 열기를 요청합니다.");
+        Debug.Log("GameManager가 직원 관리(태블릿) 메뉴를 엽니다.");
 
+        // 다른 겹칠 수 있는 패널들 닫기
         if (menuPlanner != null) CloseMenuPlanner();
         if (shopPanel != null) CloseShopPanel();
+        if (inventoryUI != null) CloseInventoryPanel();
 
         if (PopupManager != null) PopupManager.SetActive(true);
 
+        // EmployeeUI_Controller를 통해 허브 화면 열기
         if (EmployeeUI_Controller.Instance != null)
         {
             EmployeeUI_Controller.Instance.OpenPanel();
@@ -537,7 +498,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ClearSelectedObjectDeferred());
     }
 
-    public void CloseEmployeeSubMenu()
+    /// <summary>
+    /// 직원 메뉴 닫기
+    /// </summary>
+    public void CloseEmployeeMenu()
     {
         if (EmployeeUI_Controller.Instance != null)
         {
@@ -550,58 +514,37 @@ public class GameManager : MonoBehaviour
     private IEnumerator ClearSelectedObjectDeferred()
     {
         yield return null;
-
-        if (EventSystem.current != null)
-        {
-            EventSystem.current.SetSelectedGameObject(null);
-        }
+        if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void AddTable(Transform buttonTransform)
     {
-        if (TablePrefab == null)
-        {
-            Debug.LogError("GameManager에 Table Prefab이 연결되지 않았습니다!");
-            return;
-        }
-
+        if (TablePrefab == null) return;
         totalGoldAmount -= tablePrice;
         totalGold.text = totalGoldAmount.ToString();
-
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(buttonTransform.position);
         worldPosition.z = 0f;
         GameObject newTableObject = Instantiate(TablePrefab, worldPosition, Quaternion.identity);
-
         Table newTableComponent = newTableObject.GetComponent<Table>();
         if (newTableComponent != null && restaurantManager != null)
         {
             restaurantManager.tables.Add(newTableComponent);
         }
-
-        Debug.Log($"테이블을 {worldPosition} 위치에 생성했습니다.");
     }
 
     public void HireAndSpawnEmployee(EmployeeData dataTemplate, GameObject prefabToSpawn)
     {
         EmployeeInstance newEmployee = new EmployeeInstance(dataTemplate);
-
         EmployeeManager.Instance.hiredEmployees.Add(newEmployee);
-        Debug.Log($"{newEmployee.firstName}이(가) 고용되어 리스트에 추가되었습니다.");
-
         if (restaurantManager != null)
         {
             restaurantManager.SpawnSingleWorker(newEmployee, prefabToSpawn);
-        }
-        else
-        {
-            Debug.LogError("GameManager: Restaurant Manager가 연결되지 않았습니다!");
         }
     }
 
     private void UpdateLockedButtons()
     {
         if (btnRecipeBook != null) btnRecipeBook.interactable = isRecipeUnlocked;
-        
         if (btnEmployee != null) btnEmployee.interactable = isEmployeeUnlocked;
     }
 
@@ -609,17 +552,15 @@ public class GameManager : MonoBehaviour
     {
         isRecipeUnlocked = true;
         UpdateLockedButtons();
-        
-        if (NotificationController.instance != null) 
+        if (NotificationController.instance != null)
             NotificationController.instance.ShowNotification("레시피 도감 기능이 해금되었습니다!");
     }
 
     public void UnlockEmployeeSystem()
     {
         isEmployeeUnlocked = true;
-        UpdateLockedButtons(); 
-        
-        if (NotificationController.instance != null) 
+        UpdateLockedButtons();
+        if (NotificationController.instance != null)
             NotificationController.instance.ShowNotification("직원 관리 기능이 해금되었습니다!");
     }
 }
