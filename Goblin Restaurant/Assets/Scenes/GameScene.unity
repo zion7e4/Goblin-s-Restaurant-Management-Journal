@@ -19577,6 +19577,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: QuestPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 4448638714632766356, guid: 64bd3d4b9812e72449b62135a1a6d62b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5003472257304364539, guid: 64bd3d4b9812e72449b62135a1a6d62b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7418153114323506327, guid: 64bd3d4b9812e72449b62135a1a6d62b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

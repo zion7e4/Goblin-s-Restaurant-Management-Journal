@@ -10,12 +10,13 @@ public class QuestSlotUI : MonoBehaviour
     public TextMeshProUGUI descText;
     public TextMeshProUGUI rewardText;
     
+    public TextMeshProUGUI progressText; 
+    
     [Header("Buttons")]
     public Button claimButton; 
     public TextMeshProUGUI claimButtonText; 
 
     [Header("Check Box")]
-    [Tooltip("완료 시 켜질 체크 표시 아이콘")]
     public GameObject checkMarkObject; 
 
     private QuestData myQuest;
@@ -26,6 +27,11 @@ public class QuestSlotUI : MonoBehaviour
 
         titleText.text = quest.title;
         descText.text = quest.description;
+
+        if (progressText != null)
+        {
+            progressText.text = quest.GetProgressString();
+        }
 
         rewardText.text = $"보상: {GetReadableRewardText(quest.reward)}";
 
@@ -59,19 +65,28 @@ public class QuestSlotUI : MonoBehaviour
         if (rawReward.Contains("rcp_id"))
         {
             string idStr = Regex.Match(rawReward, @"\d+").Value;
-            
             if (int.TryParse(idStr, out int id))
             {
                 if (GameDataManager.instance != null)
                 {
                     RecipeData data = GameDataManager.instance.GetRecipeDataById(id);
-                    if (data != null)
-                    {
-                        return $"{data.recipeName} 레시피";
-                    }
+                    if (data != null) return $"{data.recipeName} 레시피";
                 }
             }
-            return "알 수 없는 레시피";
+        }
+
+        if (rawReward.Contains("ING"))
+        {
+            string idStr = Regex.Match(rawReward, @"[A-Za-z0-9]+").Value;
+            
+            if (GameDataManager.instance != null)
+            {
+                IngredientData data = GameDataManager.instance.GetIngredientDataById(idStr);
+                if (data != null)
+                {
+                    return rawReward.Replace(idStr, data.ingredientName);
+                }
+            }
         }
         return rawReward;
     }

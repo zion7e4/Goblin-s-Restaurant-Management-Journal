@@ -28,9 +28,11 @@ public class ShopUIController : MonoBehaviour
     public GameObject todayShopItemPrefab; 
     public Transform todayShopContentParent; 
 
-    [Header("3. 레시피 탭 (영구)")]
+    [Header("3. 레시피 탭 (명성도 해금)")]
     public Transform permanentRecipeContentParent;
-    public GameObject basicRecipeItemPrefab; 
+    public GameObject basicRecipeItemPrefab;
+
+    private List<int> hiddenRecipeIDs = new List<int>() { 1002 }; 
 
     void Awake()
     {
@@ -104,21 +106,23 @@ public class ShopUIController : MonoBehaviour
         }
         UpdateBulkTotalCost();
     }
-
     void PopulateRecipeTab()
     {
         if (permanentRecipeContentParent == null || basicRecipeItemPrefab == null) return;
         foreach (Transform child in permanentRecipeContentParent) Destroy(child.gameObject);
-
+            
         if (ShopManager.Instance == null || ShopManager.Instance.recipePool == null) return;
 
         foreach (var poolEntry in ShopManager.Instance.recipePool.items)
         {
+            if (hiddenRecipeIDs.Contains(poolEntry.rcp_id)) continue;
+
             GameObject itemGO = Instantiate(basicRecipeItemPrefab, permanentRecipeContentParent);
+            
             itemGO.GetComponent<ShopRecipeItemUI>().Setup(poolEntry, this);
         }
     }
-    
+
     void PopulateTodayShopTab()
     {
         if (todayShopContentParent == null || todayShopItemPrefab == null) return;
@@ -162,13 +166,10 @@ public class ShopUIController : MonoBehaviour
             {
                 InventoryManager.instance.AddIngredient(item.Key.id, item.Value);
                 sb.AppendLine($"- {item.Key.ingredientName} {item.Value}개");
-
-                // ▼▼▼ [추가] 일괄 구매 시에도 퀘스트 카운트 적용 ▼▼▼
                 if (QuestManager.Instance != null)
                 {
                     QuestManager.Instance.UpdateProgress(QuestTargetType.Collect, item.Key.id, item.Value);
                 }
-                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
             }
             sb.Append($"\n총 지출: -{totalCost} G");
             NotificationController.instance.ShowNotification(sb.ToString());
@@ -179,7 +180,6 @@ public class ShopUIController : MonoBehaviour
             NotificationController.instance.ShowNotification("골드가 부족합니다!");
         }
     }
-
     public void UpdateBulkTotalCost() 
     {
         int totalCost = 0;
@@ -190,8 +190,6 @@ public class ShopUIController : MonoBehaviour
         if (bulkTotalCostText != null) bulkTotalCostText.text = $"총합계: {totalCost} G";
         if (bulkPurchaseButton != null) bulkPurchaseButton.interactable = totalCost > 0;
     }
-
-    // ▼▼▼ [수정] 기본 재료 구매 시 퀘스트 업데이트 추가 ▼▼▼
     public void AttemptPurchaseIngredient(IngredientData ingredientData, int quantity) 
     {
         if (quantity <= 0) return;
@@ -200,15 +198,11 @@ public class ShopUIController : MonoBehaviour
         {
             GameManager.instance.SpendGold(totalPrice);
             InventoryManager.instance.AddIngredient(ingredientData.id, quantity);
-
-            // --- 퀘스트 업데이트 ---
             if (QuestManager.Instance != null)
             {
                 Debug.Log($"[Standard Shop] 퀘스트 업데이트: {ingredientData.id} x{quantity}");
                 QuestManager.Instance.UpdateProgress(QuestTargetType.Collect, ingredientData.id, quantity);
             }
-            // ---------------------
-
             NotificationController.instance.ShowNotification($"-{totalPrice} G\n ({ingredientData.ingredientName} {quantity}개 구매)");
         }
         else
@@ -216,9 +210,6 @@ public class ShopUIController : MonoBehaviour
             NotificationController.instance.ShowNotification("골드가 부족합니다!");
         }
     }
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-    // ▼▼▼ [수정] 영구 레시피 구매 시 퀘스트 업데이트 추가 (필요 시) ▼▼▼
     public void AttemptPurchaseRecipe(RecipeData recipeData) 
     {
         int price = (int)(recipeData.basePrice * 1.5f);
@@ -227,14 +218,6 @@ public class ShopUIController : MonoBehaviour
             GameManager.instance.SpendGold(price);
             RecipeManager.instance.UnlockRecipe(recipeData.id);
             Debug.Log($"'{recipeData.recipeName}' 레시피 구매 성공!");
-
-            // --- 퀘스트 업데이트 (레시피 획득 퀘스트가 있을 경우) ---
-            // if (QuestManager.Instance != null)
-            // {
-            //     QuestManager.Instance.UpdateProgress(QuestTargetType.Collect, recipeData.id.ToString(), 1);
-            // }
-            // -----------------------------------------------------
-
             PopulateRecipeTab();
             NotificationController.instance.ShowNotification($"-{price} G\n (레시피 구매)");
         }
