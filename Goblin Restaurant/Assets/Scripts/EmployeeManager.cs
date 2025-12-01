@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
@@ -6,28 +6,26 @@ public class EmployeeManager : MonoBehaviour
 {
     public static EmployeeManager Instance { get; private set; }
 
-    [Header("Á¾Á· ÅÛÇÃ¸´ µ¥ÀÌÅÍ")]
+    [Header("ì¢…ì¡± í…œí”Œë¦¿ ë°ì´í„°")]
     public List<EmployeeData> allSpeciesTemplates;
 
-    [Header("½Ç½Ã°£ µ¥ÀÌÅÍ")]
+    [Header("ì‹¤ì‹œê°„ ë°ì´í„°")]
     public List<EmployeeInstance> hiredEmployees = new List<EmployeeInstance>();
     public List<GeneratedApplicant> applicants = new List<GeneratedApplicant>();
 
-    // »ó¼ö Á¤ÀÇ
-    private const int MAX_TOTAL_EMPLOYEES = 10; // °íºí¸° ½¦ÇÁ Æ÷ÇÔ ÃÑ Á÷¿ø ¼ö Á¦ÇÑ
-    private const int MAX_APPLICANTS = 10;     // Áö¿øÀÚ ¸ñ·Ï¿¡ Ç¥½ÃµÉ ÃÖ´ë ¼ö
+    // ìƒìˆ˜ ì •ì˜
+    private const int MAX_TOTAL_EMPLOYEES = 10; // ê³ ë¸”ë¦° ì‰í”„ í¬í•¨ ì´ ì§ì› ìˆ˜ ì œí•œ
+    private const int MAX_APPLICANTS = 10;     // ì§€ì›ì ëª©ë¡ì— í‘œì‹œë  ìµœëŒ€ ìˆ˜
 
     void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            // ÀÌ ¿ÀºêÁ§Æ®°¡ ¾ÀÀÌ ¹Ù²î¾îµµ ÆÄ±«µÇÁö ¾Êµµ·Ï ¼³Á¤ÇÕ´Ï´Ù.
             DontDestroyOnLoad(gameObject);
         }
         else
         {
-            // ÀÌ¹Ì ´Ù¸¥ EmployeeManager°¡ ÀÖ´Ù¸é ÀÚ½ÅÀ» ÆÄ±«ÇÏ¿© Áßº¹À» ¸·½À´Ï´Ù.
             Destroy(gameObject);
         }
     }
@@ -36,37 +34,34 @@ public class EmployeeManager : MonoBehaviour
     {
         applicants.Clear();
 
-        // ÅÛÇÃ¸´ ¸®½ºÆ®¿¡¼­ NullÀÌ ¾Æ´Ñ À¯È¿ÇÑ ÅÛÇÃ¸´¸¸ ÇÊÅÍ¸µÇÕ´Ï´Ù. (³Î ÂüÁ¶ ¹æÁö)
+        // í…œí”Œë¦¿ ë¦¬ìŠ¤íŠ¸ì—ì„œ Nullì´ ì•„ë‹Œ ìœ íš¨í•œ í…œí”Œë¦¿ë§Œ í•„í„°ë§í•©ë‹ˆë‹¤.
         List<EmployeeData> validTemplates = allSpeciesTemplates
             .Where(t => t != null)
             .ToList();
 
         if (!validTemplates.Any())
         {
-            Debug.LogError("GenerateApplicants ¿À·ù: À¯È¿ÇÑ EmployeeData ÅÛÇÃ¸´ÀÌ EmployeeManager¿¡ ¿¬°áµÇ¾î ÀÖÁö ¾Ê½À´Ï´Ù!");
+            Debug.LogError("GenerateApplicants ì˜¤ë¥˜: ìœ íš¨í•œ EmployeeData í…œí”Œë¦¿ì´ EmployeeManagerì— ì—°ê²°ë˜ì–´ ìˆì§€ ì•ŠìŠµë‹ˆë‹¤!");
             return;
         }
 
-        // ±âÈ¹¼­ ±âÁØÀ¸·Î 3~5¸íÀÇ ÈÄº¸°¡ µîÀå 
+        // ê¸°íšì„œ ê¸°ì¤€ìœ¼ë¡œ 3~5ëª…ì˜ í›„ë³´ê°€ ë“±ì¥ 
         int minApplicantsRaw = 3;
         int maxApplicantsRaw = 5;
 
-        // 2. ÃÖÁ¾ ÃÖ´ë »óÇÑÀ» 10À¸·Î Á¦ÇÑÇÕ´Ï´Ù. (MAX_APPLICANTS °ªÀº À¯Áö)
+        // ìµœì¢… ìµœëŒ€ ìƒí•œì„ 10ìœ¼ë¡œ ì œí•œ (MAX_APPLICANTS)
         int finalMaxLimit = Mathf.Min(maxApplicantsRaw, MAX_APPLICANTS);
 
-        // 3. ÃÖÁ¾ ÃÖ¼Ò ÇÏÇÑÀ» °è»êÇÕ´Ï´Ù: (Random.Range ¿À·ù ¹æÁö)
+        // ìµœì¢… ìµœì†Œ í•˜í•œ ê³„ì‚°
         int finalMinLimit = Mathf.Min(minApplicantsRaw, finalMaxLimit);
 
-        // 4. ÃÖÁ¾ Áö¿øÀÚ ¼ö¸¦ °è»êÇÕ´Ï´Ù. 
+        // ìµœì¢… ì§€ì›ì ìˆ˜ ê³„ì‚°
         int applicantCount = Random.Range(finalMinLimit, finalMaxLimit + 1);
 
-        // ÃÖÁ¾ »ı¼ºµÉ Áö¿øÀÚ ¼ö¸¦ È®ÀÎÇÕ´Ï´Ù.
-        Debug.Log($"[Áö¿øÀÚ ¼ö Á¦ÇÑ È®ÀÎ] ¸í¼ºµµ: {currentFame}, ÃÖÁ¾ »ı¼º ¼ö: {applicantCount}");
-
+        Debug.Log($"[ì§€ì›ì ìˆ˜ ì œí•œ í™•ì¸] ëª…ì„±ë„: {currentFame}, ìµœì¢… ìƒì„± ìˆ˜: {applicantCount}");
 
         for (int i = 0; i < applicantCount; i++)
         {
-            // À¯È¿ÇÑ ÅÛÇÃ¸´ ¸®½ºÆ® Áß¿¡¼­ ·£´ı ¼±ÅÃ
             EmployeeData selectedSpecies = validTemplates[Random.Range(0, validTemplates.Count)];
 
             float fameMultiplier = (float)currentFame / 100f;
@@ -75,27 +70,25 @@ public class EmployeeManager : MonoBehaviour
             int finalServe = Random.Range(selectedSpecies.baseServingStat + (int)(fameMultiplier * selectedSpecies.servingGrowthFactor * 0.8f), selectedSpecies.baseServingStat + (int)(fameMultiplier * selectedSpecies.servingGrowthFactor * 1.2f) + 1);
             int finalCharm = Random.Range(selectedSpecies.baseCharmStat + (int)(fameMultiplier * selectedSpecies.charmGrowthFactor * 0.8f), selectedSpecies.baseCharmStat + (int)(fameMultiplier * selectedSpecies.charmGrowthFactor * 1.2f) + 1);
 
-            string jobTitle = "½ÅÀÔ";
-            if (finalCook >= finalServe && finalCook >= finalCharm) { jobTitle = "¿ä¸®»ç"; }
-            else if (finalServe > finalCook && finalServe >= finalCharm) { jobTitle = "¼­¹ö"; }
-            else { jobTitle = "¸Å´ÏÀú"; }
+            string jobTitle = "ì‹ ì…";
+            if (finalCook >= finalServe && finalCook >= finalCharm) { jobTitle = "ìš”ë¦¬ì‚¬"; }
+            else if (finalServe > finalCook && finalServe >= finalCharm) { jobTitle = "ì„œë²„"; }
+            else { jobTitle = "ë§¤ë‹ˆì €"; }
 
             string firstName = selectedSpecies.speciesName;
 
-            // Null Ã¼Å©: possibleFirstNames ¸®½ºÆ®°¡ NullÀÌ ¾Æ´Ï¸ç, Ç×¸ñÀÌ ÀÖ´ÂÁö È®ÀÎ
             if (selectedSpecies.possibleFirstNames != null && selectedSpecies.possibleFirstNames.Any())
             {
                 firstName = selectedSpecies.possibleFirstNames[Random.Range(0, selectedSpecies.possibleFirstNames.Count)];
             }
 
-            // --- 1. µî±Ş(Grade) ÃßÃ· ---
+            // --- 1. ë“±ê¸‰ ì¶”ì²¨ ---
             EmployeeGrade finalGrade = DetermineGrade(currentFame);
 
-            // --- 2. Æ¯¼º(Trait) ÃßÃ· ---
+            // --- 2. íŠ¹ì„± ì¶”ì²¨ ---
             List<Trait> finalTraits = new List<Trait>();
             if (selectedSpecies.possibleTraits != null && selectedSpecies.possibleTraits.Any())
             {
-                // 40%¸¦ ±âº» È®·ü·Î, 100 ¸í¼ºµµ´ç 10%¾¿ Áõ°¡
                 float traitChance = 40f + ((float)currentFame / 100f) * 10f;
                 traitChance = Mathf.Min(traitChance, 100f);
 
@@ -109,7 +102,7 @@ public class EmployeeManager : MonoBehaviour
                 }
             }
 
-            // --- 3. »ı¼ºÀÚ È£Ãâ (µî±Ş Àü´Ş) ---
+            // --- 3. ì§€ì›ì ìƒì„± ---
             GeneratedApplicant newApplicant = new GeneratedApplicant(
                 selectedSpecies, firstName, jobTitle,
                 finalCook, finalServe, finalCharm,
@@ -118,127 +111,89 @@ public class EmployeeManager : MonoBehaviour
             applicants.Add(newApplicant);
         }
 
-        // Áö¿øÀÚ ¸ñ·Ï UI °»½Å (Null Ã¼Å© Ãß°¡)
-        if (EmployeeUI_Controller.Instance != null && EmployeeUI_Controller.Instance.employeeSubMenuPanel != null && EmployeeUI_Controller.Instance.employeeSubMenuPanel.activeSelf)
+        // [ìˆ˜ì •ë¨] employeeSubMenuPanel ì²´í¬ ì œê±° -> UI ì»¨íŠ¸ë¡¤ëŸ¬ê°€ ì¡´ì¬í•˜ë©´ ë¦¬ìŠ¤íŠ¸ë§Œ ê°±ì‹ í•´ë‘ 
+        if (EmployeeUI_Controller.Instance != null)
         {
             EmployeeUI_Controller.Instance.UpdateApplicantListUI(applicants);
         }
     }
 
-    /// <summary>
-    /// ÇöÀç ¸í¼ºµµ¸¦ ±â¹İÀ¸·Î Á÷¿øÀÇ µî±Ş(S,A,B,C)À» ·£´ıÇÏ°Ô °áÁ¤ÇÕ´Ï´Ù.
-    /// (È®·ü ¼öÁ¤À» ¿øÇÏ¸é ÀÌ ÇÔ¼ö ³»ºÎÀÇ ¼ıÀÚ¸¸ º¯°æÇÏ¸é µË´Ï´Ù)
-    /// </summary>
     private EmployeeGrade DetermineGrade(int currentFame)
     {
-        // --- È®·ü ¼³Á¤ (0.0 ~ 1.0 »çÀÌ °ª) ---
-
-        // 1. ¸í¼º ºñÀ²À» °è»ê (0.0 ~ 1.0 »çÀÌ)
         float fameRatio = (float)currentFame / 400f;
+        fameRatio = Mathf.Clamp01(fameRatio);
 
-        // 2. (¡Ú¼öÁ¤¡Ú) ¸í¼ºµµ°¡ 400À» ³Ñ¾îµµ ºñÀ²ÀÌ 1.0À» ³ÑÁö ¾Êµµ·Ï Á¦ÇÑ
-        fameRatio = Mathf.Clamp01(fameRatio); // 0.0 ~ 1.0 »çÀÌ·Î °íÁ¤
-
-        // Sµî±Ş: 5% (¸í¼º 0) ~ 10% (¸í¼º 400)
         float s_Chance = 0.05f + (fameRatio * 0.05f);
-        // Aµî±Ş: 10% (¸í¼º 0) ~ 25% (¸í¼º 400)
         float a_Chance = 0.10f + (fameRatio * 0.15f);
-        // Bµî±Ş: 25% (¸í¼º 0) ~ 30% (¸í¼º 400)
         float b_Chance = 0.25f + (fameRatio * 0.05f);
-        // Cµî±Ş: ³ª¸ÓÁö È®·ü (ÀÚµ¿ °è»ê)
 
-        // --- ÃßÃ· ---
         float gradeRoll = UnityEngine.Random.Range(0f, 1f);
 
-        if (gradeRoll < s_Chance)
-        {
-            return EmployeeGrade.S;
-        }
-        else if (gradeRoll < s_Chance + a_Chance)
-        {
-            return EmployeeGrade.A;
-        }
-        else if (gradeRoll < s_Chance + a_Chance + b_Chance)
-        {
-            return EmployeeGrade.B;
-        }
-        else
-        {
-            return EmployeeGrade.C;
-        }
+        if (gradeRoll < s_Chance) return EmployeeGrade.S;
+        else if (gradeRoll < s_Chance + a_Chance) return EmployeeGrade.A;
+        else if (gradeRoll < s_Chance + a_Chance + b_Chance) return EmployeeGrade.B;
+        else return EmployeeGrade.C;
     }
-
 
     public void HireEmployee(GeneratedApplicant applicantToHire)
     {
-        // °í¿ë ÀÎ¿ø È®ÀÎ: ÃÑ Á÷¿ø ¼ö°¡ MAX_TOTAL_EMPLOYEES(10) ÀÌ»óÀÌ¸é °í¿ë ºÒ°¡
         if (hiredEmployees.Count >= MAX_TOTAL_EMPLOYEES)
         {
-            Debug.LogWarning($"ÃÖ´ë °í¿ë ÀÎ¿ø({MAX_TOTAL_EMPLOYEES}¸í)¿¡ µµ´ŞÇÏ¿© ´õ ÀÌ»ó Á÷¿øÀ» °í¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.");
-            return; // °í¿ë ÁøÇàÀ» ¸·°í ÇÔ¼ö Á¾·á
+            Debug.LogWarning($"ìµœëŒ€ ê³ ìš© ì¸ì›({MAX_TOTAL_EMPLOYEES}ëª…)ì— ë„ë‹¬í–ˆìŠµë‹ˆë‹¤.");
+            return;
         }
 
         if (applicants.Contains(applicantToHire))
         {
             int hiringCost = applicantToHire.BaseSpeciesData.salary;
-            // TODO: °æÁ¦ ½Ã½ºÅÛ ¿¬µ¿ ½Ã ¿©±â¿¡ SpendMoney() Ã¼Å© Ãß°¡
 
-            // 1. »õ Á÷¿ø ÀÎ½ºÅÏ½º(µ¥ÀÌÅÍ) »ı¼º
+            // 1. ìƒˆ ì§ì› ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
             EmployeeInstance newEmployee = new EmployeeInstance(applicantToHire);
 
-            // 2. µ¥ÀÌÅÍ ¸®½ºÆ®¿¡ Ãß°¡
+            // 2. ë¦¬ìŠ¤íŠ¸ ì´ë™
             hiredEmployees.Add(newEmployee);
             applicants.Remove(applicantToHire);
-            Debug.Log($"{newEmployee.BaseData.speciesName} {newEmployee.firstName}(À»)¸¦ {hiringCost}¿ø¿¡ °í¿ëÇß½À´Ï´Ù.");
+            Debug.Log($"{newEmployee.BaseData.speciesName} {newEmployee.firstName} ê³ ìš© ì™„ë£Œ (ë¹„ìš©: {hiringCost})");
 
-            // 3. ½ºÆùÇÒ ÇÁ¸®ÆÕ °¡Á®¿À±â (EmployeeData¿¡ speciesPrefab º¯¼ö ÇÊ¿ä)
+            // 3. í”„ë¦¬íŒ¹ ìŠ¤í°
             GameObject prefabToSpawn = applicantToHire.BaseSpeciesData.speciesPrefab;
 
-            // 4. RestaurantManagerÀÇ ½ºÆù ÇÔ¼ö È£Ãâ
             if (RestaurantManager.instance != null && prefabToSpawn != null)
             {
                 RestaurantManager.instance.SpawnSingleWorker(newEmployee, prefabToSpawn);
             }
             else
             {
-                Debug.LogError($"[EmployeeManager] ½ºÆù ½ÇÆĞ! RestaurantManager.instance°¡ ¾ø°Å³ª " +
-                               $"{newEmployee.firstName}ÀÇ Prefab ({newEmployee.BaseData.speciesName})ÀÌ nullÀÔ´Ï´Ù.");
+                Debug.LogError($"[EmployeeManager] ìŠ¤í° ì‹¤íŒ¨: RestaurantManager ë˜ëŠ” Prefabì´ ì—†ìŠµë‹ˆë‹¤.");
             }
 
-            // 5. UI °»½Å (±âÁ¸ ÄÚµå)
+            // 4. UI ê°±ì‹ 
             if (EmployeeUI_Controller.Instance != null)
             {
-                // Áö¿øÀÚ ¸ñ·Ï°ú °í¿ëµÈ Á÷¿ø ¸ñ·Ï ¸ğµÎ °»½Å
                 EmployeeUI_Controller.Instance.UpdateApplicantListUI(applicants);
                 EmployeeUI_Controller.Instance.UpdateHiredEmployeeListUI();
             }
 
+            // 5. í€˜ìŠ¤íŠ¸ ê°±ì‹ 
             if (QuestManager.Instance != null)
-        {
-            // "°í¿ëÇÑ Á÷¿ø ¼ö"¶ó´Â Å°¿öµå´Â CSVÀÇ Target°ú ÀÏÄ¡ÇØ¾ß ÇÕ´Ï´Ù.
-            QuestManager.Instance.SetProgress(QuestTargetType.Collect, "°í¿ëÇÑ Á÷¿ø ¼ö", hiredEmployees.Count);
-        }
+            {
+                QuestManager.Instance.SetProgress(QuestTargetType.Collect, "ê³ ìš©í•œ ì§ì› ìˆ˜", hiredEmployees.Count);
+            }
         }
     }
 
-    /// <summary>
-    /// °í¿ëµÈ Á÷¿øÀ» ÇØ°íÇÕ´Ï´Ù. ÇØ°í ½Ã ¸ñ·Ï¿¡¼­ Á¦°ÅÇÏ°í UI¸¦ ¾÷µ¥ÀÌÆ®ÇÕ´Ï´Ù.
-    /// </summary>
     public void DismissEmployee(EmployeeInstance employeeToDismiss)
     {
         if (hiredEmployees.Contains(employeeToDismiss))
         {
             hiredEmployees.Remove(employeeToDismiss);
-            Debug.Log($"{employeeToDismiss.firstName} Á÷¿ø({employeeToDismiss.BaseData.speciesName})À» ÇØ°íÇß½À´Ï´Ù.");
+            Debug.Log($"{employeeToDismiss.firstName} í•´ê³  ì™„ë£Œ.");
 
-            // ÇØ°í ÈÄ Á÷¿ø °ü¸® UI¸¦ »õ·Î°íÄ§ÇÕ´Ï´Ù.
             if (QuestManager.Instance != null)
-        {
-            // hiredEmployees ¸®½ºÆ®¿¡¼­ isProtagonist°¡ falseÀÎ »ç¶÷¸¸ ¼Á´Ï´Ù.
-            int hiredCount = hiredEmployees.Count(e => !e.isProtagonist);
-            
-            QuestManager.Instance.SetProgress(QuestTargetType.Collect, "°í¿ëÇÑ Á÷¿ø ¼ö", hiredCount);
-        }
+            {
+                int hiredCount = hiredEmployees.Count(e => !e.isProtagonist);
+                QuestManager.Instance.SetProgress(QuestTargetType.Collect, "ê³ ìš©í•œ ì§ì› ìˆ˜", hiredCount);
+            }
         }
     }
 }
