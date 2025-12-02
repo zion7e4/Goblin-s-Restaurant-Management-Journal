@@ -288,10 +288,25 @@ public class EmployeeUI_Controller : MonoBehaviour
 
     public void UpdateHiredEmployeeListUI()
     {
+        // 1. 매니저 존재 확인
+        if (EmployeeManager.Instance == null)
+        {
+            Debug.LogError("❌ [오류] EmployeeManager가 없습니다!");
+            return;
+        }
+
+        // 2. 직원 수 확인 로그 (★중요★)
+        Debug.Log($"📋 [확인] 현재 고용된 직원 수: {EmployeeManager.Instance.hiredEmployees.Count}명");
+
+        // 3. 연결 확인
+        if (hiredCardPrefab == null) Debug.LogError("❌ [오류] Hired Card Prefab이 연결되지 않았습니다!");
+        if (hiredCardParent == null) Debug.LogError("❌ [오류] Hired Card Parent(Content)가 연결되지 않았습니다!");
+
+        if (hiredCardPrefab == null || hiredCardParent == null) return;
+
+        // --- 기존 로직 실행 ---
         foreach (GameObject card in spawnedHiredCards) Destroy(card);
         spawnedHiredCards.Clear();
-
-        if (hiredCardPrefab == null || hiredCardParent == null || EmployeeManager.Instance == null) return;
 
         foreach (EmployeeInstance employee in EmployeeManager.Instance.hiredEmployees)
         {
@@ -302,66 +317,77 @@ public class EmployeeUI_Controller : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 개별 직원 카드의 정보를 채웁니다. (레벨업 버튼 로직 추가됨)
+    /// </summary>
     private void UpdateHiredCardUI(GameObject card, EmployeeInstance employee)
     {
-        // UI 요소 찾기
+        // 1. UI 요소 찾기
         Image portraitImage = card.transform.Find("PortraitImage")?.GetComponent<Image>();
+
+        // 스탯 텍스트
         TextMeshProUGUI cookText = card.transform.Find("CookStatText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI serveText = card.transform.Find("ServeStatText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI charmText = card.transform.Find("CharmStatText")?.GetComponent<TextMeshProUGUI>();
 
-        // 레벨 & SP & 강화 버튼
-        TextMeshProUGUI levelText = card.transform.Find("LevelText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI spText = card.transform.Find("SPText")?.GetComponent<TextMeshProUGUI>();
-        Button cookUpBtn = card.transform.Find("CookUpButton")?.GetComponent<Button>();
-        Button serveUpBtn = card.transform.Find("ServeUpButton")?.GetComponent<Button>();
-        Button charmUpBtn = card.transform.Find("CharmUpButton")?.GetComponent<Button>();
-
-        // Text 폴더 내부
+        // 정보 텍스트 (Text 폴더 내부)
         TextMeshProUGUI nameText = card.transform.Find("Text/Name/NameText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI speciesText = card.transform.Find("Text/Species/SpeciesText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI gradeText = card.transform.Find("Text/Grade/GradeText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI traitText = card.transform.Find("Text/Trait/TraitText")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI salaryText = card.transform.Find("Text/Salary/SalaryText")?.GetComponent<TextMeshProUGUI>();
 
+        // 레벨 & SP 관련
+        TextMeshProUGUI levelText = card.transform.Find("LevelText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI spText = card.transform.Find("SPText")?.GetComponent<TextMeshProUGUI>();
+
+        // 버튼들
+        Button cookUpBtn = card.transform.Find("CookUpButton")?.GetComponent<Button>();
+        Button serveUpBtn = card.transform.Find("ServeUpButton")?.GetComponent<Button>();
+        Button charmUpBtn = card.transform.Find("CharmUpButton")?.GetComponent<Button>();
+
+        // ★ [추가됨] 레벨업 버튼 찾기
+        Button levelUpBtn = card.transform.Find("LevelUpButton")?.GetComponent<Button>();
+
         // 기능 UI
         TMP_Dropdown roleDropdown = card.transform.Find("RoleDropdown")?.GetComponent<TMP_Dropdown>();
         Button dismissBtn = card.transform.Find("DismissButton")?.GetComponent<Button>();
 
-        // 데이터 적용
+        // ---------------------------------------------------------
+        // 2. 데이터 적용
+
         if (portraitImage != null && employee.BaseData.portrait != null)
             portraitImage.sprite = employee.BaseData.portrait;
 
         if (nameText != null) nameText.text = employee.firstName;
+        if (speciesText != null) speciesText.text = GetKoreanSpeciesName(employee.BaseData.speciesName);
 
-        // ★ [수정됨] 종족 이름을 한글로 변환하여 표시
-        if (speciesText != null)
-            speciesText.text = GetKoreanSpeciesName(employee.BaseData.speciesName);
-
-        // 레벨
+        // 레벨 표시
         if (levelText != null)
             levelText.text = $"Lv.{employee.currentLevel}";
         else if (nameText != null)
             nameText.text = $"{employee.firstName} <size=80%>(Lv.{employee.currentLevel})</size>";
 
-        // SP
+        // SP 표시
         if (spText != null)
         {
             if (employee.skillPoints > 0) spText.text = $"SP: <color=yellow>{employee.skillPoints}</color>";
             else spText.text = "SP: 0";
         }
 
-        // 등급
+        // 등급 표시
         if (gradeText != null)
         {
             string colorHex = GetGradeColorHex(employee.grade);
             gradeText.text = $"<color={colorHex}>{employee.grade}</color>";
         }
 
+        // 스탯 표시
         if (cookText != null) cookText.text = $"{employee.currentCookingStat}";
         if (serveText != null) serveText.text = $"{employee.currentServingStat}";
         if (charmText != null) charmText.text = $"{employee.currentCharmStat}";
 
+        // 특성 표시
         if (traitText != null)
         {
             if (employee.currentTraits != null && employee.currentTraits.Count > 0)
@@ -370,40 +396,82 @@ public class EmployeeUI_Controller : MonoBehaviour
                 traitText.text = "-";
         }
 
+        // 급여 표시
         if (salaryText != null)
         {
             salaryText.text = $"{employee.currentSalary} G";
             salaryText.color = Color.white;
         }
 
-        // 스탯 강화 버튼 로직
+        // =======================================================
+        // ★ [추가됨] 레벨업 버튼 로직 (비용 계산 및 조건 체크)
+        // =======================================================
+        if (levelUpBtn != null)
+        {
+            // 1. 최대 레벨 확인 (EmployeeInstance 로직과 동일하게)
+            int maxLevel = 20;
+            switch (employee.grade)
+            {
+                case EmployeeGrade.B: maxLevel = 30; break;
+                case EmployeeGrade.A: maxLevel = 40; break;
+                case EmployeeGrade.S: maxLevel = 50; break;
+            }
+
+            // 2. 비용 계산 (100 * 1.1^(Lv-1))
+            int nextLevelCost = (int)(100 * Mathf.Pow(1.1f, employee.currentLevel - 1));
+
+            // 텍스트 컴포넌트 찾기 (버튼 자식)
+            TextMeshProUGUI btnText = levelUpBtn.GetComponentInChildren<TextMeshProUGUI>();
+
+            if (employee.currentLevel >= maxLevel)
+            {
+                // 최대 레벨 도달 시
+                levelUpBtn.interactable = false;
+                if (btnText != null) btnText.text = "MAX";
+            }
+            else
+            {
+                // 비용 체크
+                bool canAfford = GameManager.instance.totalGoldAmount >= nextLevelCost;
+                levelUpBtn.interactable = canAfford;
+
+                // 버튼 텍스트에 가격 표시 (예: "UP\n100G")
+                if (btnText != null)
+                    btnText.text = $"LvUP <size=80%>({nextLevelCost}G)</size>";
+
+                // 클릭 리스너 연결
+                levelUpBtn.onClick.RemoveAllListeners();
+                levelUpBtn.onClick.AddListener(() => {
+                    // TryLevelUp 함수가 내부적으로 골드 소모, 레벨 증가, SP 지급을 다 처리함
+                    if (employee.TryLevelUp())
+                    {
+                        UpdateHiredEmployeeListUI(); // 성공하면 UI 갱신
+                    }
+                });
+            }
+        }
+        // =======================================================
+
+        // 스탯 강화 버튼 (SP 있을 때만 활성)
         bool hasSP = employee.skillPoints > 0;
 
         if (cookUpBtn != null)
         {
             cookUpBtn.interactable = hasSP;
             cookUpBtn.onClick.RemoveAllListeners();
-            cookUpBtn.onClick.AddListener(() => {
-                if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI();
-            });
+            cookUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI(); });
         }
-
         if (serveUpBtn != null)
         {
             serveUpBtn.interactable = hasSP;
             serveUpBtn.onClick.RemoveAllListeners();
-            serveUpBtn.onClick.AddListener(() => {
-                if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI();
-            });
+            serveUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); });
         }
-
         if (charmUpBtn != null)
         {
             charmUpBtn.interactable = hasSP;
             charmUpBtn.onClick.RemoveAllListeners();
-            charmUpBtn.onClick.AddListener(() => {
-                if (employee.SpendSkillPointOnCharm()) UpdateHiredEmployeeListUI();
-            });
+            charmUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCharm()) UpdateHiredEmployeeListUI(); });
         }
 
         // 해고 버튼
@@ -431,14 +499,11 @@ public class EmployeeUI_Controller : MonoBehaviour
                 roleDropdown.interactable = true;
                 roleDropdown.ClearOptions();
                 roleDropdown.AddOptions(new List<string> { "미지정", "주방", "홀" });
-
                 roleDropdown.onValueChanged.RemoveAllListeners();
                 roleDropdown.value = (int)employee.assignedRole;
-
-                roleDropdown.onValueChanged.AddListener((newRoleIndex) => {
-                    employee.assignedRole = (EmployeeRole)newRoleIndex;
-                    if (SynergyManager.Instance != null)
-                        SynergyManager.Instance.UpdateActiveSynergies(EmployeeManager.Instance.hiredEmployees);
+                roleDropdown.onValueChanged.AddListener((val) => {
+                    employee.assignedRole = (EmployeeRole)val;
+                    if (SynergyManager.Instance != null) SynergyManager.Instance.UpdateActiveSynergies(EmployeeManager.Instance.hiredEmployees);
                 });
             }
         }

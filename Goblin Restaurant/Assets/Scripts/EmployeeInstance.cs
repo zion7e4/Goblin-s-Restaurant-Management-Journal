@@ -121,8 +121,8 @@ public class EmployeeInstance
         // 이 직원의 보유 특성(currentTraits) 리스트로 복사합니다.
         currentTraits = new List<Trait>(baseData.possibleTraits);
 
-        // (주인공의 기본 등급은 C등급으로 설정. 필요시 변경)
-        this.grade = EmployeeGrade.C;
+        // (주인공의 기본 등급은 S등급으로 설정. 필요시 변경)
+        this.grade = EmployeeGrade.S;
 
         // 주인공 여부를 설정합니다.
         isProtagonist = true;
@@ -203,25 +203,15 @@ public class EmployeeInstance
     /// <returns>레벨업 성공 여부</returns>
     public bool TryLevelUp()
     {
-        // 1. 등급(Grade)에 따른 최대 레벨을 결정합니다. (기획서 참고)
+        // 1. 등급(Grade)에 따른 최대 레벨 체크
         int maxLevel;
         switch (this.grade)
         {
-            case EmployeeGrade.C:
-                maxLevel = 20;
-                break;
-            case EmployeeGrade.B:
-                maxLevel = 30;
-                break;
-            case EmployeeGrade.A:
-                maxLevel = 40;
-                break;
-            case EmployeeGrade.S:
-                maxLevel = 50;
-                break;
-            default:
-                maxLevel = 20; // 기본값 C등급
-                break;
+            case EmployeeGrade.C: maxLevel = 20; break;
+            case EmployeeGrade.B: maxLevel = 30; break;
+            case EmployeeGrade.A: maxLevel = 40; break;
+            case EmployeeGrade.S: maxLevel = 50; break;
+            default: maxLevel = 20; break;
         }
 
         if (currentLevel >= maxLevel)
@@ -230,9 +220,8 @@ public class EmployeeInstance
             return false;
         }
 
-        // 2. 비용 소모 확인 (기획서 기반)
-        // (기획서 내용: 다음 레벨 비용 = 현재 레벨 비용 * 1.1)
-        int requiredGold = (int)(100 * Mathf.Pow(1.1f, currentLevel - 1)); // (기획서 10% 증가 공식 임시 적용)
+        // 2. 레벨업 비용 확인 (현재 레벨에 비례해 증가)
+        int requiredGold = (int)(100 * Mathf.Pow(1.1f, currentLevel - 1));
 
         if (GameManager.instance.totalGoldAmount < requiredGold)
         {
@@ -243,12 +232,16 @@ public class EmployeeInstance
         // 3. 비용 소모 및 레벨업 처리
         GameManager.instance.SpendGold(requiredGold);
         currentLevel++;
-        skillPoints++; // ★ 기획서대로 SP 1 지급 ★
+        skillPoints++; // SP 1 획득
 
-        Debug.Log($"[레벨업!] {firstName} (Lv. {currentLevel}), SP +1. (소모: {requiredGold}G)");
+        //급여 인상 로직
+        // 기본 급여에서 레벨마다 5%씩 인상 (비용 공식과 동일하게 적용)
+        // (1.1f 대신 1.05f로 하면 5%씩 인상됩니다. 밸런스에 맞춰 조정하세요.)
+        currentSalary = (int)(BaseData.salary * Mathf.Pow(1.05f, currentLevel - 1));
+
+        Debug.Log($"[레벨업!] {firstName} (Lv. {currentLevel}), SP +1, 급여 -> {currentSalary}G");
         return true;
     }
-
     /// <summary>
     /// 이 직원이 보유한 모든 특성에서 '재료 훔침' 확률의 합을 반환합니다.
     /// </summary>
