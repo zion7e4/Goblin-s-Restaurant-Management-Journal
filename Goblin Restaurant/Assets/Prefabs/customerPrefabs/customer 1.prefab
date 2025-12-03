@@ -186,7 +186,7 @@ MonoBehaviour:
   - level: 4
     icon: {fileID: -2951221726194618990, guid: b8eccb2365c1cd34b8347b98faa9dbcd, type: 3}
   leavingPoint: {fileID: 8970576874620857491, guid: 02640270d9434a74c8fc74d84e30f9c8, type: 3}
-  speed: 3
+  speed: 1.5
 --- !u!1 &8866038012476259947
 GameObject:
   m_ObjectHideFlags: 0

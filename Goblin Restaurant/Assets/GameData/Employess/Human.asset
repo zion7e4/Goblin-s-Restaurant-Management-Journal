@@ -21,7 +21,7 @@ MonoBehaviour:
   baseCookingStat: 2
   baseServingStat: 2
   baseCharmStat: 2
-  baseMoveSpeed: 1
+  baseMoveSpeed: 1.5
   cookingGrowthFactor: 0.2
   servingGrowthFactor: 0.2
   charmGrowthFactor: 0.2

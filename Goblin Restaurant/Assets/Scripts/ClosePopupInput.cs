@@ -13,6 +13,7 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
     public GameObject centralUpgradePanel; // 중앙 업그레이드 패널
     public GameObject QuantityPopupPanel;
     public GameObject QuestPanel;
+    public GameObject EmployeePanel;
 
     public GameObject PanelBlocker;
     public GameObject PopupManager;
@@ -78,6 +79,13 @@ public class ClosePopupInput : MonoBehaviour, IPointerClickHandler
             PanelBlocker.SetActive(false);
             return;
         }
+
+        if (EmployeePanel != null && EmployeePanel.activeSelf)
+        {
+            EmployeePanel.SetActive(false);
+            return;
+        }
+
 
 
         if (centralUpgradePanel != null && centralUpgradePanel.activeSelf)
