@@ -1,23 +1,23 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// ¸ğµç ½Ã³ÊÁö¸¦ °ü¸®ÇÏ°í, ÇöÀç ¹ßµ¿ ÁßÀÎ ½Ã³ÊÁö¸¦ °è»êÇÏ¿© Àû¿ëÇÕ´Ï´Ù.
+/// ëª¨ë“  ì‹œë„ˆì§€ë¥¼ ê´€ë¦¬í•˜ê³ , í˜„ì¬ ë°œë™ ì¤‘ì¸ ì‹œë„ˆì§€ë¥¼ ê³„ì‚°í•˜ì—¬ ì ìš©í•©ë‹ˆë‹¤.
 /// </summary>
 public class SynergyManager : MonoBehaviour
 {
     public static SynergyManager Instance { get; private set; }
 
-    [Header("½Ã³ÊÁö µ¥ÀÌÅÍ")]
-    [Tooltip("°ÔÀÓ¿¡ Á¸ÀçÇÏ´Â ¸ğµç ½Ã³ÊÁö SO ¿¡¼Â ¸ñ·Ï")]
+    [Header("ì‹œë„ˆì§€ ë°ì´í„°")]
+    [Tooltip("ê²Œì„ì— ì¡´ì¬í•˜ëŠ” ëª¨ë“  ì‹œë„ˆì§€ SO ì—ì…‹ ëª©ë¡")]
     public List<Synergy> allSynergies;
 
-    [Header("½Ç½Ã°£ »óÅÂ")]
-    [Tooltip("ÇöÀç ¹ßµ¿ ÁßÀÎ ½Ã³ÊÁö ¸ñ·Ï (ÀĞ±â Àü¿ë)")]
+    [Header("ì‹¤ì‹œê°„ ìƒíƒœ")]
+    [Tooltip("í˜„ì¬ ë°œë™ ì¤‘ì¸ ì‹œë„ˆì§€ ëª©ë¡ (ì½ê¸° ì „ìš©)")]
     public List<Synergy> activeSynergies = new List<Synergy>();
 
-    private List<EmployeeInstance> lastCheckedEmployees; // ºñ±³¿ë
+    private List<EmployeeInstance> lastCheckedEmployees; // ë¹„êµìš©
 
     void Awake()
     {
@@ -25,8 +25,8 @@ public class SynergyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// EmployeeManager°¡ Á÷¿øÀ» °í¿ë/ÇØ°íÇÒ ¶§ È£ÃâÇØ¾ß ÇÏ´Â ÇÔ¼ö.
-    /// ÇöÀç Á÷¿ø ¸ñ·ÏÀ» ±âÁØÀ¸·Î ¸ğµç ½Ã³ÊÁö¸¦ ´Ù½Ã °è»êÇÕ´Ï´Ù.
+    /// EmployeeManagerê°€ ì§ì›ì„ ê³ ìš©/í•´ê³ í•  ë•Œ í˜¸ì¶œí•´ì•¼ í•˜ëŠ” í•¨ìˆ˜.
+    /// í˜„ì¬ ì§ì› ëª©ë¡ì„ ê¸°ì¤€ìœ¼ë¡œ ëª¨ë“  ì‹œë„ˆì§€ë¥¼ ë‹¤ì‹œ ê³„ì‚°í•©ë‹ˆë‹¤.
     /// </summary>
     public void UpdateActiveSynergies(List<EmployeeInstance> currentHiredEmployees)
     {
@@ -35,29 +35,29 @@ public class SynergyManager : MonoBehaviour
 
         foreach (Synergy synergy in allSynergies)
         {
-            // ÀÌ ½Ã³ÊÁöÀÇ ¸ğµç Á¶°ÇÀ» ¸¸Á·ÇÏ´ÂÁö °Ë»ç
+            // ì´ ì‹œë„ˆì§€ì˜ ëª¨ë“  ì¡°ê±´ì„ ë§Œì¡±í•˜ëŠ”ì§€ ê²€ì‚¬
             if (CheckSynergyConditions(synergy, currentHiredEmployees))
             {
                 activeSynergies.Add(synergy);
-                Debug.Log($"[½Ã³ÊÁö ¹ßµ¿!] {synergy.synergyName}");
+                Debug.Log($"[ì‹œë„ˆì§€ ë°œë™!] {synergy.synergyName}");
             }
         }
 
-        // (TODO: ½Ã³ÊÁö ¹ßµ¿/ÇØÁ¦ UI °»½Å È£Ãâ)
+        // (TODO: ì‹œë„ˆì§€ ë°œë™/í•´ì œ UI ê°±ì‹  í˜¸ì¶œ)
         // UIManager.Instance.UpdateSynergyUI(activeSynergies);
     }
 
     /// <summary>
-    /// Æ¯Á¤ ½Ã³ÊÁöÀÇ ¸ğµç ¹ßµ¿ Á¶°ÇÀ» È®ÀÎÇÕ´Ï´Ù.
+    /// íŠ¹ì • ì‹œë„ˆì§€ì˜ ëª¨ë“  ë°œë™ ì¡°ê±´ì„ í™•ì¸í•©ë‹ˆë‹¤.
     /// </summary>
     private bool CheckSynergyConditions(Synergy synergy, List<EmployeeInstance> employees)
     {
-        // --- 1. Á¾Á· Á¶°Ç °Ë»ç ---
+        // --- 1. ì¢…ì¡± ì¡°ê±´ ê²€ì‚¬ ---
         if (synergy.speciesConditions != null && synergy.speciesConditions.Count > 0)
         {
             foreach (SynergyCondition condition in synergy.speciesConditions)
             {
-                // ¹èÄ¡(Role) Á¶°Ç±îÁö Æ÷ÇÔÇÏ¿© Ä«¿îÆ®
+                // ë°°ì¹˜(Role) ì¡°ê±´ê¹Œì§€ í¬í•¨í•˜ì—¬ ì¹´ìš´íŠ¸
                 int count = employees.Count(emp =>
                     emp.BaseData == condition.species &&
                     (!condition.requirePlacement || emp.assignedRole == condition.requiredRole)
@@ -67,12 +67,12 @@ public class SynergyManager : MonoBehaviour
             }
         }
 
-        // --- 2. Æ¯Á¤ Æ¯¼º Á¶ÇÕ °Ë»ç ---
+        // --- 2. íŠ¹ì • íŠ¹ì„± ì¡°í•© ê²€ì‚¬ ---
         if (synergy.traitConditions != null && synergy.traitConditions.Count > 0)
         {
             foreach (SynergyTraitCondition condition in synergy.traitConditions)
             {
-                // ¹èÄ¡(Role) Á¶°Ç±îÁö Æ÷ÇÔÇÏ¿© Ä«¿îÆ®
+                // ë°°ì¹˜(Role) ì¡°ê±´ê¹Œì§€ í¬í•¨í•˜ì—¬ ì¹´ìš´íŠ¸
                 int count = employees.Count(emp =>
                     emp.currentTraits.Contains(condition.requiredTrait) &&
                     (!condition.requirePlacement || emp.assignedRole == condition.requiredRole)
@@ -82,7 +82,7 @@ public class SynergyManager : MonoBehaviour
             }
         }
 
-        // --- 3. ºÎÁ¤Àû Æ¯¼º ÃÑ °³¼ö °Ë»ç ---
+        // --- 3. ë¶€ì •ì  íŠ¹ì„± ì´ ê°œìˆ˜ ê²€ì‚¬ ---
         if (synergy.minNegativeTraitCount > 0)
         {
             int totalNegativeTraits = 0;
@@ -94,7 +94,7 @@ public class SynergyManager : MonoBehaviour
             if (totalNegativeTraits < synergy.minNegativeTraitCount) return false;
         }
 
-        // (¿¹¿Ü Ã³¸®: ¾Æ¹« Á¶°Çµµ ¾øÀ¸¸é ¹ßµ¿ ¾È ÇÔ)
+        // (ì˜ˆì™¸ ì²˜ë¦¬: ì•„ë¬´ ì¡°ê±´ë„ ì—†ìœ¼ë©´ ë°œë™ ì•ˆ í•¨)
         if ((synergy.speciesConditions == null || synergy.speciesConditions.Count == 0) &&
             (synergy.traitConditions == null || synergy.traitConditions.Count == 0) &&
             (synergy.minNegativeTraitCount <= 0))
@@ -102,15 +102,15 @@ public class SynergyManager : MonoBehaviour
             return false;
         }
 
-        // ¸ğµç Á¶°ÇÀ» Åë°úÇßÀ¸¸é ¼º°ø
+        // ëª¨ë“  ì¡°ê±´ì„ í†µê³¼í–ˆìœ¼ë©´ ì„±ê³µ
         return true;
     }
 
 
-    // --- ´Ù¸¥ ½ºÅ©¸³Æ®°¡ È¿°ú¸¦ ¹°¾îº¼ ¼ö ÀÖ´Â ÇÔ¼öµé ---
+    // --- ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ê°€ íš¨ê³¼ë¥¼ ë¬¼ì–´ë³¼ ìˆ˜ ìˆëŠ” í•¨ìˆ˜ë“¤ ---
 
     /// <summary>
-    /// (Employee.cs°¡ È£Ãâ) 'Æ¯Á¤ Á÷¿ø'¿¡°Ô Àû¿ëµÇ´Â '¿ä¸® ¼Óµµ' º¸³Ê½º ÃÑÇÕÀ» ¹İÈ¯ÇÕ´Ï´Ù.
+    /// (Employee.csê°€ í˜¸ì¶œ) 'íŠ¹ì • ì§ì›'ì—ê²Œ ì ìš©ë˜ëŠ” 'ìš”ë¦¬ ì†ë„' ë³´ë„ˆìŠ¤ ì´í•©ì„ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     public float GetCookingSpeedBonus(EmployeeInstance employee)
     {
@@ -118,9 +118,9 @@ public class SynergyManager : MonoBehaviour
 
         foreach (Synergy synergy in activeSynergies)
         {
-            // (GetStatBonuses¿Í µ¿ÀÏÇÑ ·ÎÁ÷À¸·Î 'È¿°ú ´ë»ó'ÀÎÁö È®ÀÎ)
+            // (GetStatBonusesì™€ ë™ì¼í•œ ë¡œì§ìœ¼ë¡œ 'íš¨ê³¼ ëŒ€ìƒ'ì¸ì§€ í™•ì¸)
 
-            // (1. Á¾Á· ½Ã³ÊÁöÀÎ°¡?)
+            // (1. ì¢…ì¡± ì‹œë„ˆì§€ì¸ê°€?)
             if (synergy.speciesConditions != null && synergy.speciesConditions.Count > 0)
             {
                 bool isTargeted = synergy.speciesConditions.Any(condition =>
@@ -130,7 +130,7 @@ public class SynergyManager : MonoBehaviour
                 if (isTargeted) totalBonus += synergy.cookingSpeedBonus;
             }
 
-            // (2. Æ¯¼º ½Ã³ÊÁöÀÎ°¡?)
+            // (2. íŠ¹ì„± ì‹œë„ˆì§€ì¸ê°€?)
             if (synergy.traitConditions != null && synergy.traitConditions.Count > 0)
             {
                 bool isTargeted = synergy.traitConditions.Any(condition =>
@@ -140,10 +140,10 @@ public class SynergyManager : MonoBehaviour
                 if (isTargeted) totalBonus += synergy.cookingSpeedBonus;
             }
 
-            // (3. ºÎÁ¤Àû Æ¯¼º ½Ã³ÊÁöÀÎ°¡?)
+            // (3. ë¶€ì •ì  íŠ¹ì„± ì‹œë„ˆì§€ì¸ê°€?)
             if (synergy.minNegativeTraitCount > 0)
             {
-                // (ÀÌ ½Ã³ÊÁö´Â '¸ğµç' Á÷¿ø¿¡°Ô Àû¿ëµÈ´Ù°í °¡Á¤)
+                // (ì´ ì‹œë„ˆì§€ëŠ” 'ëª¨ë“ ' ì§ì›ì—ê²Œ ì ìš©ëœë‹¤ê³  ê°€ì •)
                 totalBonus += synergy.cookingSpeedBonus;
             }
         }
@@ -151,7 +151,7 @@ public class SynergyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// (Customer.cs°¡ È£Ãâ) ÇöÀç ¹ßµ¿ ÁßÀÎ '¸í¼º È¹µæ' º¸³Ê½º ÃÑÇÕÀ» ¹İÈ¯ÇÕ´Ï´Ù.
+    /// (Customer.csê°€ í˜¸ì¶œ) í˜„ì¬ ë°œë™ ì¤‘ì¸ 'ëª…ì„± íšë“' ë³´ë„ˆìŠ¤ ì´í•©ì„ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     public float GetFameBonusPercent()
     {
@@ -159,7 +159,7 @@ public class SynergyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// (Employee.cs°¡ È£Ãâ) 'Æ¯Á¤ Á÷¿ø'¿¡°Ô Àû¿ëµÇ´Â '½ºÅÈ' º¸³Ê½º ÃÑÇÕÀ» ¹İÈ¯ÇÕ´Ï´Ù.
+    /// (Employee.csê°€ í˜¸ì¶œ) 'íŠ¹ì • ì§ì›'ì—ê²Œ ì ìš©ë˜ëŠ” 'ìŠ¤íƒ¯' ë³´ë„ˆìŠ¤ ì´í•©ì„ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     public (int cook, int serve, int charm) GetStatBonuses(EmployeeInstance employee)
     {
@@ -167,18 +167,18 @@ public class SynergyManager : MonoBehaviour
         int totalServe = 0;
         int totalCharm = 0;
 
-        // ÇöÀç ¹ßµ¿ ÁßÀÎ ¸ğµç ½Ã³ÊÁö¸¦ È®ÀÎ
+        // í˜„ì¬ ë°œë™ ì¤‘ì¸ ëª¨ë“  ì‹œë„ˆì§€ë¥¼ í™•ì¸
         foreach (Synergy synergy in activeSynergies)
         {
-            // --- ÀÌ Á÷¿øÀÌ ÀÌ ½Ã³ÊÁöÀÇ 'È¿°ú ´ë»ó'ÀÎÁö È®ÀÎ ---
+            // --- ì´ ì§ì›ì´ ì´ ì‹œë„ˆì§€ì˜ 'íš¨ê³¼ ëŒ€ìƒ'ì¸ì§€ í™•ì¸ ---
 
-            // (1. Á¾Á· ½Ã³ÊÁöÀÎ°¡?)
+            // (1. ì¢…ì¡± ì‹œë„ˆì§€ì¸ê°€?)
             if (synergy.speciesConditions != null && synergy.speciesConditions.Count > 0)
             {
-                // "ÀÌ Á÷¿øÀÇ Á¾Á·"ÀÌ ½Ã³ÊÁö Á¶°Ç ¸ñ·Ï¿¡ Æ÷ÇÔµÇ¾î ÀÖ´ÂÁö È®ÀÎ
+                // "ì´ ì§ì›ì˜ ì¢…ì¡±"ì´ ì‹œë„ˆì§€ ì¡°ê±´ ëª©ë¡ì— í¬í•¨ë˜ì–´ ìˆëŠ”ì§€ í™•ì¸
                 bool isTargeted = synergy.speciesConditions.Any(condition =>
                     condition.species == employee.BaseData &&
-                    // (¹èÄ¡ Á¶°Ç È®ÀÎ) ¹èÄ¡°¡ ÇÊ¿ä ¾ø°Å³ª, Á÷¿øÀÇ ¿ªÇÒÀÌ ÀÏÄ¡ÇÏ´Â°¡?
+                    // (ë°°ì¹˜ ì¡°ê±´ í™•ì¸) ë°°ì¹˜ê°€ í•„ìš” ì—†ê±°ë‚˜, ì§ì›ì˜ ì—­í• ì´ ì¼ì¹˜í•˜ëŠ”ê°€?
                     (!condition.requirePlacement || employee.assignedRole == condition.requiredRole)
                 );
 
@@ -190,13 +190,13 @@ public class SynergyManager : MonoBehaviour
                 }
             }
 
-            // (2. Æ¯¼º ½Ã³ÊÁöÀÎ°¡?)
+            // (2. íŠ¹ì„± ì‹œë„ˆì§€ì¸ê°€?)
             if (synergy.traitConditions != null && synergy.traitConditions.Count > 0)
             {
-                // "ÀÌ Á÷¿øÀÇ Æ¯¼º"ÀÌ ½Ã³ÊÁö Á¶°Ç ¸ñ·Ï¿¡ Æ÷ÇÔµÇ¾î ÀÖ´ÂÁö È®ÀÎ
+                // "ì´ ì§ì›ì˜ íŠ¹ì„±"ì´ ì‹œë„ˆì§€ ì¡°ê±´ ëª©ë¡ì— í¬í•¨ë˜ì–´ ìˆëŠ”ì§€ í™•ì¸
                 bool isTargeted = synergy.traitConditions.Any(condition =>
                     employee.currentTraits.Contains(condition.requiredTrait) &&
-                    // (¹èÄ¡ Á¶°Ç È®ÀÎ) ¹èÄ¡°¡ ÇÊ¿ä ¾ø°Å³ª, Á÷¿øÀÇ ¿ªÇÒÀÌ ÀÏÄ¡ÇÏ´Â°¡?
+                    // (ë°°ì¹˜ ì¡°ê±´ í™•ì¸) ë°°ì¹˜ê°€ í•„ìš” ì—†ê±°ë‚˜, ì§ì›ì˜ ì—­í• ì´ ì¼ì¹˜í•˜ëŠ”ê°€?
                     (!condition.requirePlacement || employee.assignedRole == condition.requiredRole)
                 );
 
@@ -208,10 +208,10 @@ public class SynergyManager : MonoBehaviour
                 }
             }
 
-            // (3. ºÎÁ¤Àû Æ¯¼º ½Ã³ÊÁöÀÎ°¡?)
+            // (3. ë¶€ì •ì  íŠ¹ì„± ì‹œë„ˆì§€ì¸ê°€?)
             if (synergy.minNegativeTraitCount > 0)
             {
-                // (ÀÌ ½Ã³ÊÁö´Â '¸ğµç' Á÷¿ø¿¡°Ô Àû¿ëµÈ´Ù°í °¡Á¤)
+                // (ì´ ì‹œë„ˆì§€ëŠ” 'ëª¨ë“ ' ì§ì›ì—ê²Œ ì ìš©ëœë‹¤ê³  ê°€ì •)
                 totalCook += synergy.cookingStatBonus;
                 totalServe += synergy.servingStatBonus;
                 totalCharm += synergy.charmStatBonus;
@@ -222,29 +222,48 @@ public class SynergyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// (Employee.cs°¡ È£Ãâ) ÇöÀç ¹ßµ¿ ÁßÀÎ 'ÀÌµ¿ ¼Óµµ' º¸³Ê½º ÃÑÇÕÀ» ¹İÈ¯ÇÕ´Ï´Ù.
+    /// (Employee.csê°€ í˜¸ì¶œ) í˜„ì¬ ë°œë™ ì¤‘ì¸ 'ì´ë™ ì†ë„' ë³´ë„ˆìŠ¤ ì´í•©ì„ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     public float GetMoveSpeedMultiplier()
     {
-        // (Âü°í: ÀÌ ÇÔ¼ö´Â '¿ì¿ïÇÑ ÀÛ¾÷Àå'Ã³·³ ¸ğµç Á÷¿ø¿¡°Ô Àû¿ëµË´Ï´Ù)
+        // (ì°¸ê³ : ì´ í•¨ìˆ˜ëŠ” 'ìš°ìš¸í•œ ì‘ì—…ì¥'ì²˜ëŸ¼ ëª¨ë“  ì§ì›ì—ê²Œ ì ìš©ë©ë‹ˆë‹¤)
         return activeSynergies.Sum(s => s.moveSpeedMultiplier);
     }
 
     /// <summary>
-    /// (Customer.cs°¡ È£Ãâ) ÇöÀç ¹ßµ¿ ÁßÀÎ '¼­ºñ½º Á¡¼ö' º¸³Ê½º ÃÑÇÕÀ» ¹İÈ¯ÇÕ´Ï´Ù.
+    /// (Customer.csê°€ í˜¸ì¶œ) í˜„ì¬ ë°œë™ ì¤‘ì¸ 'ì„œë¹„ìŠ¤ ì ìˆ˜' ë³´ë„ˆìŠ¤ ì´í•©ì„ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     public int GetServiceScoreBonus()
     {
-        // (Âü°í: ÀÌ ÇÔ¼ö´Â 'È°±âÂù ½Ä´ç'Ã³·³ ¸ğµç ¼Õ´Ô¿¡°Ô Àû¿ëµË´Ï´Ù)
+        // (ì°¸ê³ : ì´ í•¨ìˆ˜ëŠ” 'í™œê¸°ì°¬ ì‹ë‹¹'ì²˜ëŸ¼ ëª¨ë“  ì†ë‹˜ì—ê²Œ ì ìš©ë©ë‹ˆë‹¤)
         return activeSynergies.Sum(s => s.serviceScoreBonus);
     }
 
     /// <summary>
-    /// (Employee.cs°¡ È£Ãâ) ÇöÀç ¹ßµ¿ ÁßÀÎ '½ÄÀç·á Àı¾à' È®·ü ÃÑÇÕÀ» ¹İÈ¯ÇÕ´Ï´Ù.
+    /// (Employee.csê°€ í˜¸ì¶œ) í˜„ì¬ ë°œë™ ì¤‘ì¸ 'ì‹ì¬ë£Œ ì ˆì•½' í™•ë¥  ì´í•©ì„ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     public float GetIngredientSaveChance()
     {
-        // (Âü°í: ÀÌ ÇÔ¼ö´Â '¿Ïº®ÁÖÀÇ ÁÖ¹æ'Ã³·³ ÁÖ¹æ ÀüÃ¼¿¡ Àû¿ëµË´Ï´Ù)
+        // (ì°¸ê³ : ì´ í•¨ìˆ˜ëŠ” 'ì™„ë²½ì£¼ì˜ ì£¼ë°©'ì²˜ëŸ¼ ì£¼ë°© ì „ì²´ì— ì ìš©ë©ë‹ˆë‹¤)
         return activeSynergies.Sum(s => s.ingredientSaveChance);
+    }
+
+    /// <summary>
+    /// í˜„ì¬ í™œì„±í™”ëœ ì‹œë„ˆì§€ë“¤ì˜ ì´ë¦„ì„ ë¦¬ìŠ¤íŠ¸ë¡œ ë°˜í™˜í•©ë‹ˆë‹¤.
+    /// (EmployeeUI_Controllerì—ì„œ ì‹œë„ˆì§€ ëª©ë¡ì„ í‘œì‹œí•  ë•Œ í˜¸ì¶œí•©ë‹ˆë‹¤)
+    /// </summary>
+    public List<string> GetActiveSynergyNames()
+    {
+        List<string> names = new List<string>();
+
+        if (activeSynergies != null)
+        {
+            foreach (var synergy in activeSynergies)
+            {
+                names.Add(synergy.synergyName);
+            }
+        }
+
+        return names;
     }
 }
