@@ -2,250 +2,325 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
-using System.Linq; // 리스트 및 LINQ 기능을 위해 필요
+using System.Linq;
 using UnityEngine.EventSystems;
 
-/// <summary>
-/// 직원 관리 UI(태블릿 허브, 고용, 배치, 해고 등)를 제어하는 메인 컨트롤러입니다.
-/// </summary>
 public class EmployeeUI_Controller : MonoBehaviour
 {
-    // 싱글톤 패턴: 어디서든 접근 가능하도록 설정
     public static EmployeeUI_Controller Instance { get; private set; }
 
-    [Header("1. 메인 패널 (Employee_Panel)")]
-    [Tooltip("전체 배경 이미지와 닫기 버튼이 있는 최상위 부모 패널입니다.")]
+    [Header("1. 메인 패널")]
     public GameObject employeePanel;
-
-    [Tooltip("메뉴 전체를 닫는 X 버튼입니다.")]
     public Button btn_CloseMenu;
 
-    [Header("2. 메인 버튼 그룹 (허브 화면)")]
-    [Tooltip("고용/관리 버튼을 묶어둔 빈 오브젝트입니다. 서브 패널이 열리면 숨겨집니다.")]
+    [Header("2. 메인 버튼 그룹")]
     public GameObject mainButtonsGroup;
-
-    [Tooltip("직원 고용 화면으로 이동하는 버튼")]
     public Button btn_Hire;
-
-    [Tooltip("직원 관리(배치) 화면으로 이동하는 버튼")]
     public Button btn_Manage;
+    public Button btn_Assignment;
 
-    [Header("3. 서브 패널 - 고용 (RecruitmentPanel)")]
-    [Tooltip("지원자 목록이 표시되는 패널입니다.")]
+    [Header("3. 서브 패널 - 고용")]
     public GameObject recruitmentPanel;
-    [Tooltip("고용 화면 뒤로가기 버튼")]
     public Button btn_BackFromRecruitment;
-
-    [Tooltip("지원자 카드 프리팹 (ApplicantSlot)")]
     public GameObject applicantCardPrefab;
-    [Tooltip("지원자 카드가 생성될 위치 (Scroll View의 Content)")]
     public Transform applicantCardParent;
 
-    [Header("4. 서브 패널 - 관리 (ManageEmployeePanel)")]
-    [Tooltip("보유 중인 직원 목록이 표시되는 패널입니다.")]
+    [Header("4. 서브 패널 - 관리")]
     public GameObject manageEmployeePanel;
-    [Tooltip("관리 화면 뒤로가기 버튼")]
     public Button btn_BackFromManage;
-
-    [Tooltip("직원 카드 프리팹 (HiredEmployeeCard)")]
     public GameObject hiredCardPrefab;
-    [Tooltip("직원 카드가 생성될 위치 (Scroll View의 Content)")]
     public Transform hiredCardParent;
 
-    [Header("5. 팝업 (해고 확인)")]
+    [Header("5. 서브 패널 - 배치")]
+    public GameObject assignmentPanel;
+    public Button btn_BackFromAssignment;
+
+    [Header("배치 구역")]
+    public Transform kitchenListParent;
+    public Transform hallListParent;
+    public Transform allRounderListParent;
+    public Transform waitingListParent;
+    public Transform synergyListParent;
+
+    [Header("배치용 프리팹")]
+    public GameObject assignedWorkerCardPrefab;
+    public GameObject workerNameTagPrefab;
+    public GameObject synergyTextPrefab;
+
+    [Header("★ 역할 선택 팝업")]
+    public GameObject roleSelectPopup;
+    public Button btn_ToKitchen;
+    public Button btn_ToHall;
+    public Button btn_ToAllRounder;
+    public Button btn_ToWait;
+    public Button btn_ClosePopup;
+
+    [Header("★ 툴팁 (Hover 기능)")]
+    [Tooltip("마우스 오버 시 띄울 상세 정보 카드 (씬에 있는 오브젝트 연결)")]
+    public GameObject tooltipCardObject;
+
+    [Header("6. 팝업 (해고 확인)")]
     public GameObject dismissalConfirmationPanel;
     public TextMeshProUGUI dismissalNameText;
     public Button Button_ConfirmDismiss;
     public Button Button_CancelDismiss;
 
-    // --- 내부 변수 (스크립트가 자동으로 관리) ---
-    private EmployeeInstance employeeToDismiss; // 해고 대기 중인 직원 데이터
-    private List<GameObject> spawnedApplicantCards = new List<GameObject>(); // 생성된 지원자 카드 리스트
-    private List<GameObject> spawnedHiredCards = new List<GameObject>();     // 생성된 직원 카드 리스트
+    // 내부 변수
+    private EmployeeInstance employeeToDismiss;
+    private EmployeeInstance selectedEmployeeForRole;
+    private List<GameObject> spawnedApplicantCards = new List<GameObject>();
+    private List<GameObject> spawnedHiredCards = new List<GameObject>();
+    private List<GameObject> spawnedAssignedCards = new List<GameObject>();
+    private List<GameObject> spawnedSynergyTexts = new List<GameObject>();
 
-    void Awake()
-    {
-        // 싱글톤 초기화
-        if (Instance == null) { Instance = this; } else { Destroy(gameObject); }
-    }
+    void Awake() { if (Instance == null) { Instance = this; } else { Destroy(gameObject); } }
 
     void Start()
     {
-        // --- 버튼 클릭 이벤트 연결 ---
+        if (btn_Hire) btn_Hire.onClick.AddListener(() => OpenSubPanel(recruitmentPanel));
+        if (btn_Manage) btn_Manage.onClick.AddListener(() => OpenSubPanel(manageEmployeePanel));
+        if (btn_Assignment) btn_Assignment.onClick.AddListener(() => OpenSubPanel(assignmentPanel));
+        if (btn_CloseMenu) btn_CloseMenu.onClick.AddListener(ClosePanel);
 
-        // 메인 메뉴 버튼
-        if (btn_Hire != null) btn_Hire.onClick.AddListener(() => OpenSubPanel(recruitmentPanel));
-        if (btn_Manage != null) btn_Manage.onClick.AddListener(() => OpenSubPanel(manageEmployeePanel));
+        if (btn_BackFromRecruitment) btn_BackFromRecruitment.onClick.AddListener(BackToHub);
+        if (btn_BackFromManage) btn_BackFromManage.onClick.AddListener(BackToHub);
+        if (btn_BackFromAssignment) btn_BackFromAssignment.onClick.AddListener(BackToHub);
 
-        // 닫기 버튼
-        if (btn_CloseMenu != null) btn_CloseMenu.onClick.AddListener(ClosePanel);
+        if (Button_ConfirmDismiss) Button_ConfirmDismiss.onClick.AddListener(ConfirmDismissal);
+        if (Button_CancelDismiss) Button_CancelDismiss.onClick.AddListener(HideDismissalConfirmation);
 
-        // 뒤로가기 버튼
-        if (btn_BackFromRecruitment != null) btn_BackFromRecruitment.onClick.AddListener(BackToHub);
-        if (btn_BackFromManage != null) btn_BackFromManage.onClick.AddListener(BackToHub);
+        if (btn_ToKitchen) btn_ToKitchen.onClick.AddListener(() => ChangeRole(EmployeeRole.Kitchen));
+        if (btn_ToHall) btn_ToHall.onClick.AddListener(() => ChangeRole(EmployeeRole.Hall));
+        if (btn_ToAllRounder) btn_ToAllRounder.onClick.AddListener(() => ChangeRole(EmployeeRole.AllRounder));
+        if (btn_ToWait) btn_ToWait.onClick.AddListener(() => ChangeRole(EmployeeRole.Unassigned));
+        if (btn_ClosePopup) btn_ClosePopup.onClick.AddListener(CloseRolePopup);
 
-        // 해고 팝업 버튼
-        if (Button_ConfirmDismiss != null) Button_ConfirmDismiss.onClick.AddListener(ConfirmDismissal);
-        if (Button_CancelDismiss != null) Button_CancelDismiss.onClick.AddListener(HideDismissalConfirmation);
+        if (tooltipCardObject != null) tooltipCardObject.SetActive(false);
 
-        // 게임 시작 시 패널 닫기
         ClosePanel();
     }
 
     void Update()
     {
-        // ESC 키 기능
         if (employeePanel != null && employeePanel.activeSelf && Input.GetKeyDown(KeyCode.Escape))
         {
-            if (dismissalConfirmationPanel != null && dismissalConfirmationPanel.activeSelf)
-            {
-                HideDismissalConfirmation();
-                return;
-            }
+            if (dismissalConfirmationPanel.activeSelf) { HideDismissalConfirmation(); return; }
+            if (roleSelectPopup != null && roleSelectPopup.activeSelf) { CloseRolePopup(); return; }
 
-            if ((recruitmentPanel != null && recruitmentPanel.activeSelf) ||
-                (manageEmployeePanel != null && manageEmployeePanel.activeSelf))
+            if (recruitmentPanel.activeSelf || manageEmployeePanel.activeSelf || assignmentPanel.activeSelf) BackToHub();
+            else ClosePanel();
+        }
+
+        // 툴팁 마우스 따라다니기
+        if (tooltipCardObject != null && tooltipCardObject.activeSelf)
+        {
+            tooltipCardObject.transform.position = Input.mousePosition + new Vector3(20, -20, 0);
+        }
+    }
+
+    public void OpenPanel() { if (employeePanel) employeePanel.SetActive(true); BackToHub(); }
+    public void ClosePanel()
+    {
+        if (employeePanel) employeePanel.SetActive(false);
+        if (dismissalConfirmationPanel) dismissalConfirmationPanel.SetActive(false);
+        CloseRolePopup();
+        HideWorkerTooltip();
+    }
+    private void BackToHub()
+    {
+        if (recruitmentPanel) recruitmentPanel.SetActive(false);
+        if (manageEmployeePanel) manageEmployeePanel.SetActive(false);
+        if (assignmentPanel) assignmentPanel.SetActive(false);
+        if (mainButtonsGroup) mainButtonsGroup.SetActive(true);
+        CloseRolePopup();
+        HideWorkerTooltip();
+    }
+    private void OpenSubPanel(GameObject panel)
+    {
+        if (mainButtonsGroup) mainButtonsGroup.SetActive(false);
+        if (recruitmentPanel) recruitmentPanel.SetActive(false);
+        if (manageEmployeePanel) manageEmployeePanel.SetActive(false);
+        if (assignmentPanel) assignmentPanel.SetActive(false);
+
+        if (panel)
+        {
+            panel.SetActive(true);
+            if (panel == recruitmentPanel) UpdateApplicantListUI(EmployeeManager.Instance.applicants);
+            else if (panel == manageEmployeePanel) UpdateHiredEmployeeListUI();
+            else if (panel == assignmentPanel) UpdateAssignmentUI();
+        }
+    }
+
+    // --- 툴팁 관련 함수 (복구됨) ---
+    public void ShowWorkerTooltip(EmployeeInstance employee)
+    {
+        if (tooltipCardObject != null)
+        {
+            tooltipCardObject.SetActive(true);
+            UpdateHiredCardUI(tooltipCardObject, employee); // 정보 채우기 재활용
+
+            // 툴팁에선 버튼들 끄기
+            Transform dismissBtn = tooltipCardObject.transform.Find("DismissButton");
+            if (dismissBtn) dismissBtn.gameObject.SetActive(false);
+            Transform roleDrop = tooltipCardObject.transform.Find("RoleDropdown");
+            if (roleDrop) roleDrop.gameObject.SetActive(false);
+        }
+    }
+
+    public void HideWorkerTooltip()
+    {
+        if (tooltipCardObject != null) tooltipCardObject.SetActive(false);
+    }
+
+    // --- 배치 화면 ---
+    public void UpdateAssignmentUI()
+    {
+        foreach (var obj in spawnedAssignedCards) Destroy(obj);
+        spawnedAssignedCards.Clear();
+        foreach (var obj in spawnedSynergyTexts) Destroy(obj);
+        spawnedSynergyTexts.Clear();
+
+        if (EmployeeManager.Instance == null) return;
+
+        foreach (EmployeeInstance emp in EmployeeManager.Instance.hiredEmployees)
+        {
+            if (emp.assignedRole == EmployeeRole.Unassigned)
             {
-                BackToHub();
+                if (waitingListParent && assignedWorkerCardPrefab)
+                {
+                    GameObject card = Instantiate(assignedWorkerCardPrefab, waitingListParent);
+                    UpdateHiredCardUI(card, emp); // 정보 채우기
+
+                    // 클릭 이벤트 (팝업)
+                    Button btn = card.GetComponent<Button>();
+                    if (!btn) btn = card.AddComponent<Button>();
+                    btn.onClick.RemoveAllListeners();
+                    btn.onClick.AddListener(() => OpenRolePopup(emp));
+
+                    // 툴팁 이벤트 (새 스크립트용)
+                    WorkerTooltipTrigger tooltip = card.GetComponent<WorkerTooltipTrigger>();
+                    if (!tooltip) tooltip = card.AddComponent<WorkerTooltipTrigger>();
+                    tooltip.employeeData = emp;
+
+                    spawnedAssignedCards.Add(card);
+                }
             }
             else
             {
-                ClosePanel();
+                Transform targetParent = null;
+                switch (emp.assignedRole)
+                {
+                    case EmployeeRole.Kitchen: targetParent = kitchenListParent; break;
+                    case EmployeeRole.Hall: targetParent = hallListParent; break;
+                    case EmployeeRole.AllRounder: targetParent = allRounderListParent; break;
+                }
+                if (targetParent && workerNameTagPrefab)
+                {
+                    GameObject tag = Instantiate(workerNameTagPrefab, targetParent);
+                    TextMeshProUGUI txt = tag.GetComponentInChildren<TextMeshProUGUI>();
+                    if (txt) txt.text = $"{emp.firstName} (Lv.{emp.currentLevel})";
+
+                    Button btn = tag.GetComponent<Button>();
+                    if (btn)
+                    {
+                        btn.onClick.RemoveAllListeners();
+                        btn.onClick.AddListener(() => OpenRolePopup(emp));
+                    }
+
+                    // 툴팁 이벤트
+                    WorkerTooltipTrigger tooltip = tag.GetComponent<WorkerTooltipTrigger>();
+                    if (!tooltip) tooltip = tag.AddComponent<WorkerTooltipTrigger>();
+                    tooltip.employeeData = emp;
+
+                    spawnedAssignedCards.Add(tag);
+                }
             }
         }
-    }
 
-    // ==================================================================================
-    // 1. 패널 열기 / 닫기 로직
-    // ==================================================================================
-
-    public void OpenPanel()
-    {
-        if (employeePanel != null) employeePanel.SetActive(true);
-        BackToHub();
-    }
-
-    public void ClosePanel()
-    {
-        if (employeePanel != null) employeePanel.SetActive(false);
-        if (dismissalConfirmationPanel != null) dismissalConfirmationPanel.SetActive(false);
-    }
-
-    private void BackToHub()
-    {
-        if (recruitmentPanel != null) recruitmentPanel.SetActive(false);
-        if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
-
-        if (mainButtonsGroup != null) mainButtonsGroup.SetActive(true);
-
-        if (dismissalConfirmationPanel != null) dismissalConfirmationPanel.SetActive(false);
-    }
-
-    private void OpenSubPanel(GameObject panelToShow)
-    {
-        if (mainButtonsGroup != null) mainButtonsGroup.SetActive(false);
-
-        if (recruitmentPanel != null) recruitmentPanel.SetActive(false);
-        if (manageEmployeePanel != null) manageEmployeePanel.SetActive(false);
-
-        if (panelToShow != null)
+        if (synergyListParent && synergyTextPrefab && SynergyManager.Instance)
         {
-            panelToShow.SetActive(true);
-
-            if (panelToShow == recruitmentPanel && EmployeeManager.Instance != null)
-            {
-                UpdateApplicantListUI(EmployeeManager.Instance.applicants);
-            }
-            else if (panelToShow == manageEmployeePanel)
-            {
-                UpdateHiredEmployeeListUI();
-            }
+            List<string> synergies = SynergyManager.Instance.GetActiveSynergyNames();
+            if (synergies.Count == 0) CreateSynergyText("발동된 시너지가 없습니다.");
+            else foreach (string s in synergies) CreateSynergyText(s);
         }
     }
 
-    // ==================================================================================
-    // 2. 고용 화면 (ApplicantSlot) UI 업데이트
-    // ==================================================================================
+    private void CreateSynergyText(string content)
+    {
+        GameObject obj = Instantiate(synergyTextPrefab, synergyListParent);
+        TextMeshProUGUI tmp = obj.GetComponentInChildren<TextMeshProUGUI>();
+        if (tmp) tmp.text = content;
+        spawnedSynergyTexts.Add(obj);
+    }
 
+    // --- 팝업 로직 ---
+    public void OpenRolePopup(EmployeeInstance employee)
+    {
+        selectedEmployeeForRole = employee;
+        if (roleSelectPopup) roleSelectPopup.SetActive(true);
+    }
+    public void CloseRolePopup()
+    {
+        selectedEmployeeForRole = null;
+        if (roleSelectPopup) roleSelectPopup.SetActive(false);
+    }
+    public void ChangeRole(EmployeeRole newRole)
+    {
+        if (selectedEmployeeForRole != null)
+        {
+            selectedEmployeeForRole.assignedRole = newRole;
+            if (SynergyManager.Instance) SynergyManager.Instance.UpdateActiveSynergies(EmployeeManager.Instance.hiredEmployees);
+            UpdateAssignmentUI();
+            CloseRolePopup();
+        }
+    }
+
+    // --- UI 업데이트 함수들 (Applicant, Hired) ---
     public void UpdateApplicantListUI(List<GeneratedApplicant> applicants)
     {
-        foreach (GameObject card in spawnedApplicantCards) Destroy(card);
+        foreach (GameObject c in spawnedApplicantCards) Destroy(c);
         spawnedApplicantCards.Clear();
-
-        if (applicantCardPrefab == null || applicantCardParent == null) return;
-
-        foreach (GeneratedApplicant applicant in applicants)
+        if (!applicantCardPrefab || !applicantCardParent) return;
+        foreach (GeneratedApplicant app in applicants)
         {
-            if (applicant == null) continue;
-
+            if (app == null) continue;
             GameObject newCard = Instantiate(applicantCardPrefab, applicantCardParent);
-            UpdateApplicantCardUI(newCard, applicant);
+            UpdateApplicantCardUI(newCard, app);
             spawnedApplicantCards.Add(newCard);
         }
     }
 
     private void UpdateApplicantCardUI(GameObject card, GeneratedApplicant applicant)
     {
-        // UI 요소 찾기
-        Image portraitImage = card.transform.Find("PortraitImage")?.GetComponent<Image>();
-        TextMeshProUGUI cookText = card.transform.Find("CookStatText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI serveText = card.transform.Find("ServeStatText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI charmText = card.transform.Find("CharmStatText")?.GetComponent<TextMeshProUGUI>();
-        Button hireButton = card.transform.Find("HireButton")?.GetComponent<Button>();
+        Image portrait = card.transform.Find("PortraitImage")?.GetComponent<Image>();
+        TextMeshProUGUI name = card.transform.Find("Text/Name/NameText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI species = card.transform.Find("Text/Species/SpeciesText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI grade = card.transform.Find("Text/Grade/GradeText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI trait = card.transform.Find("Text/Trait/TraitText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI cook = card.transform.Find("CookStatText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI serve = card.transform.Find("ServeStatText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI charm = card.transform.Find("CharmStatText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI cost = card.transform.Find("CostText")?.GetComponent<TextMeshProUGUI>();
+        if (!cost) cost = card.transform.Find("Text/Salary/SalaryText")?.GetComponent<TextMeshProUGUI>();
+        Button hireBtn = card.transform.Find("HireButton")?.GetComponent<Button>();
 
-        TextMeshProUGUI costText = card.transform.Find("CostText")?.GetComponent<TextMeshProUGUI>();
-        if (costText == null) costText = card.transform.Find("Text/Salary/SalaryText")?.GetComponent<TextMeshProUGUI>();
+        if (portrait && applicant.BaseSpeciesData.portrait) portrait.sprite = applicant.BaseSpeciesData.portrait;
+        if (name) name.text = applicant.GeneratedFirstName;
+        if (species) species.text = GetKoreanSpeciesName(applicant.BaseSpeciesData.speciesName);
+        if (grade) grade.text = $"<color={GetGradeColorHex(applicant.grade)}>{applicant.grade}</color>";
+        if (cook) cook.text = $"{applicant.GeneratedCookingStat}";
+        if (serve) serve.text = $"{applicant.GeneratedServingStat}";
+        if (charm) charm.text = $"{applicant.GeneratedCharmStat}";
+        if (trait) trait.text = (applicant.GeneratedTraits.Count > 0) ? string.Join(", ", applicant.GeneratedTraits.Select(t => t.traitName)) : "-";
 
-        // Text 폴더 내부 요소
-        TextMeshProUGUI nameText = card.transform.Find("Text/Name/NameText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI speciesText = card.transform.Find("Text/Species/SpeciesText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI gradeText = card.transform.Find("Text/Grade/GradeText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI traitText = card.transform.Find("Text/Trait/TraitText")?.GetComponent<TextMeshProUGUI>();
-
-        // 데이터 적용
-        if (portraitImage != null && applicant.BaseSpeciesData.portrait != null)
-            portraitImage.sprite = applicant.BaseSpeciesData.portrait;
-
-        if (nameText != null)
-            nameText.text = applicant.GeneratedFirstName;
-
-        // ★ [수정됨] 종족 이름을 한글로 변환하여 표시
-        if (speciesText != null)
-            speciesText.text = GetKoreanSpeciesName(applicant.BaseSpeciesData.speciesName);
-
-        if (gradeText != null)
+        int price = applicant.BaseSpeciesData.salary;
+        if (cost) { cost.text = $"{price} G"; cost.color = (GameManager.instance.totalGoldAmount >= price) ? Color.white : Color.red; }
+        if (hireBtn)
         {
-            string colorHex = GetGradeColorHex(applicant.grade);
-            gradeText.text = $"<color={colorHex}>{applicant.grade}</color>";
-        }
-
-        if (cookText != null) cookText.text = $"{applicant.GeneratedCookingStat}";
-        if (serveText != null) serveText.text = $"{applicant.GeneratedServingStat}";
-        if (charmText != null) charmText.text = $"{applicant.GeneratedCharmStat}";
-
-        if (traitText != null)
-        {
-            if (applicant.GeneratedTraits != null && applicant.GeneratedTraits.Count > 0)
-                traitText.text = string.Join(", ", applicant.GeneratedTraits.Select(t => t.traitName));
-            else
-                traitText.text = "-";
-        }
-
-        int cost = applicant.BaseSpeciesData.salary;
-        bool canAfford = GameManager.instance.totalGoldAmount >= cost;
-
-        if (costText != null)
-        {
-            costText.text = $"{cost} G";
-            costText.color = canAfford ? Color.white : Color.red;
-        }
-
-        if (hireButton != null)
-        {
-            hireButton.interactable = canAfford;
-            hireButton.onClick.RemoveAllListeners();
-            hireButton.onClick.AddListener(() => {
-                if (EmployeeManager.Instance != null)
+            hireBtn.interactable = (GameManager.instance.totalGoldAmount >= price);
+            hireBtn.onClick.RemoveAllListeners();
+            hireBtn.onClick.AddListener(() => {
+                if (EmployeeManager.Instance)
                 {
                     EmployeeManager.Instance.HireEmployee(applicant);
                     UpdateApplicantListUI(EmployeeManager.Instance.applicants);
@@ -254,289 +329,93 @@ public class EmployeeUI_Controller : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 영어로 된 종족 이름을 한글로 변환합니다. (데이터가 추가되면 여기에도 추가해주세요)
-    /// </summary>
-    private string GetKoreanSpeciesName(string englishName)
-    {
-        switch (englishName)
-        {
-            case "Elf": return "엘프";
-            case "Dwarf": return "드워프";
-            case "Goblin": return "고블린";
-            case "Orc": return "오크";
-            case "Human": return "인간";
-            // 여기에 새로운 종족을 계속 추가하면 됩니다.
-            default: return englishName; // 목록에 없으면 원래 영어 이름 출력
-        }
-    }
-
-    private string GetGradeColorHex(EmployeeGrade grade)
-    {
-        switch (grade)
-        {
-            case EmployeeGrade.S: return "#FFD700"; // Gold
-            case EmployeeGrade.A: return "#9370DB"; // Purple
-            case EmployeeGrade.B: return "#1E90FF"; // Blue
-            default: return "#FFFFFF"; // White
-        }
-    }
-
-    // ==================================================================================
-    // 3. 관리 화면 (HiredEmployeeCard) UI 업데이트
-    // ==================================================================================
-
     public void UpdateHiredEmployeeListUI()
     {
-        // 1. 매니저 존재 확인
-        if (EmployeeManager.Instance == null)
-        {
-            Debug.LogError("❌ [오류] EmployeeManager가 없습니다!");
-            return;
-        }
-
-        // 2. 직원 수 확인 로그 (★중요★)
-        Debug.Log($"📋 [확인] 현재 고용된 직원 수: {EmployeeManager.Instance.hiredEmployees.Count}명");
-
-        // 3. 연결 확인
-        if (hiredCardPrefab == null) Debug.LogError("❌ [오류] Hired Card Prefab이 연결되지 않았습니다!");
-        if (hiredCardParent == null) Debug.LogError("❌ [오류] Hired Card Parent(Content)가 연결되지 않았습니다!");
-
-        if (hiredCardPrefab == null || hiredCardParent == null) return;
-
-        // --- 기존 로직 실행 ---
-        foreach (GameObject card in spawnedHiredCards) Destroy(card);
+        foreach (GameObject c in spawnedHiredCards) Destroy(c);
         spawnedHiredCards.Clear();
-
-        foreach (EmployeeInstance employee in EmployeeManager.Instance.hiredEmployees)
+        if (!hiredCardPrefab || !hiredCardParent || !EmployeeManager.Instance) return;
+        foreach (EmployeeInstance emp in EmployeeManager.Instance.hiredEmployees)
         {
-            if (employee == null) continue;
+            if (emp == null) continue;
             GameObject newCard = Instantiate(hiredCardPrefab, hiredCardParent);
-            UpdateHiredCardUI(newCard, employee);
+            UpdateHiredCardUI(newCard, emp);
             spawnedHiredCards.Add(newCard);
         }
     }
 
-    /// <summary>
-    /// 개별 직원 카드의 정보를 채웁니다. (레벨업 버튼 로직 추가됨)
-    /// </summary>
     private void UpdateHiredCardUI(GameObject card, EmployeeInstance employee)
     {
-        // 1. UI 요소 찾기
-        Image portraitImage = card.transform.Find("PortraitImage")?.GetComponent<Image>();
+        Image portrait = card.transform.Find("PortraitImage")?.GetComponent<Image>();
+        TextMeshProUGUI name = card.transform.Find("Text/Name/NameText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI species = card.transform.Find("Text/Species/SpeciesText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI grade = card.transform.Find("Text/Grade/GradeText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI trait = card.transform.Find("Text/Trait/TraitText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI cook = card.transform.Find("CookStatText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI serve = card.transform.Find("ServeStatText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI charm = card.transform.Find("CharmStatText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI level = card.transform.Find("LevelText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI sp = card.transform.Find("SPText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI salary = card.transform.Find("Text/Salary/SalaryText")?.GetComponent<TextMeshProUGUI>();
 
-        // 스탯 텍스트
-        TextMeshProUGUI cookText = card.transform.Find("CookStatText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI serveText = card.transform.Find("ServeStatText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI charmText = card.transform.Find("CharmStatText")?.GetComponent<TextMeshProUGUI>();
-
-        // 정보 텍스트 (Text 폴더 내부)
-        TextMeshProUGUI nameText = card.transform.Find("Text/Name/NameText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI speciesText = card.transform.Find("Text/Species/SpeciesText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI gradeText = card.transform.Find("Text/Grade/GradeText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI traitText = card.transform.Find("Text/Trait/TraitText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI salaryText = card.transform.Find("Text/Salary/SalaryText")?.GetComponent<TextMeshProUGUI>();
-
-        // 레벨 & SP 관련
-        TextMeshProUGUI levelText = card.transform.Find("LevelText")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI spText = card.transform.Find("SPText")?.GetComponent<TextMeshProUGUI>();
-
-        // 버튼들
-        Button cookUpBtn = card.transform.Find("CookUpButton")?.GetComponent<Button>();
-        Button serveUpBtn = card.transform.Find("ServeUpButton")?.GetComponent<Button>();
-        Button charmUpBtn = card.transform.Find("CharmUpButton")?.GetComponent<Button>();
-
-        // ★ [추가됨] 레벨업 버튼 찾기
-        Button levelUpBtn = card.transform.Find("LevelUpButton")?.GetComponent<Button>();
-
-        // 기능 UI
-        TMP_Dropdown roleDropdown = card.transform.Find("RoleDropdown")?.GetComponent<TMP_Dropdown>();
+        Button cookBtn = card.transform.Find("CookUpButton")?.GetComponent<Button>();
+        Button serveBtn = card.transform.Find("ServeUpButton")?.GetComponent<Button>();
+        Button charmBtn = card.transform.Find("CharmUpButton")?.GetComponent<Button>();
+        Button levelBtn = card.transform.Find("LevelUpButton")?.GetComponent<Button>();
         Button dismissBtn = card.transform.Find("DismissButton")?.GetComponent<Button>();
 
-        // ---------------------------------------------------------
-        // 2. 데이터 적용
+        if (portrait && employee.BaseData.portrait) portrait.sprite = employee.BaseData.portrait;
+        if (name) name.text = employee.firstName;
+        if (species) species.text = GetKoreanSpeciesName(employee.BaseData.speciesName);
+        if (level) level.text = $"Lv.{employee.currentLevel}";
+        else if (name) name.text += $" (Lv.{employee.currentLevel})";
+        if (sp) sp.text = (employee.skillPoints > 0) ? $"SP: <color=yellow>{employee.skillPoints}</color>" : "SP: 0";
+        if (grade) grade.text = $"<color={GetGradeColorHex(employee.grade)}>{employee.grade}</color>";
+        if (cook) cook.text = $"{employee.currentCookingStat}";
+        if (serve) serve.text = $"{employee.currentServingStat}";
+        if (charm) charm.text = $"{employee.currentCharmStat}";
+        if (trait) trait.text = (employee.currentTraits.Count > 0) ? string.Join(", ", employee.currentTraits.Select(t => t.traitName)) : "-";
+        if (salary) { salary.text = $"{employee.currentSalary} G"; salary.color = Color.white; }
 
-        if (portraitImage != null && employee.BaseData.portrait != null)
-            portraitImage.sprite = employee.BaseData.portrait;
-
-        if (nameText != null) nameText.text = employee.firstName;
-        if (speciesText != null) speciesText.text = GetKoreanSpeciesName(employee.BaseData.speciesName);
-
-        // 레벨 표시
-        if (levelText != null)
-            levelText.text = $"Lv.{employee.currentLevel}";
-        else if (nameText != null)
-            nameText.text = $"{employee.firstName} <size=80%>(Lv.{employee.currentLevel})</size>";
-
-        // SP 표시
-        if (spText != null)
-        {
-            if (employee.skillPoints > 0) spText.text = $"SP: <color=yellow>{employee.skillPoints}</color>";
-            else spText.text = "SP: 0";
-        }
-
-        // 등급 표시
-        if (gradeText != null)
-        {
-            string colorHex = GetGradeColorHex(employee.grade);
-            gradeText.text = $"<color={colorHex}>{employee.grade}</color>";
-        }
-
-        // 스탯 표시
-        if (cookText != null) cookText.text = $"{employee.currentCookingStat}";
-        if (serveText != null) serveText.text = $"{employee.currentServingStat}";
-        if (charmText != null) charmText.text = $"{employee.currentCharmStat}";
-
-        // 특성 표시
-        if (traitText != null)
-        {
-            if (employee.currentTraits != null && employee.currentTraits.Count > 0)
-                traitText.text = string.Join(", ", employee.currentTraits.Select(t => t.traitName));
-            else
-                traitText.text = "-";
-        }
-
-        // 급여 표시
-        if (salaryText != null)
-        {
-            salaryText.text = $"{employee.currentSalary} G";
-            salaryText.color = Color.white;
-        }
-
-        // =======================================================
-        // ★ [추가됨] 레벨업 버튼 로직 (비용 계산 및 조건 체크)
-        // =======================================================
-        if (levelUpBtn != null)
-        {
-            // 1. 최대 레벨 확인 (EmployeeInstance 로직과 동일하게)
-            int maxLevel = 20;
-            switch (employee.grade)
-            {
-                case EmployeeGrade.B: maxLevel = 30; break;
-                case EmployeeGrade.A: maxLevel = 40; break;
-                case EmployeeGrade.S: maxLevel = 50; break;
-            }
-
-            // 2. 비용 계산 (100 * 1.1^(Lv-1))
-            int nextLevelCost = (int)(100 * Mathf.Pow(1.1f, employee.currentLevel - 1));
-
-            // 텍스트 컴포넌트 찾기 (버튼 자식)
-            TextMeshProUGUI btnText = levelUpBtn.GetComponentInChildren<TextMeshProUGUI>();
-
-            if (employee.currentLevel >= maxLevel)
-            {
-                // 최대 레벨 도달 시
-                levelUpBtn.interactable = false;
-                if (btnText != null) btnText.text = "MAX";
-            }
-            else
-            {
-                // 비용 체크
-                bool canAfford = GameManager.instance.totalGoldAmount >= nextLevelCost;
-                levelUpBtn.interactable = canAfford;
-
-                // 버튼 텍스트에 가격 표시 (예: "UP\n100G")
-                if (btnText != null)
-                    btnText.text = $"LvUP <size=80%>({nextLevelCost}G)</size>";
-
-                // 클릭 리스너 연결
-                levelUpBtn.onClick.RemoveAllListeners();
-                levelUpBtn.onClick.AddListener(() => {
-                    // TryLevelUp 함수가 내부적으로 골드 소모, 레벨 증가, SP 지급을 다 처리함
-                    if (employee.TryLevelUp())
-                    {
-                        UpdateHiredEmployeeListUI(); // 성공하면 UI 갱신
-                    }
-                });
-            }
-        }
-        // =======================================================
-
-        // 스탯 강화 버튼 (SP 있을 때만 활성)
         bool hasSP = employee.skillPoints > 0;
+        if (cookBtn) { cookBtn.interactable = hasSP; cookBtn.onClick.RemoveAllListeners(); cookBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI(); }); }
+        if (serveBtn) { serveBtn.interactable = hasSP; serveBtn.onClick.RemoveAllListeners(); serveBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); }); }
+        if (charmBtn) { charmBtn.interactable = hasSP; charmBtn.onClick.RemoveAllListeners(); charmBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCharm()) UpdateHiredEmployeeListUI(); }); }
 
-        if (cookUpBtn != null)
+        if (levelBtn)
         {
-            cookUpBtn.interactable = hasSP;
-            cookUpBtn.onClick.RemoveAllListeners();
-            cookUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCooking()) UpdateHiredEmployeeListUI(); });
-        }
-        if (serveUpBtn != null)
-        {
-            serveUpBtn.interactable = hasSP;
-            serveUpBtn.onClick.RemoveAllListeners();
-            serveUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnServing()) UpdateHiredEmployeeListUI(); });
-        }
-        if (charmUpBtn != null)
-        {
-            charmUpBtn.interactable = hasSP;
-            charmUpBtn.onClick.RemoveAllListeners();
-            charmUpBtn.onClick.AddListener(() => { if (employee.SpendSkillPointOnCharm()) UpdateHiredEmployeeListUI(); });
+            int maxLv = 20; // 등급별 로직 생략
+            int cost = (int)(100 * Mathf.Pow(1.1f, employee.currentLevel - 1));
+            TextMeshProUGUI txt = levelBtn.GetComponentInChildren<TextMeshProUGUI>();
+            if (employee.currentLevel >= maxLv) { levelBtn.interactable = false; if (txt) txt.text = "MAX"; }
+            else
+            {
+                levelBtn.interactable = (GameManager.instance.totalGoldAmount >= cost);
+                if (txt) txt.text = $"UP {cost}G";
+                levelBtn.onClick.RemoveAllListeners();
+                levelBtn.onClick.AddListener(() => { if (employee.TryLevelUp()) UpdateHiredEmployeeListUI(); });
+            }
         }
 
-        // 해고 버튼
-        if (dismissBtn != null)
+        if (dismissBtn)
         {
             dismissBtn.onClick.RemoveAllListeners();
             if (employee.isProtagonist) dismissBtn.interactable = false;
-            else
-            {
-                dismissBtn.interactable = true;
-                dismissBtn.onClick.AddListener(() => ShowDismissalConfirmation(employee));
-            }
-        }
-
-        // 역할 드롭다운
-        if (roleDropdown != null)
-        {
-            if (EmployeeManager.Instance.hiredEmployees.Count <= 1)
-            {
-                roleDropdown.value = (int)EmployeeRole.Unassigned;
-                roleDropdown.interactable = false;
-            }
-            else
-            {
-                roleDropdown.interactable = true;
-                roleDropdown.ClearOptions();
-                roleDropdown.AddOptions(new List<string> { "미지정", "주방", "홀" });
-                roleDropdown.onValueChanged.RemoveAllListeners();
-                roleDropdown.value = (int)employee.assignedRole;
-                roleDropdown.onValueChanged.AddListener((val) => {
-                    employee.assignedRole = (EmployeeRole)val;
-                    if (SynergyManager.Instance != null) SynergyManager.Instance.UpdateActiveSynergies(EmployeeManager.Instance.hiredEmployees);
-                });
-            }
+            else { dismissBtn.interactable = true; dismissBtn.onClick.AddListener(() => ShowDismissalConfirmation(employee)); }
         }
     }
 
-    // ==================================================================================
-    // 4. 해고 확인 팝업 로직
-    // ==================================================================================
+    private string GetKoreanSpeciesName(string s) { return (s == "Elf") ? "엘프" : (s == "Dwarf") ? "드워프" : (s == "Goblin") ? "고블린" : s; }
+    private string GetGradeColorHex(EmployeeGrade g) { return (g == EmployeeGrade.S) ? "#FFD700" : (g == EmployeeGrade.A) ? "#9370DB" : (g == EmployeeGrade.B) ? "#1E90FF" : "#FFFFFF"; }
 
-    public void ShowDismissalConfirmation(EmployeeInstance employee)
+    public void ShowDismissalConfirmation(EmployeeInstance e)
     {
-        employeeToDismiss = employee;
-        if (dismissalConfirmationPanel != null)
-        {
-            dismissalConfirmationPanel.SetActive(true);
-            if (dismissalNameText != null)
-                dismissalNameText.text = $"'{employee.firstName}' 직원을\n해고하시겠습니까?";
-        }
+        employeeToDismiss = e;
+        if (dismissalConfirmationPanel) { dismissalConfirmationPanel.SetActive(true); if (dismissalNameText) dismissalNameText.text = $"{e.firstName} 해고?"; }
     }
-
     public void ConfirmDismissal()
     {
-        if (employeeToDismiss != null && EmployeeManager.Instance != null)
-        {
-            EmployeeManager.Instance.DismissEmployee(employeeToDismiss);
-        }
-        HideDismissalConfirmation();
-        UpdateHiredEmployeeListUI();
+        if (employeeToDismiss != null) EmployeeManager.Instance.DismissEmployee(employeeToDismiss);
+        HideDismissalConfirmation(); UpdateHiredEmployeeListUI();
     }
-
-    public void HideDismissalConfirmation()
-    {
-        employeeToDismiss = null;
-        if (dismissalConfirmationPanel != null) dismissalConfirmationPanel.SetActive(false);
-    }
+    public void HideDismissalConfirmation() { employeeToDismiss = null; if (dismissalConfirmationPanel) dismissalConfirmationPanel.SetActive(false); }
 }
