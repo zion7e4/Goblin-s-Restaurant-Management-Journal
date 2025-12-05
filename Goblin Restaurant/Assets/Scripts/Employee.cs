@@ -259,15 +259,25 @@ public class Employee : MonoBehaviour
     {
         if (employeeData == null)
         {
-            Debug.LogWarning("Employee.cs employeeData가 null이라 FindTask를 실행할 수 없습니다");
+            Debug.LogWarning("Employee.cs: employeeData가 null이라 FindTask를 실행할 수 없습니다");
             return;
         }
 
+        // 1. 미지정(Unassigned) 상태면 아무 일도 하지 않고 대기 (Waiting Area에 머뭄)
+        if (employeeData.assignedRole == EmployeeRole.Unassigned)
+        {
+            // (필요 시 대기 모션이나 로직 추가 가능)
+            currentState = EmployeeState.Idle;
+            return;
+        }
+
+        // 2. [홀 서빙] 체크: 역할이 'Hall'이거나 'AllRounder'일 때
         if (employeeData.assignedRole == EmployeeRole.Hall ||
-            employeeData.assignedRole == EmployeeRole.Unassigned)
+            employeeData.assignedRole == EmployeeRole.AllRounder)
         {
             if (RestaurantManager.instance != null)
             {
+                // 서빙할 음식이 있는지 찾기 (조리 완료된 음식)
                 targetOrder = RestaurantManager.instance.OrderQueue.FirstOrDefault(o =>
                     o != null &&
                     o.status == OrderStatus.ReadyToServe &&
@@ -277,62 +287,67 @@ public class Employee : MonoBehaviour
 
             if (targetOrder != null)
             {
-                Debug.Log($"{employeeData?.firstName ?? "Worker"} 홀 서빙할 음식 발견");
-                targetOrder.status = OrderStatus.Completed;
+                Debug.Log($"{employeeData.firstName}: 홀 서빙 시작 (AllRounder/Hall)");
+                targetOrder.status = OrderStatus.Completed; // 픽업 중 상태로 변경
                 targetCustomer = targetOrder.customer;
                 targetCountertop = targetOrder.cookedOnCounterTop;
                 currentState = EmployeeState.MovingToPickupFood;
-                return;
+                return; // 일을 찾았으니 함수 종료
             }
         }
 
+        // 3. [주방 요리] 체크: 역할이 'Kitchen'이거나 'AllRounder'일 때
         if (employeeData.assignedRole == EmployeeRole.Kitchen ||
-            employeeData.assignedRole == EmployeeRole.Unassigned)
+            employeeData.assignedRole == EmployeeRole.AllRounder)
         {
             if (RestaurantManager.instance != null)
             {
+                // 요리할 주문이 있는지 찾기 (대기 중인 주문)
                 targetOrder = RestaurantManager.instance.OrderQueue.FirstOrDefault(o => o != null && o.status == OrderStatus.Pending);
             }
 
             if (targetOrder != null)
             {
-                Debug.Log($"{employeeData?.firstName ?? "Worker"} 주방 요리할 주문 발견");
+                // 빈 조리대 찾기
                 targetCountertop = RestaurantManager.instance.counterTops.FirstOrDefault(s => s != null && !s.isBeingUsed);
 
                 if (targetCountertop != null)
                 {
+                    Debug.Log($"{employeeData.firstName}: 요리 시작 (AllRounder/Kitchen)");
                     targetOrder.status = OrderStatus.Cooking;
                     targetCountertop.isBeingUsed = true;
                     currentState = EmployeeState.MovingToCounterTop;
-                    return;
+                    return; // 일을 찾았으니 함수 종료
                 }
             }
         }
 
+        // 4. [홀 청소] 체크: 역할이 'Hall'이거나 'AllRounder'일 때
         if (employeeData.assignedRole == EmployeeRole.Hall ||
-            employeeData.assignedRole == EmployeeRole.Unassigned)
+            employeeData.assignedRole == EmployeeRole.AllRounder)
         {
             if (RestaurantManager.instance != null)
             {
+                // 더러운 테이블 찾기
                 targetTable = RestaurantManager.instance.tables.FirstOrDefault(t =>
                     t != null && t.isDirty && !t.isBeingUsedForCleaning);
             }
 
             if (targetTable != null)
             {
-                Debug.Log($"{employeeData?.firstName ?? "Worker"} 홀 청소할 테이블 발견");
+                Debug.Log($"{employeeData.firstName}: 테이블 청소 시작 (AllRounder/Hall)");
                 targetTable.isBeingUsedForCleaning = true;
                 currentState = EmployeeState.MovingToTable;
-                return;
+                return; // 일을 찾았으니 함수 종료
             }
         }
 
+        // 5. 할 일이 없으면 대기 위치(IdlePosition)로 복귀
         if (idlePosition != null && Vector2.Distance(transform.position, idlePosition.position) > 0.5f)
         {
             currentState = EmployeeState.MovingToIdle;
         }
     }
-
     IEnumerator CookFoodCoroutine()
     {
         currentState = EmployeeState.Cooking;

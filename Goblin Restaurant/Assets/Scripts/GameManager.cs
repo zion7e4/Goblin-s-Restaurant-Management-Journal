@@ -281,8 +281,43 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.Preparing)
         {
+            // 1. (기존 로직) 시간 초기화
             if (currentTimeOfDay > 9 * 3600) currentTimeOfDay = 9 * 3600;
 
+            // ================================================================
+            // ★ [추가됨] 미지정(Unassigned) 직원을 자동으로 올라운더로 변경
+            // ================================================================
+            if (EmployeeManager.Instance != null)
+            {
+                bool roleChanged = false; // 변경된 사항이 있는지 체크
+
+                foreach (var emp in EmployeeManager.Instance.hiredEmployees)
+                {
+                    // 직원이 '대기(미지정)' 상태라면?
+                    if (emp.assignedRole == EmployeeRole.Unassigned)
+                    {
+                        emp.assignedRole = EmployeeRole.AllRounder; // 올라운더로 변경
+                        Debug.Log($"[자동배치] {emp.firstName}이(가) 영업 시작과 함께 '올라운더'로 배치되었습니다.");
+                        roleChanged = true;
+                    }
+                }
+
+                // 역할이 바뀌었으니 시너지도 다시 계산해야 함
+                if (roleChanged && SynergyManager.Instance != null)
+                {
+                    SynergyManager.Instance.UpdateActiveSynergies(EmployeeManager.Instance.hiredEmployees);
+                }
+
+                // (선택 사항) 만약 배치 UI가 켜져 있다면 갱신 (보통 영업 시작하면 UI 닫히니 필수는 아님)
+                if (roleChanged && EmployeeUI_Controller.Instance != null)
+                {
+                    // 데이터가 바뀌었으니 UI도 갱신해달라고 요청 (혹시 켜져 있을 경우 대비)
+                    // EmployeeUI_Controller.Instance.UpdateAssignmentUI(); 
+                }
+            }
+            // ================================================================
+
+            // 2. (기존 로직) 상태 변경 및 영업 시작
             currentState = GameState.Open;
             if (menuPlanner != null) menuPlanner.SetActive(false);
 
@@ -291,6 +326,8 @@ public class GameManager : MonoBehaviour
                 MenuPlanner.instance.ConsumeIngredientsForToday();
                 MenuPlanner.instance.StartDaySales();
             }
+
+            Debug.Log("영업 시작");
         }
     }
 
