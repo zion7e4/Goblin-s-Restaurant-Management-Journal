@@ -23,7 +23,7 @@ public class FameManager : MonoBehaviour
         private set { currentFameLevel = value; }
     }
 
-    private readonly List<int> fameLevelThresholds = new List<int> { 10, 25, 50, 100, 200, 400 };
+    private readonly List<int> fameLevelThresholds = new List<int> { 10, 25, 50, 100, 200, 400};
 
     public event System.Action OnFameChanged;
 
@@ -55,7 +55,7 @@ public class FameManager : MonoBehaviour
 
         UpdateFameLevel();
         OnFameChanged?.Invoke();
-        Debug.Log($"������ {amount} ����. ���� ����: {CurrentFamePoints}");
+        Debug.Log($" {amount} .  : {CurrentFamePoints}");
     }
 
     public void DecreaseFame(float amount)
@@ -65,7 +65,7 @@ public class FameManager : MonoBehaviour
 
         UpdateFameLevel();
         OnFameChanged?.Invoke();
-        Debug.Log($"������ {amount} ����. ���� ����: {CurrentFamePoints}");
+        Debug.Log($" {amount} .  : {CurrentFamePoints}");
     }
 
     private void UpdateFameLevel()
@@ -73,7 +73,7 @@ public class FameManager : MonoBehaviour
         CurrentFameLevel = 0;
         for (int i = 0; i < fameLevelThresholds.Count; i++)
         {
-            if (CurrentFamePoints > fameLevelThresholds[i])
+            if (CurrentFamePoints >= fameLevelThresholds[i])
             {
                 CurrentFameLevel = i + 1;
             }
@@ -86,8 +86,8 @@ public class FameManager : MonoBehaviour
 
         if (QuestManager.Instance != null)
         {
-            // TargetType.Level, Ű���� "������ ����"
-            QuestManager.Instance.SetProgress(QuestTargetType.Level, "�Ĵ� ������ ����", CurrentFameLevel);
+            // TargetType.Level, 키워드 "식당 명성도 레벨"
+            QuestManager.Instance.SetProgress(QuestTargetType.Level, "식당 명성도 레벨", CurrentFameLevel);
         }
     }
 

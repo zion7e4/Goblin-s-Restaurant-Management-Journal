@@ -354,7 +354,7 @@ public class GameManager : MonoBehaviour
                 ShopManager.Instance.GenerateTodayItems(FameManager.instance.CurrentFamePoints);
             }
 
-            if (isEmployeeUnlocked && (DayCount - 1) % 7 ==0)
+            if (isEmployeeUnlocked && DayCount >= 1)
             {
                 EmployeeManager.Instance.GenerateApplicants((int)FameManager.instance.CurrentFamePoints);
                 Debug.Log($"[GameManager] {DayCount}일차 아침, 새로운 지원자 생성.");
